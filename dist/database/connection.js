@@ -12,7 +12,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.dbConnection = void 0;
 const pg_1 = require("pg");
 const clientConfig = {
-    host: "127.0.0.1",
+    host: "187.190.170.110", // Reemplaza con tu IP pública
     user: "morado",
     password: "adiosamor2",
     port: 5432,

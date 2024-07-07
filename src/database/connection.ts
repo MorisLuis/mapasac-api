@@ -4,7 +4,7 @@ const clientConfig: ClientConfig = {
     host: "127.0.0.1",
     user: "morado",
     password: "adiosamor2",
-    port: 5432,
+    port: 5434,
     database: 'mapasac'
 };
 

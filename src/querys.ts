@@ -1,7 +1,13 @@
 export const querys = {
 
     inveart: ` 
-        SELECT * FROM mapasoft.invearts
+        SELECT
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         ORDER BY idinvearts ASC 
         OFFSET ($1 - 1) * $2
         LIMIT $2;
@@ -19,12 +25,24 @@ export const querys = {
     `,
 
     getByClave: `
-        SELECT * FROM mapasoft.invearts
+        SELECT  
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         WHERE clave = $1
     `,
 
     getById: `
-        SELECT * FROM mapasoft.invearts
+        SELECT
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         WHERE idinvearts = $1
     `,
 
