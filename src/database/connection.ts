@@ -1,10 +1,10 @@
 import { Client, ClientConfig } from "pg";
 
 const clientConfig: ClientConfig = {
-    host: "127.0.0.1",
+    host: "192.168.1.81",
     user: "morado",
     password: "adiosamor2",
-    port: 5434,
+    port: 5432,
     database: 'mapasac'
 };
 
