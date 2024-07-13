@@ -2,8 +2,27 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.querys = void 0;
 exports.querys = {
+    auth: `
+        SELECT
+            idusrmob,
+            usr,
+            pas,
+            svr,
+            dba,
+            port,
+            usrdba,
+            pasdba
+        FROM mapasoft.usrmob
+        WHERE usr = $1
+    `,
     inveart: ` 
-        SELECT * FROM mapasoft.invearts
+        SELECT
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         ORDER BY idinvearts ASC 
         OFFSET ($1 - 1) * $2
         LIMIT $2;
@@ -18,11 +37,23 @@ exports.querys = {
         WHERE codbarras = $1
     `,
     getByClave: `
-        SELECT * FROM mapasoft.invearts
+        SELECT  
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         WHERE clave = $1
     `,
     getById: `
-        SELECT * FROM mapasoft.invearts
+        SELECT
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 
+        FROM mapasoft.invearts
         WHERE idinvearts = $1
     `,
     insertInventoryDetails: `

@@ -3,25 +3,27 @@ import cors from 'cors';
 import { dbConnection } from "../database/connection";
 import inverRouter from '../routes/inverartRouter';
 import codebarRouter from '../routes/codebarRouter';
+import authRouter from '../routes/authRouter';
 
 class Server {
     public app: Application;
     private port: string;
     private paths: {
         invearts: string,
-        codebar: string
+        codebar: string,
+        auth: string
     }
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT || "5001";
         this.paths = {
+            auth: "/api/auth",
             invearts: "/api/invearts",
-            codebar: "/api/codebar",
-
+            codebar: "/api/codebar"
         }
 
-        //Connect to database
+        // Connect to database
         this.connectDB();
 
         // Middlewares
@@ -47,6 +49,7 @@ class Server {
     routes() {
         this.app.use(this.paths.invearts, inverRouter);
         this.app.use(this.paths.codebar, codebarRouter);
+        this.app.use(this.paths.auth, authRouter);
 
     }
 

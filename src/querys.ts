@@ -1,5 +1,33 @@
 export const querys = {
 
+    auth: `
+        SELECT
+            idusrmob,
+            usr,
+            pas,
+            svr,
+            dba,
+            port,
+            usrdba,
+            pasdba
+        FROM mapasoft.usrmob
+        WHERE usr = $1
+    `,
+
+    getUserById: `
+        SELECT
+            idusrmob,
+            usr,
+            pas,
+            svr,
+            dba,
+            port,
+            usrdba,
+            pasdba
+        FROM mapasoft.usrmob
+        WHERE idusrmob = $1
+    `,
+
     inveart: ` 
         SELECT
             idinvearts,
