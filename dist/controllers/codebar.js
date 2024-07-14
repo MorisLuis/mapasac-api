@@ -1,26 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProductCodebar = exports.getProducByCodebar = void 0;
+exports.updateProductCodebar = void 0;
 const connection_1 = require("../database/connection");
-const querys_1 = require("../querys");
-const getProducByCodebar = async (req, res) => {
-    try {
-        const client = await (0, connection_1.dbConnection)();
-        if (!client) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-        const { codbarras } = req.query;
-        const result = await client.query(querys_1.querys.getByCodebar, [codbarras]);
-        const product = result.rows[0];
-        res.json({ product });
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-};
-exports.getProducByCodebar = getProducByCodebar;
+const querys_1 = require("../querys/querys");
 const updateProductCodebar = async (req, res) => {
     try {
         const client = await (0, connection_1.dbConnection)();

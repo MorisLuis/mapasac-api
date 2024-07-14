@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { dbConnection } from "../database/connection";
-import { querys } from '../querys';
+import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
 

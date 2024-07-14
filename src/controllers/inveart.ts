@@ -1,82 +1,8 @@
 import { Request, Response } from "express";
 import { dbConnection } from "../database/connection";
-import { querys } from "../querys";
 import { Client } from "pg";
 
 
-const getInveart = async (req: Request, res: Response) => {
-
-    try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
-        const { limit, page } = req.query;
-
-        const result = await pool.query(querys.inveart, [page, limit]);
-        const products = result.rows;
-
-        res.json({
-            total: products.length,
-            products
-        })
-
-    } catch (error) {
-        console.log({ error })
-    }
-}
-
-
-const getInveartByClave = async (req: Request, res: Response) => {
-
-    try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
-        const { clave } = req.query;
-
-        const result = await pool.query(querys.getByClave, [clave]);
-        const product = result.rows[0];
-
-        res.json({
-            product
-        })
-
-    } catch (error) {
-        console.log({ error })
-    }
-}
-
-const getInveartById = async (req: Request, res: Response) => {
-
-    try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
-        const { idinvearts } = req.query;
-
-        const result = await pool.query(querys.getById, [idinvearts]);
-        const product = result.rows[0];
-
-        res.json({
-            product
-        })
-
-    } catch (error) {
-        console.log({ error })
-    }
-}
 
 const insertInventoryDetails = async (req: Request, res: Response) => {
     try {
@@ -120,8 +46,5 @@ const insertInventoryDetails = async (req: Request, res: Response) => {
 
 
 export {
-    getInveart,
-    getInveartByClave,
-    getInveartById,
     insertInventoryDetails
 }

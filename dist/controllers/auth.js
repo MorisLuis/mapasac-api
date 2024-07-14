@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.renewLogin = exports.login = void 0;
 const connection_1 = require("../database/connection");
-const querys_1 = require("../querys");
+const querys_1 = require("../querys/querys");
 const generate_jwt_1 = require("../helpers/generate-jwt");
 const login = async (req, res) => {
     try {
@@ -39,10 +39,16 @@ exports.login = login;
 const renewLogin = async (req, res) => {
     const idusrmob = req.idusrmob;
     try {
-        console.log({ idusrmob });
+        const pool = await (0, connection_1.dbConnection)();
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+        const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
+        const user = result.rows[0];
         res.json({
             ok: true,
-            idusrmob
+            user
         });
     }
     catch (error) {

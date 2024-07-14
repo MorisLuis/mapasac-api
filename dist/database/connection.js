@@ -15,7 +15,6 @@ const dbConnection = async () => {
         port: config_1.default.port,
         database: config_1.default.database
     };
-    console.log({ dbConfig });
     if (!client) {
         client = new pg_1.Client(dbConfig);
         try {

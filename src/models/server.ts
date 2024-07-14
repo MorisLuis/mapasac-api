@@ -2,16 +2,16 @@ import express, { Application } from "express";
 import cors from 'cors';
 import { dbConnection } from "../database/connection";
 import inverRouter from '../routes/inverartRouter';
-import codebarRouter from '../routes/codebarRouter';
 import authRouter from '../routes/authRouter';
+import productRouter from '../routes/productRouter';
 
 class Server {
     public app: Application;
     private port: string;
     private paths: {
         invearts: string,
-        codebar: string,
-        auth: string
+        auth: string,
+        product: string
     }
 
     constructor() {
@@ -20,7 +20,7 @@ class Server {
         this.paths = {
             auth: "/api/auth",
             invearts: "/api/invearts",
-            codebar: "/api/codebar"
+            product: "/api/product"
         }
 
         // Connect to database
@@ -48,9 +48,8 @@ class Server {
 
     routes() {
         this.app.use(this.paths.invearts, inverRouter);
-        this.app.use(this.paths.codebar, codebarRouter);
         this.app.use(this.paths.auth, authRouter);
-
+        this.app.use(this.paths.product, productRouter);
     }
 
     listen() {
