@@ -4,6 +4,7 @@ import { dbConnection } from "../database/connection";
 import inverRouter from '../routes/inverartRouter';
 import authRouter from '../routes/authRouter';
 import productRouter from '../routes/productRouter';
+import searchRouter from '../routes/searchRouter';
 
 class Server {
     public app: Application;
@@ -11,7 +12,8 @@ class Server {
     private paths: {
         invearts: string,
         auth: string,
-        product: string
+        product: string,
+        search: string
     }
 
     constructor() {
@@ -20,7 +22,8 @@ class Server {
         this.paths = {
             auth: "/api/auth",
             invearts: "/api/invearts",
-            product: "/api/product"
+            product: "/api/product",
+            search: "/api/search"
         }
 
         // Connect to database
@@ -50,6 +53,8 @@ class Server {
         this.app.use(this.paths.invearts, inverRouter);
         this.app.use(this.paths.auth, authRouter);
         this.app.use(this.paths.product, productRouter);
+        this.app.use(this.paths.search, searchRouter);
+
     }
 
     listen() {

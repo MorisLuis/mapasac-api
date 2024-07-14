@@ -9,6 +9,7 @@ const connection_1 = require("../database/connection");
 const inverartRouter_1 = __importDefault(require("../routes/inverartRouter"));
 const authRouter_1 = __importDefault(require("../routes/authRouter"));
 const productRouter_1 = __importDefault(require("../routes/productRouter"));
+const searchRouter_1 = __importDefault(require("../routes/searchRouter"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -16,7 +17,8 @@ class Server {
         this.paths = {
             auth: "/api/auth",
             invearts: "/api/invearts",
-            product: "/api/product"
+            product: "/api/product",
+            search: "/api/search"
         };
         // Connect to database
         this.connectDB();
@@ -39,6 +41,7 @@ class Server {
         this.app.use(this.paths.invearts, inverartRouter_1.default);
         this.app.use(this.paths.auth, authRouter_1.default);
         this.app.use(this.paths.product, productRouter_1.default);
+        this.app.use(this.paths.search, searchRouter_1.default);
     }
     listen() {
         this.app.listen(this.port, () => {
