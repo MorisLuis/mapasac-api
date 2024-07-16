@@ -57,12 +57,20 @@ const renewLogin = async (req: Req, res: Response) => {
             return;
         }
 
+        if (!idusrmob) {
+            return res.status(401).json({ message: 'No se encontro el id del usuario' });
+        };
+
         const result = await pool.query(querys.getUserById, [idusrmob]);
         const user = result.rows[0]
 
+        const token = await generateJWT({
+            idusrmob: idusrmob,
+        });
+
         res.json({
-            ok: true,
-            user
+            user,
+            token
         });
 
     } catch (error: any) {

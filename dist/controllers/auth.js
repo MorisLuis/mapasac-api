@@ -44,11 +44,18 @@ const renewLogin = async (req, res) => {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
         }
+        if (!idusrmob) {
+            return res.status(401).json({ message: 'No se encontro el id del usuario' });
+        }
+        ;
         const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
         const user = result.rows[0];
+        const token = await (0, generate_jwt_1.generateJWT)({
+            idusrmob: idusrmob,
+        });
         res.json({
-            ok: true,
-            user
+            user,
+            token
         });
     }
     catch (error) {

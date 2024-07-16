@@ -1,17 +1,18 @@
 import { Router } from "express";
-import { getProducByCodebar, getProductByClave, getProductById, getProducts, updateProduct } from "../controllers/product";
+import { getProducByCodebar, getProductByClave, getProductById, getProducts, getTotalProducts, updateProduct } from "../controllers/product";
 
 const router = Router();
 
 router.get('/', getProducts);
 
-router.get('/byclave', getProductByClave);
+router.get('/total', getTotalProducts);
+
 
 router.get('/byid', getProductById);
 
-router.get('/bycodebar', getProducByCodebar);
+router.get('/byclave', getProductByClave);
 
-router.put('/', updateProduct);
+router.get('/bycodebar', getProducByCodebar);
 
 router.put('/:id', updateProduct);
 

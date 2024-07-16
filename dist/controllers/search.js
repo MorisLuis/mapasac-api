@@ -10,8 +10,15 @@ const searchProduct = async (req, res) => {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
         }
-        const { term } = req.params;
-        const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [term]);
+        const { term } = req.query;
+        let searchTerm;
+        if (!term) {
+            searchTerm = "a";
+        }
+        else {
+            searchTerm = term;
+        }
+        const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [searchTerm]);
         const products = result.rows;
         res.json({
             products

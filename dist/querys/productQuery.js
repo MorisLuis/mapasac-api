@@ -14,28 +14,46 @@ exports.productQuerys = {
         OFFSET ($1 - 1) * $2
         LIMIT $2;
     `,
+    getTotalProducts: `
+        SELECT COUNT(*) FROM mapasoft.invearts 
+    `,
     getProductByClave: `
-        SELECT  
-            idinvearts,
-            codbarras,
-            producto,
-            clave,
-            precio1 
-        FROM mapasoft.invearts
+    SELECT
+        P.idinvearts,
+        P.codbarras,
+        P.producto,
+        P.clave,
+        P.precio1,
+        P.cvefamilia,
+        F.descripcio AS Familia
+    FROM mapasoft.invearts P
+        JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
         WHERE clave = $1
     `,
     getProductById: `
-        SELECT
-            idinvearts,
-            codbarras,
-            producto,
-            clave,
-            precio1 
-        FROM mapasoft.invearts
-        WHERE idinvearts = $1
+    SELECT
+        P.idinvearts,
+        P.codbarras,
+        P.producto,
+        P.clave,
+        P.precio1,
+        P.cvefamilia,
+        F.descripcio AS Familia
+    FROM mapasoft.invearts P
+        JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
+    WHERE idinvearts =  $1
     `,
     getProductByCodebar: `
-        SELECT * FROM mapasoft.invearts
+    SELECT
+        P.idinvearts,
+        P.codbarras,
+        P.producto,
+        P.clave,
+        P.precio1,
+        P.cvefamilia,
+        F.descripcio AS Familia
+    FROM mapasoft.invearts P
+        JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
         WHERE codbarras = $1
     `,
     updateProduct: `

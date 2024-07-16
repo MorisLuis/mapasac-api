@@ -23,10 +23,34 @@ const getProducts = async (req: Request, res: Response) => {
             products
         })
 
-    } catch (error) {
+    } catch (error: any) {
         console.log({ error })
+        res.status(500).send(error.message);
     }
 }
+
+const getTotalProducts = async (req: Request, res: Response) => {
+
+    try {
+        const pool = await dbConnection();
+
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+
+        const result = await pool.query(productQuerys.getTotalProducts);
+        const total = result.rows[0].count;
+
+        res.json({
+            total
+        });
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+
+    }
+};
 
 
 const getProductByClave = async (req: Request, res: Response) => {
@@ -137,6 +161,7 @@ const updateProduct = async (req: Request, res: Response) => {
 
 export {
     getProducts,
+    getTotalProducts,
     getProductByClave,
     getProductById,
     getProducByCodebar,

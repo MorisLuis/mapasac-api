@@ -16,10 +16,16 @@ const searchProduct = async (req: Req, res: Response) => {
             return;
         }
 
-        const { term } = req.params;
+        const { term } = req.query;
 
+        let searchTerm;
+        if(!term){
+            searchTerm = "a"
+        } else {
+            searchTerm = term
+        }
 
-        const result = await pool.query(searchQuerys.searchProduct, [term]);
+        const result = await pool.query(searchQuerys.searchProduct, [searchTerm]);
         const products = result.rows;
 
         res.json({

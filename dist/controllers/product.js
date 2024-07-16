@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByClave = exports.getProducts = void 0;
+exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const getProducts = async (req, res) => {
@@ -20,9 +20,29 @@ const getProducts = async (req, res) => {
     }
     catch (error) {
         console.log({ error });
+        res.status(500).send(error.message);
     }
 };
 exports.getProducts = getProducts;
+const getTotalProducts = async (req, res) => {
+    try {
+        const pool = await (0, connection_1.dbConnection)();
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+        const result = await pool.query(productQuery_1.productQuerys.getTotalProducts);
+        const total = result.rows[0].count;
+        res.json({
+            total
+        });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getTotalProducts = getTotalProducts;
 const getProductByClave = async (req, res) => {
     try {
         const pool = await (0, connection_1.dbConnection)();
