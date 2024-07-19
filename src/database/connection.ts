@@ -1,26 +1,20 @@
-import { Client, ClientConfig } from "pg";
+import { Pool, PoolConfig } from "pg";
 import config from "../config";
 
-let client: Client | null = null;
+const poolConfig: PoolConfig = {
+    host: config.host,
+    user: config.user,
+    password: config.password,
+    port: config.port,
+    database: config.database,
+    max: 10, // Número máximo de conexiones en el pool
+    idleTimeoutMillis: 30000, // Tiempo de espera para cerrar conexiones inactivas
+    connectionTimeoutMillis: 2000 // Tiempo de espera para conectar
+};
+
+const pool = new Pool(poolConfig);
 
 export const dbConnection = async () => {
-
-    const dbConfig : ClientConfig = {
-        host: config.host,
-        user: config.user,
-        password: config.password,
-        port: config.port,
-        database: config.database
-    };
-    if (!client) {
-        client = new Client(dbConfig);
-        try {
-            await client.connect();
-            console.log("Connected to the database!");
-        } catch (err) {
-            console.error('Error connecting to the database:', err);
-            client = null;
-        }
-    }
-    return client;
-}
+    console.log("Connected to the database!");
+    return pool;
+};

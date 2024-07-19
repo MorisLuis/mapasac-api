@@ -5,6 +5,8 @@ import inverRouter from '../routes/inverartRouter';
 import authRouter from '../routes/authRouter';
 import productRouter from '../routes/productRouter';
 import searchRouter from '../routes/searchRouter';
+import utilsRouter from '../routes/utilsRouter';
+import bagRouter from '../routes/bagRouter';
 
 class Server {
     public app: Application;
@@ -13,7 +15,9 @@ class Server {
         invearts: string,
         auth: string,
         product: string,
-        search: string
+        search: string,
+        utils: string,
+        bag: string
     }
 
     constructor() {
@@ -23,7 +27,9 @@ class Server {
             auth: "/api/auth",
             invearts: "/api/invearts",
             product: "/api/product",
-            search: "/api/search"
+            search: "/api/search",
+            utils: "/api/utils",
+            bag: "/api/bag"
         }
 
         // Connect to database
@@ -54,7 +60,8 @@ class Server {
         this.app.use(this.paths.auth, authRouter);
         this.app.use(this.paths.product, productRouter);
         this.app.use(this.paths.search, searchRouter);
-
+        this.app.use(this.paths.utils, utilsRouter);
+        this.app.use(this.paths.bag, bagRouter);
     }
 
     listen() {

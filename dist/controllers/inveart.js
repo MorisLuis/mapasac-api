@@ -1,38 +1,66 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.insertInventoryDetails = void 0;
+exports.postSell = exports.postInventory = void 0;
 const connection_1 = require("../database/connection");
-const insertInventoryDetails = async (req, res) => {
+const moment_1 = __importDefault(require("moment"));
+const querys_1 = require("../querys/querys");
+const postInventory = async (req, res) => {
+    const pool = await (0, connection_1.dbConnection)();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+    const idusrmob = req.idusrmob;
+    const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
+    const folioQuery = querys_1.querys.getFolio;
+    const folioValue = await pool.query(folioQuery, [folioDate]);
+    const folio = folioValue.rows[0].fn_pedidos_foliounico;
     try {
-        const client = await (0, connection_1.dbConnection)();
-        if (!client) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-        const postInventoryDataArray = req.body;
-        // Validación de la estructura de los datos recibidos
-        if (!Array.isArray(postInventoryDataArray)) {
-            res.status(400).json({ error: 'El cuerpo de la solicitud debe ser un arreglo de objetos' });
-            return;
-        }
-        try {
-            await client.query('BEGIN');
-            const insertFunctionQuery = `
-                SELECT insert_inventario_detalles($1::jsonb)
-            `;
-            await client.query(insertFunctionQuery, [JSON.stringify(postInventoryDataArray)]);
-            await client.query('COMMIT');
-            res.status(201).json({ message: 'Datos insertados exitosamente' });
-        }
-        catch (error) {
-            console.log({ error });
-            await client.query('ROLLBACK');
-            res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
-        }
+        await client.query('BEGIN');
+        await client.query(querys_1.querys.createInventory, [idusrmob, folio]);
+        await client.query('COMMIT');
+        res.status(201).json({ message: 'Datos insertados exitosamente' });
     }
     catch (error) {
-        res.status(500).json({ error: 'Error en el servidor', details: error.message });
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+    }
+    finally {
+        client.release();
     }
 };
-exports.insertInventoryDetails = insertInventoryDetails;
+exports.postInventory = postInventory;
+const postSell = async (req, res) => {
+    const pool = await (0, connection_1.dbConnection)();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+    const idusrmob = req.idusrmob;
+    const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
+    const folioQuery = querys_1.querys.getFolio;
+    const folioValue = await pool.query(folioQuery, [folioDate]);
+    const folio = folioValue.rows[0].fn_pedidos_foliounico;
+    try {
+        await client.query('BEGIN');
+        await client.query(querys_1.querys.createSale, [idusrmob, folio]);
+        await client.query('COMMIT');
+        res.status(201).json({ message: 'Datos insertados exitosamente' });
+    }
+    catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+    }
+    finally {
+        client.release();
+    }
+};
+exports.postSell = postSell;
 //# sourceMappingURL=inveart.js.map

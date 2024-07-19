@@ -34,10 +34,20 @@ export const querys = {
         WHERE idinvearts = $2
     `,
 
-    insertInventoryDetails: `
-        INSERT INTO mapasoft.inventarioDetalles (inventarioDetalleID, Folio, Fecha, Partida, Id_Almacen, Id_Ubicacion, Clave, producto, precio1, idinvearts)
-        VALUES 
-        ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-        RETURNING inventarioDetalleID, Folio, Fecha, producto
+    getFolio: `
+        SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 1);
+    `,
+
+    createInventory: `
+        UPDATE mapasoft.enlacemob
+        SET opcion = 1, folcontado = $2
+        WHERE opcion = 0 AND idusrmob = $1
+    `,
+
+    createSale: `
+        UPDATE mapasoft.enlacemob
+        SET opcion = 3, folcontado = $2
+        WHERE opcion = 2 AND idusrmob = $1
     `
+
 }

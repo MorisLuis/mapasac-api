@@ -1,50 +1,77 @@
-import { Request, Response } from "express";
+import { Response, query } from "express";
 import { dbConnection } from "../database/connection";
-import { Client } from "pg";
+import { Req } from "../helpers/validate-jwt";
+import moment from "moment";
+import { querys } from "../querys/querys";
 
 
+const postInventory = async (req: Req, res: Response) => {
 
-const insertInventoryDetails = async (req: Request, res: Response) => {
+    const pool = await dbConnection();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    const idusrmob = req.idusrmob;
+    const folioDate = moment().format('YYYY-MM-DD');
+    const folioQuery = querys.getFolio;
+    const folioValue = await pool.query(folioQuery, [folioDate])
+    const folio = folioValue.rows[0].fn_pedidos_foliounico;
+
     try {
-        const client: Client | null = await dbConnection();
+        await client.query('BEGIN');
 
-        if (!client) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
+        await client.query(querys.createInventory, [idusrmob, folio]);
 
-        const postInventoryDataArray = req.body;
+        await client.query('COMMIT');
 
-        // Validación de la estructura de los datos recibidos
-        if (!Array.isArray(postInventoryDataArray)) {
-            res.status(400).json({ error: 'El cuerpo de la solicitud debe ser un arreglo de objetos' });
-            return;
-        }
-
-        try {
-            await client.query('BEGIN');
-
-            const insertFunctionQuery = `
-                SELECT insert_inventario_detalles($1::jsonb)
-            `;
-
-            await client.query(insertFunctionQuery, [JSON.stringify(postInventoryDataArray)]);
-
-            await client.query('COMMIT');
-
-            res.status(201).json({ message: 'Datos insertados exitosamente' });
-
-        } catch (error: any) {
-            console.log({error})
-            await client.query('ROLLBACK');
-            res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
-        }
+        res.status(201).json({ message: 'Datos insertados exitosamente' });
     } catch (error: any) {
-        res.status(500).json({ error: 'Error en el servidor', details: error.message });
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+    } finally {
+        client.release();
+    }
+};
+
+const postSell = async (req: Req, res: Response) => {
+
+    const pool = await dbConnection();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    const idusrmob = req.idusrmob;
+    const folioDate = moment().format('YYYY-MM-DD');
+    const folioQuery = querys.getFolio;
+    const folioValue = await pool.query(folioQuery, [folioDate])
+    const folio = folioValue.rows[0].fn_pedidos_foliounico;
+
+    try {
+        await client.query('BEGIN');
+
+        await client.query(querys.createSale, [idusrmob, folio]);
+
+        await client.query('COMMIT');
+
+        res.status(201).json({ message: 'Datos insertados exitosamente' });
+    } catch (error: any) {
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+    } finally {
+        client.release();
     }
 };
 
 
+
 export {
-    insertInventoryDetails
+    postInventory,
+    postSell
 }

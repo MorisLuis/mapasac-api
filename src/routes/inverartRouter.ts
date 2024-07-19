@@ -1,9 +1,11 @@
 import { Router } from "express";
-import { insertInventoryDetails } from "../controllers/inveart";
+import { validateJWT } from "../helpers/validate-jwt";
+import { postInventory, postSell } from "../controllers/inveart";
 
 const router = Router();
 
-router.post('/', insertInventoryDetails);
+router.post('/inventory', validateJWT, postInventory);
+router.post('/sell', validateJWT, postSell);
 
 
 export default router;

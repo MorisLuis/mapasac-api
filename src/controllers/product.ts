@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { dbConnection } from "../database/connection";
 import { productQuerys } from "../querys/productQuery";
+import { verifyIfIsEAN13 } from "../utils/identifyBarcodeType";
 
 
 const getProducts = async (req: Request, res: Response) => {
@@ -51,7 +52,6 @@ const getTotalProducts = async (req: Request, res: Response) => {
 
     }
 };
-
 
 const getProductByClave = async (req: Request, res: Response) => {
 
@@ -125,15 +125,15 @@ const getProducByCodebar = async (req: Request, res: Response) => {
 }
 
 const updateProduct = async (req: Request, res: Response) => {
+    const pool = await dbConnection();
+    const client = await pool.connect();
+
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { ...updateFields } = req.body;
         const { idinvearts } = req.params;
 
@@ -141,20 +141,71 @@ const updateProduct = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'El campo idinvearts es requerido' });
         }
 
-        // Construir el query dinámicamente.
         const setClauses = Object.keys(updateFields)
             .map((key, index) => `${key} = $${index + 2}`)
             .join(', ');
         const values = [idinvearts, ...Object.values(updateFields)];
 
         const query = productQuerys.updateProduct.replace('$SET_CLAUSES', setClauses);
-        await pool.query(query, values);
 
-        res.json({ success: true, message: 'Producto actualizado correctamente'});
-    
+        await client.query('BEGIN');
+
+        await client.query(query, values);
+
+        await client.query('COMMIT');
+
+        res.json({ success: true, message: 'Producto actualizado correctamente' });
+
     } catch (error) {
+        await client.query('ROLLBACK');
         console.error('Error:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    } finally {
+        client.release();
+    }
+};
+
+const updateProductCodebar = async (req: Request, res: Response) => {
+    const pool = await dbConnection();
+    const client = await pool.connect();
+
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    try {
+        const { codbarras } = req.body;
+        const { idinvearts } = req.params;
+        let codbar = codbarras
+
+        if (!idinvearts) {
+            return res.status(400).json({ error: 'El campo idinvearts es requerido' });
+        }
+
+        let isEAN13 = false;
+        if (codbar) {
+            isEAN13 = verifyIfIsEAN13(codbar)
+        }
+
+        if (isEAN13) {
+            codbar = codbar?.substring(1)
+        }
+
+        await client.query('BEGIN');
+
+        await client.query(productQuerys.updateCodebarProduct, [codbar, idinvearts]);
+
+        await client.query('COMMIT');
+
+        res.json({ success: true, message: 'Producto actualizado correctamente' });
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    } finally {
+        client.release();
     }
 }
 
@@ -165,5 +216,6 @@ export {
     getProductByClave,
     getProductById,
     getProducByCodebar,
-    updateProduct
+    updateProduct,
+    updateProductCodebar
 }

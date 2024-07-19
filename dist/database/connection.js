@@ -6,27 +6,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.dbConnection = void 0;
 const pg_1 = require("pg");
 const config_1 = __importDefault(require("../config"));
-let client = null;
+const poolConfig = {
+    host: config_1.default.host,
+    user: config_1.default.user,
+    password: config_1.default.password,
+    port: config_1.default.port,
+    database: config_1.default.database,
+    max: 10, // Número máximo de conexiones en el pool
+    idleTimeoutMillis: 30000, // Tiempo de espera para cerrar conexiones inactivas
+    connectionTimeoutMillis: 2000 // Tiempo de espera para conectar
+};
+const pool = new pg_1.Pool(poolConfig);
 const dbConnection = async () => {
-    const dbConfig = {
-        host: config_1.default.host,
-        user: config_1.default.user,
-        password: config_1.default.password,
-        port: config_1.default.port,
-        database: config_1.default.database
-    };
-    if (!client) {
-        client = new pg_1.Client(dbConfig);
-        try {
-            await client.connect();
-            console.log("Connected to the database!");
-        }
-        catch (err) {
-            console.error('Error connecting to the database:', err);
-            client = null;
-        }
-    }
-    return client;
+    console.log("Connected to the database!");
+    return pool;
 };
 exports.dbConnection = dbConnection;
 //# sourceMappingURL=connection.js.map

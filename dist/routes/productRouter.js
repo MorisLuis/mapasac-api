@@ -8,6 +8,7 @@ router.get('/total', product_1.getTotalProducts);
 router.get('/byid', product_1.getProductById);
 router.get('/byclave', product_1.getProductByClave);
 router.get('/bycodebar', product_1.getProducByCodebar);
-router.put('/:id', product_1.updateProduct);
+router.put('/:idinvearts', product_1.updateProduct);
+router.put('/codebar/:idinvearts', product_1.updateProductCodebar);
 exports.default = router;
 //# sourceMappingURL=productRouter.js.map
