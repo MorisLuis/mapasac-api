@@ -1,28 +1,19 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getModules = exports.renewLogin = exports.login = void 0;
 const connection_1 = require("../database/connection");
 const querys_1 = require("../querys/querys");
 const generate_jwt_1 = require("../helpers/generate-jwt");
-const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const login = async (req, res) => {
     try {
-        const pool = yield (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)();
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
         }
         const { usr, pas } = req.body;
         const userName = usr.toUpperCase();
-        const result = yield pool.query(querys_1.querys.auth, [userName]);
+        const result = await pool.query(querys_1.querys.auth, [userName]);
         const user = result.rows[0];
         if (!user) {
             res.status(404).json({ error: 'Usuario no encontrado' });
@@ -31,7 +22,7 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         if (user.pas.trim() !== pas) {
             return res.status(401).json({ error: 'Contraseña incorrecta' });
         }
-        const token = yield (0, generate_jwt_1.generateJWT)({
+        const token = await (0, generate_jwt_1.generateJWT)({
             idusrmob: user.idusrmob,
         });
         res.json({
@@ -43,12 +34,12 @@ const login = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         console.log({ error });
         return res.status(500).json({ error: error.message || 'Unexpected error' });
     }
-});
+};
 exports.login = login;
-const renewLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const renewLogin = async (req, res) => {
     const idusrmob = req.idusrmob;
     try {
-        const pool = yield (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)();
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
@@ -57,9 +48,9 @@ const renewLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
             return res.status(401).json({ message: 'No se encontro el id del usuario' });
         }
         ;
-        const result = yield pool.query(querys_1.querys.getUserById, [idusrmob]);
+        const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
         const user = result.rows[0];
-        const token = yield (0, generate_jwt_1.generateJWT)({
+        const token = await (0, generate_jwt_1.generateJWT)({
             idusrmob: idusrmob,
         });
         res.json({
@@ -71,17 +62,17 @@ const renewLogin = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log({ error });
         res.status(500).send(error.message);
     }
-});
+};
 exports.renewLogin = renewLogin;
-const getModules = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+const getModules = async (req, res) => {
     const idusrmob = req.idusrmob;
     try {
-        const pool = yield (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)();
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
         }
-        const result = yield pool.query(querys_1.querys.getModules, [idusrmob]);
+        const result = await pool.query(querys_1.querys.getModules, [idusrmob]);
         const modules = result.rows;
         res.json({
             modules
@@ -91,6 +82,6 @@ const getModules = (req, res) => __awaiter(void 0, void 0, void 0, function* () 
         console.log({ error });
         res.status(500).send(error.message);
     }
-});
+};
 exports.getModules = getModules;
 //# sourceMappingURL=auth.js.map
