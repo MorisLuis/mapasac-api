@@ -3,6 +3,7 @@ import { dbConnection } from "../database/connection";
 import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
+import { getDbConfig } from '../utils/getDbConfig';
 
 
 const login = async (req: Req, res: Response) => {
@@ -49,8 +50,14 @@ const renewLogin = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
 
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+
     try {
-        const pool = await dbConnection();
+        const pool = await dbConnection(idusrmob);
 
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -63,7 +70,6 @@ const renewLogin = async (req: Req, res: Response) => {
 
         const result = await pool.query(querys.getUserById, [idusrmob]);
         const user = result.rows[0]
-
         const token = await generateJWT({
             idusrmob: idusrmob,
         });
@@ -83,8 +89,13 @@ const getModules = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
 
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
     try {
-        const pool = await dbConnection();
+        const pool = await dbConnection(idusrmob);
 
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

@@ -6,14 +6,15 @@ import { searchQuerys } from '../querys/searchQuery';
 
 const searchProduct = async (req: Req, res: Response) => {
 
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { term } = req.query;
 
         let searchTerm;
@@ -39,14 +40,15 @@ const searchProduct = async (req: Req, res: Response) => {
 
 const searchProductInBag = async (req: Req, res: Response) => {
 
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { term, opcion } = req.query;
         const idusrmob = req.idusrmob;
 

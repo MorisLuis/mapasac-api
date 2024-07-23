@@ -5,22 +5,26 @@ import { querys } from "../querys/querys";
 import moment from "moment";
 
 const postInventory = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
 
-    const pool = await dbConnection();
+    const pool = await dbConnection(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const idusrmob = req.idusrmob;
-    const folioDate = moment().format('YYYY-MM-DD');
-    const folioQuery = querys.getFolio;
-    const folioValue = await pool.query(folioQuery, [folioDate])
-    const folio = folioValue.rows[0].fn_pedidos_foliounico;
-    
-
     try {
+        const folioDate = moment().format('YYYY-MM-DD');
+        const folioQuery = querys.getFolio;
+        const folioValue = await pool.query(folioQuery, [folioDate])
+        const folio = folioValue.rows[0].fn_pedidos_foliounico;
+
+
         await client.query('BEGIN');
 
         await client.query(querys.createInventory, [idusrmob, folio]);
@@ -39,20 +43,25 @@ const postInventory = async (req: Req, res: Response) => {
 
 const postSell = async (req: Req, res: Response) => {
 
-    const pool = await dbConnection();
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const idusrmob = req.idusrmob;
-    const folioDate = moment().format('YYYY-MM-DD');
-    const folioQuery = querys.getFolio;
-    const folioValue = await pool.query(folioQuery, [folioDate])
-    const folio = folioValue.rows[0].fn_pedidos_foliounico;
-
     try {
+        const folioDate = moment().format('YYYY-MM-DD');
+        const folioQuery = querys.getFolio;
+        const folioValue = await pool.query(folioQuery, [folioDate])
+        const folio = folioValue.rows[0].fn_pedidos_foliounico;
+
         await client.query('BEGIN');
 
         await client.query(querys.createSale, [idusrmob, folio]);

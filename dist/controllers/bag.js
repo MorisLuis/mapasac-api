@@ -4,14 +4,20 @@ exports.deleteAllProductsInBag = exports.getTotalProductsInBag = exports.deleteP
 const connection_1 = require("../database/connection");
 const bagQuerys_1 = require("../querys/bagQuerys");
 const getBag = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
     try {
-        const pool = await (0, connection_1.dbConnection)();
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
         const { limit, page, option } = req.query;
-        const idusrmob = req.idusrmob;
         const result = await pool.query(bagQuerys_1.bagQuerys.getBag, [option, idusrmob, page, limit]);
         const products = result.rows;
         res.json({
@@ -25,16 +31,21 @@ const getBag = async (req, res) => {
 };
 exports.getBag = getBag;
 const inserPoductToBag = async (req, res) => {
-    const pool = await (0, connection_1.dbConnection)();
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
-    const idusrmob = req.idusrmob;
-    const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion];
     try {
+        const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
+        const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion];
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.addProductToBag, productBody);
         await client.query('COMMIT');
@@ -51,14 +62,20 @@ const inserPoductToBag = async (req, res) => {
 };
 exports.inserPoductToBag = inserPoductToBag;
 const updatePoductFromBag = async (req, res) => {
-    const pool = await (0, connection_1.dbConnection)();
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    const { idenlacemob, cantidad } = req.body;
     try {
+        const { idenlacemob, cantidad } = req.body;
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.updateProductFromBag, [cantidad, idenlacemob]);
         await client.query('COMMIT');
@@ -75,14 +92,20 @@ const updatePoductFromBag = async (req, res) => {
 };
 exports.updatePoductFromBag = updatePoductFromBag;
 const deletePoductFromBag = async (req, res) => {
-    const pool = await (0, connection_1.dbConnection)();
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    const { idenlacemob } = req.params;
     try {
+        const { idenlacemob } = req.params;
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.deleteProductFromBag, [idenlacemob]);
         await client.query('COMMIT');
@@ -99,12 +122,19 @@ const deletePoductFromBag = async (req, res) => {
 };
 exports.deletePoductFromBag = deletePoductFromBag;
 const getTotalProductsInBag = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
     try {
-        const pool = await (0, connection_1.dbConnection)();
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys_1.bagQuerys.getTotalProductsInBag, [opcion]);
         const totalproducts = result.rows[0].count;
@@ -119,15 +149,20 @@ const getTotalProductsInBag = async (req, res) => {
 };
 exports.getTotalProductsInBag = getTotalProductsInBag;
 const deleteAllProductsInBag = async (req, res) => {
-    const pool = await (0, connection_1.dbConnection)();
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    const idusrmob = req.idusrmob;
-    const { opcion } = req.query;
     try {
+        const { opcion } = req.query;
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.deleteAllProductsInBag, [idusrmob, Number(opcion)]);
         await client.query('COMMIT');

@@ -1,22 +1,23 @@
 import { Router } from "express";
 import { getProducByCodebar, getProductByClave, getProductById, getProducts, getTotalProducts, updateProduct, updateProductCodebar } from "../controllers/product";
+import { validateJWT } from "../helpers/validate-jwt";
 
 const router = Router();
 
-router.get('/', getProducts);
+router.get('/', validateJWT, getProducts);
 
-router.get('/total', getTotalProducts);
+router.get('/total', validateJWT, getTotalProducts);
 
 
-router.get('/byid', getProductById);
+router.get('/byid', validateJWT, getProductById);
 
-router.get('/byclave', getProductByClave);
+router.get('/byclave', validateJWT, getProductByClave);
 
-router.get('/bycodebar', getProducByCodebar);
+router.get('/bycodebar', validateJWT, getProducByCodebar);
 
-router.put('/:idinvearts', updateProduct);
+router.put('/:idinvearts', validateJWT, updateProduct);
 
-router.put('/codebar/:idinvearts', updateProductCodebar);
+router.put('/codebar/:idinvearts', validateJWT, updateProductCodebar);
 
 
 export default router;

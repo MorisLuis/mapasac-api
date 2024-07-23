@@ -15,6 +15,19 @@ exports.querys = {
         FROM mapasoft.usrmob
         WHERE usr = $1
     `,
+    getDbConfig: `
+        SELECT
+            idusrmob,
+            usr,
+            pas,
+            svr,
+            dba,
+            port,
+            usrdba,
+            pasdba
+        FROM mapasoft.usrmob
+        WHERE idusrmob = $1
+    `,
     getUserById: `
         SELECT
             idusrmob,

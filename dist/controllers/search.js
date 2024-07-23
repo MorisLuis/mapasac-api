@@ -4,12 +4,14 @@ exports.searchProductInBag = exports.searchProduct = void 0;
 const connection_1 = require("../database/connection");
 const searchQuery_1 = require("../querys/searchQuery");
 const searchProduct = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     try {
-        const pool = await (0, connection_1.dbConnection)();
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
         const { term } = req.query;
         let searchTerm;
         if (!term) {
@@ -31,12 +33,14 @@ const searchProduct = async (req, res) => {
 };
 exports.searchProduct = searchProduct;
 const searchProductInBag = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)(idusrmob);
     try {
-        const pool = await (0, connection_1.dbConnection)();
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
         const { term, opcion } = req.query;
         const idusrmob = req.idusrmob;
         let searchTerm;

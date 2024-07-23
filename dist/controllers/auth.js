@@ -38,8 +38,13 @@ const login = async (req, res) => {
 exports.login = login;
 const renewLogin = async (req, res) => {
     const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
     try {
-        const pool = await (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)(idusrmob);
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
@@ -66,8 +71,13 @@ const renewLogin = async (req, res) => {
 exports.renewLogin = renewLogin;
 const getModules = async (req, res) => {
     const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
     try {
-        const pool = await (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)(idusrmob);
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;

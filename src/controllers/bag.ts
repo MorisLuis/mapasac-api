@@ -1,21 +1,26 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { bagQuerys } from "../querys/bagQuerys";
 import { Req } from "../helpers/validate-jwt";
 
 const getBag = async (req: Req, res: Response) => {
 
-    try {
-        const pool = await dbConnection();
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
 
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
+    const pool = await dbConnection(idusrmob);
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    try {
 
         const { limit, page, option } = req.query;
-        const idusrmob = req.idusrmob;
-
         const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
         const products = result.rows;
 
@@ -32,19 +37,24 @@ const getBag = async (req: Req, res: Response) => {
 
 const inserPoductToBag = async (req: Req, res: Response) => {
 
-    const pool = await dbConnection();
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
-    const idusrmob = req.idusrmob;
-
-    const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion]
-
     try {
+
+        const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
+        const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion]
+    
         await client.query('BEGIN');
 
         await client.query(bagQuerys.addProductToBag, productBody);
@@ -63,16 +73,24 @@ const inserPoductToBag = async (req: Req, res: Response) => {
 
 const updatePoductFromBag = async (req: Req, res: Response) => {
 
-    const pool = await dbConnection();
+
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const { idenlacemob, cantidad } = req.body;
-
+    
     try {
+        const { idenlacemob, cantidad } = req.body;
         await client.query('BEGIN');
 
         await client.query(bagQuerys.updateProductFromBag, [cantidad, idenlacemob]);
@@ -91,16 +109,21 @@ const updatePoductFromBag = async (req: Req, res: Response) => {
 
 const deletePoductFromBag = async (req: Req, res: Response) => {
 
-    const pool = await dbConnection();
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const { idenlacemob } = req.params;
-
     try {
+        const { idenlacemob } = req.params;
         await client.query('BEGIN');
 
         await client.query(bagQuerys.deleteProductFromBag, [idenlacemob]);
@@ -119,14 +142,20 @@ const deletePoductFromBag = async (req: Req, res: Response) => {
 
 const getTotalProductsInBag = async (req: Req, res: Response) => {
 
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys.getTotalProductsInBag, [opcion]);
         const totalproducts = result.rows[0].count;
@@ -143,17 +172,22 @@ const getTotalProductsInBag = async (req: Req, res: Response) => {
 }
 
 const deleteAllProductsInBag = async (req: Req, res: Response) => {
-    const pool = await dbConnection();
+
+    const idusrmob = req.idusrmob;
+    if(!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
 
-    const idusrmob = req.idusrmob;
-    const { opcion } = req.query;
-
     try {
+        const { opcion } = req.query;
         await client.query('BEGIN');
 
         await client.query(bagQuerys.deleteAllProductsInBag, [idusrmob, Number(opcion)]);

@@ -1,19 +1,21 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { productQuerys } from "../querys/productQuery";
 import { verifyIfIsEAN13 } from "../utils/identifyBarcodeType";
+import { Req } from "../helpers/validate-jwt";
 
 
-const getProducts = async (req: Request, res: Response) => {
+const getProducts = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
 
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { limit, page } = req.query;
 
         const result = await pool.query(productQuerys.getProducts, [page, limit]);
@@ -30,15 +32,17 @@ const getProducts = async (req: Request, res: Response) => {
     }
 }
 
-const getTotalProducts = async (req: Request, res: Response) => {
+const getTotalProducts = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
 
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
 
         const result = await pool.query(productQuerys.getTotalProducts);
         const total = result.rows[0].count;
@@ -53,16 +57,17 @@ const getTotalProducts = async (req: Request, res: Response) => {
     }
 };
 
-const getProductByClave = async (req: Request, res: Response) => {
+const getProductByClave = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
 
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { clave } = req.query;
 
         const result = await pool.query(productQuerys.getProductByClave, [clave]);
@@ -78,16 +83,16 @@ const getProductByClave = async (req: Request, res: Response) => {
     }
 }
 
-const getProductById = async (req: Request, res: Response) => {
+const getProductById = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+    const pool = await dbConnection(idusrmob);
 
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { idinvearts } = req.query;
 
         console.log({idinvearts})
@@ -103,15 +108,16 @@ const getProductById = async (req: Request, res: Response) => {
     }
 }
 
-const getProducByCodebar = async (req: Request, res: Response) => {
+const getProducByCodebar = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+
     try {
-        const pool = await dbConnection();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { codbarras } = req.query;
 
         const result = await pool.query(productQuerys.getProductByCodebar, [codbarras]);
@@ -125,10 +131,15 @@ const getProducByCodebar = async (req: Request, res: Response) => {
     }
 }
 
-const updateProduct = async (req: Request, res: Response) => {
-    const pool = await dbConnection();
-    const client = await pool.connect();
+const updateProduct = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
 
+    const pool = await dbConnection(idusrmob);
+    const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
@@ -166,10 +177,16 @@ const updateProduct = async (req: Request, res: Response) => {
     }
 };
 
-const updateProductCodebar = async (req: Request, res: Response) => {
-    const pool = await dbConnection();
-    const client = await pool.connect();
+const updateProductCodebar = async (req: Req, res: Response) => {
 
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection(idusrmob);
+    const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
