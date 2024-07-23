@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { searchProduct } from "../controllers/search";
+import { searchProduct, searchProductInBag } from "../controllers/search";
+import { validateJWT } from "../helpers/validate-jwt";
 
 const router = Router();
 
-router.get('/product', searchProduct);
+router.get('/product', validateJWT, searchProduct);
+router.get('/productInBag', validateJWT, searchProductInBag);
 
 export default router;

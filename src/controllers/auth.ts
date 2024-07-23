@@ -79,8 +79,34 @@ const renewLogin = async (req: Req, res: Response) => {
     }
 }
 
+const getModules = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+
+    try {
+        const pool = await dbConnection();
+
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+
+        const result = await pool.query(querys.getModules, [idusrmob]);
+        const modules = result.rows;
+
+        res.json({
+            modules
+        })
+
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    }
+}
+
 export {
     login,
-    renewLogin
+    renewLogin,
+    getModules
 };
 

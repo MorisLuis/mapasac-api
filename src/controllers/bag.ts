@@ -20,7 +20,6 @@ const getBag = async (req: Req, res: Response) => {
         const products = result.rows;
 
         res.json({
-            total: products.length,
             bag: products
         })
 
@@ -40,7 +39,7 @@ const inserPoductToBag = async (req: Req, res: Response) => {
         return;
     }
 
-    const { idinvearts, codbarras, unidad, cantidad, precio, opcion } = req.body;
+    const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
     const idusrmob = req.idusrmob;
 
     const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion]
@@ -99,7 +98,7 @@ const deletePoductFromBag = async (req: Req, res: Response) => {
         return;
     }
 
-    const { idenlacemob } = req.body;
+    const { idenlacemob } = req.params;
 
     try {
         await client.query('BEGIN');
@@ -118,10 +117,66 @@ const deletePoductFromBag = async (req: Req, res: Response) => {
     }
 };
 
+const getTotalProductsInBag = async (req: Req, res: Response) => {
+
+    try {
+        const pool = await dbConnection();
+
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+
+        const { opcion } = req.query;
+        const result = await pool.query(bagQuerys.getTotalProductsInBag, [opcion]);
+        const totalproducts = result.rows[0].count;
+
+        res.json({
+            total: totalproducts
+        })
+
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    }
+
+}
+
+const deleteAllProductsInBag = async (req: Req, res: Response) => {
+    const pool = await dbConnection();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    const idusrmob = req.idusrmob;
+    const { opcion } = req.query;
+
+    try {
+        await client.query('BEGIN');
+
+        await client.query(bagQuerys.deleteAllProductsInBag, [idusrmob, Number(opcion)]);
+
+        await client.query('COMMIT');
+
+        res.status(201).json({ message: 'Datos eliminados exitosamente' });
+    } catch (error: any) {
+        await client.query('ROLLBACK');
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+    } finally {
+        client.release();
+    }
+
+}
+
 
 export {
     getBag,
     inserPoductToBag,
     updatePoductFromBag,
-    deletePoductFromBag
+    deletePoductFromBag,
+    getTotalProductsInBag,
+    deleteAllProductsInBag
 }

@@ -1,4 +1,4 @@
-import { Response, query } from "express";
+import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { Req } from "../helpers/validate-jwt";
 import moment from "moment";

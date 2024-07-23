@@ -38,6 +38,15 @@ export const querys = {
         SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 1);
     `,
 
+    getModules: `
+        SELECT 
+            P.idappmob,
+            A.appmob
+        FROM mapasoft.permob P
+        JOIN mapasoft.appmob A ON P.idappmob = A.idappmob
+        WHERE P.idusrmob = $1 AND A.activo = 1;
+    `,
+
     createInventory: `
         UPDATE mapasoft.enlacemob
         SET opcion = 1, folcontado = $2

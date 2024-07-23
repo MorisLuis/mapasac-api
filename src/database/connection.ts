@@ -7,9 +7,9 @@ const poolConfig: PoolConfig = {
     password: config.password,
     port: config.port,
     database: config.database,
-    max: 10, // Número máximo de conexiones en el pool
-    idleTimeoutMillis: 30000, // Tiempo de espera para cerrar conexiones inactivas
-    connectionTimeoutMillis: 2000 // Tiempo de espera para conectar
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000
 };
 
 const pool = new Pool(poolConfig);
