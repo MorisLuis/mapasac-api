@@ -1,1 +1,1 @@
-{"version":3,"file":"searchQuery.js","sourceRoot":"","sources":["../../src/querys/searchQuery.ts"],"names":[],"mappings":";;;AACa,QAAA,YAAY,GAAG;IAExB,aAAa,EAAE;;;;;;;;;;;;;;KAcd;CACJ,CAAA"}
+{"version":3,"file":"searchQuery.js","sourceRoot":"","sources":["../../src/querys/searchQuery.ts"],"names":[],"mappings":";;;AACa,QAAA,YAAY,GAAG;IAExB,aAAa,EAAE;;;;;;;;;;;;;;KAcd;IAED,kBAAkB,EAAE;;;;;;;;;;;;;;KAcnB;CACJ,CAAA"}

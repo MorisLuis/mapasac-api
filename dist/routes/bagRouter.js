@@ -7,6 +7,8 @@ const router = (0, express_1.Router)();
 router.get('/', validate_jwt_1.validateJWT, bag_1.getBag);
 router.post('/', validate_jwt_1.validateJWT, bag_1.inserPoductToBag);
 router.put('/', validate_jwt_1.validateJWT, bag_1.updatePoductFromBag);
-router.delete('/', validate_jwt_1.validateJWT, bag_1.deletePoductFromBag);
+router.delete('/all', validate_jwt_1.validateJWT, bag_1.deleteAllProductsInBag);
+router.delete('/:idenlacemob', validate_jwt_1.validateJWT, bag_1.deletePoductFromBag);
+router.get('/total', validate_jwt_1.validateJWT, bag_1.getTotalProductsInBag);
 exports.default = router;
 //# sourceMappingURL=bagRouter.js.map

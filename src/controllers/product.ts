@@ -90,6 +90,7 @@ const getProductById = async (req: Request, res: Response) => {
 
         const { idinvearts } = req.query;
 
+        console.log({idinvearts})
         const result = await pool.query(productQuerys.getProductById, [idinvearts]);
         const product = result.rows[0];
 

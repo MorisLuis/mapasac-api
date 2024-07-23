@@ -12,9 +12,9 @@ const poolConfig = {
     password: config_1.default.password,
     port: config_1.default.port,
     database: config_1.default.database,
-    max: 10, // Número máximo de conexiones en el pool
-    idleTimeoutMillis: 30000, // Tiempo de espera para cerrar conexiones inactivas
-    connectionTimeoutMillis: 2000 // Tiempo de espera para conectar
+    max: 10,
+    idleTimeoutMillis: 30000,
+    connectionTimeoutMillis: 2000
 };
 const pool = new pg_1.Pool(poolConfig);
 const dbConnection = async () => {

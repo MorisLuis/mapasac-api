@@ -72,6 +72,7 @@ const getProductById = async (req, res) => {
             return;
         }
         const { idinvearts } = req.query;
+        console.log({ idinvearts });
         const result = await pool.query(productQuery_1.productQuerys.getProductById, [idinvearts]);
         const product = result.rows[0];
         res.json({

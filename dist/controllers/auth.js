@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renewLogin = exports.login = void 0;
+exports.getModules = exports.renewLogin = exports.login = void 0;
 const connection_1 = require("../database/connection");
 const querys_1 = require("../querys/querys");
 const generate_jwt_1 = require("../helpers/generate-jwt");
@@ -64,4 +64,24 @@ const renewLogin = async (req, res) => {
     }
 };
 exports.renewLogin = renewLogin;
+const getModules = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    try {
+        const pool = await (0, connection_1.dbConnection)();
+        if (!pool) {
+            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+            return;
+        }
+        const result = await pool.query(querys_1.querys.getModules, [idusrmob]);
+        const modules = result.rows;
+        res.json({
+            modules
+        });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getModules = getModules;
 //# sourceMappingURL=auth.js.map

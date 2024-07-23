@@ -19,6 +19,8 @@ exports.bagQuerys = {
     getBag: `
         SELECT 
             I.producto,
+            I.clave,
+            E.idenlacemob,
             E.opcion,
             E.unidad,
             E.cantidad,
@@ -30,6 +32,14 @@ exports.bagQuerys = {
         ORDER BY idenlacemob ASC
         OFFSET ($3 - 1) * $4
         LIMIT $4;
+    `,
+    getTotalProductsInBag: `
+        SELECT COUNT(*) FROM mapasoft.enlacemob
+        WHERE opcion = $1
+    `,
+    deleteAllProductsInBag: `
+        DELETE FROM mapasoft.enlacemob
+        WHERE idusrmob = $1 AND opcion = $2
     `
 };
 //# sourceMappingURL=bagQuerys.js.map
