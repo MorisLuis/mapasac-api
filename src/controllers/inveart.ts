@@ -2,7 +2,7 @@ import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { Req } from "../helpers/validate-jwt";
 import { querys } from "../querys/querys";
-
+import moment from "moment";
 
 const postInventory = async (req: Req, res: Response) => {
 
@@ -14,12 +14,11 @@ const postInventory = async (req: Req, res: Response) => {
     }
 
     const idusrmob = req.idusrmob;
-    //const folioDate = moment().format('YYYY-MM-DD');
-    const folioDate = '2024-07-23';
-
+    const folioDate = moment().format('YYYY-MM-DD');
     const folioQuery = querys.getFolio;
     const folioValue = await pool.query(folioQuery, [folioDate])
     const folio = folioValue.rows[0].fn_pedidos_foliounico;
+    
 
     try {
         await client.query('BEGIN');
@@ -48,8 +47,7 @@ const postSell = async (req: Req, res: Response) => {
     }
 
     const idusrmob = req.idusrmob;
-    //const folioDate = moment().format('YYYY-MM-DD');
-    const folioDate = '2024-07-23';
+    const folioDate = moment().format('YYYY-MM-DD');
     const folioQuery = querys.getFolio;
     const folioValue = await pool.query(folioQuery, [folioDate])
     const folio = folioValue.rows[0].fn_pedidos_foliounico;

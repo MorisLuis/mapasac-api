@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postSell = exports.postInventory = void 0;
 const connection_1 = require("../database/connection");
 const querys_1 = require("../querys/querys");
+const moment_1 = __importDefault(require("moment"));
 const postInventory = async (req, res) => {
     const pool = await (0, connection_1.dbConnection)();
     const client = await pool.connect();
@@ -11,8 +15,7 @@ const postInventory = async (req, res) => {
         return;
     }
     const idusrmob = req.idusrmob;
-    //const folioDate = moment().format('YYYY-MM-DD');
-    const folioDate = '2024-07-23';
+    const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
     const folioQuery = querys_1.querys.getFolio;
     const folioValue = await pool.query(folioQuery, [folioDate]);
     const folio = folioValue.rows[0].fn_pedidos_foliounico;
@@ -40,8 +43,7 @@ const postSell = async (req, res) => {
         return;
     }
     const idusrmob = req.idusrmob;
-    //const folioDate = moment().format('YYYY-MM-DD');
-    const folioDate = '2024-07-23';
+    const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
     const folioQuery = querys_1.querys.getFolio;
     const folioValue = await pool.query(folioQuery, [folioDate]);
     const folio = folioValue.rows[0].fn_pedidos_foliounico;
