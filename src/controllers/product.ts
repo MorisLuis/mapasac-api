@@ -71,7 +71,7 @@ const getProductByClave = async (req: Req, res: Response) => {
         const { clave } = req.query;
 
         const result = await pool.query(productQuerys.getProductByClave, [clave]);
-        const product = result.rows[0];
+        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
 
         res.json({
             product
@@ -97,7 +97,7 @@ const getProductById = async (req: Req, res: Response) => {
 
         console.log({idinvearts})
         const result = await pool.query(productQuerys.getProductById, [idinvearts]);
-        const product = result.rows[0];
+        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
 
         res.json({
             product
@@ -122,8 +122,8 @@ const getProducByCodebar = async (req: Req, res: Response) => {
         const { codbarras } = req.query;
 
         const result = await pool.query(productQuerys.getProductByCodebar, [codbarras]);
-        const product = result.rows[0];
-        
+        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
+
         res.json({ product });
 
     } catch (error) {
