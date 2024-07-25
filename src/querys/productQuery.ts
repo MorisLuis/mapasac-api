@@ -56,7 +56,7 @@ export const productQuerys = {
             P.clave,
             P.precio1,
             P.cvefamilia,
-            P.unidad
+            P.unidad,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
             JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
