@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { dbConnection } from "../database/connection";
+import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
@@ -89,13 +89,15 @@ const getModules = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
 
+    console.log({idusrmob})
     if(!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
 
     try {
-        const pool = await dbConnection(idusrmob);
+        //const pool = await dbConnection(idusrmob);
+        const pool = await dbConnectionInitial();
 
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
