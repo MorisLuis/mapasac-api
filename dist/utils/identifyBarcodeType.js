@@ -1,24 +1,24 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyIfIsEAN13 = exports.guessBarcodeType = exports.identifyBarcodeType = void 0;
-const codebarTypes_1 = require("./codebarTypes");
 const identifyBarcodeType = (codebar) => {
     if (!codebar)
         return null; // Verificación rápida para cadenas undefined o null
-    for (let i = codebarTypes_1.barcodes.length - 1; i >= 0; i--) {
-        let barcode = codebarTypes_1.barcodes[i];
-        let regex = new RegExp(barcode.regex);
-        if (regex.test(codebar)) {
-            return {
-                type: barcode.type,
-                id: barcode.id,
-                errorMessage: barcode.errorMessage,
-                keyboardType: barcode.keyboardType,
-                maxLength: barcode.maxLength
-            };
+    // Verificar la longitud del código
+    if (codebar.length === 12) {
+        return "UPC-A";
+    }
+    else if (codebar.length === 13) {
+        if (codebar.startsWith("0") && codebar.substring(1).match(/^\d{12}$/)) {
+            return "UPC-A convertido a EAN-13";
+        }
+        else {
+            return "EAN-13";
         }
     }
-    return null;
+    else {
+        return "Código de barras inválido";
+    }
 };
 exports.identifyBarcodeType = identifyBarcodeType;
 const guessBarcodeType = (code) => {

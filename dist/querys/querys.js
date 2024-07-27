@@ -4,15 +4,18 @@ exports.querys = void 0;
 exports.querys = {
     auth: `
         SELECT
-            idusrmob,
-            usr,
-            pas,
-            svr,
-            dba,
-            port,
-            usrdba,
-            pasdba
-        FROM mapasoft.usrmob
+            U.idusrmob,
+            U.usr,
+            U.pas,
+            U.svr,
+            U.dba,
+            U.port,
+            U.usrdba,
+            U.pasdba,
+            S.descripcio AS empresa,
+            S.ncomercial AS razonsocial
+        FROM mapasoft.usrmob U
+        JOIN mapasoft.sucursal S ON U.idsucursal = S.idsucursal
         WHERE usr = $1
     `,
     getDbConfig: `
@@ -30,15 +33,18 @@ exports.querys = {
     `,
     getUserById: `
         SELECT
-            idusrmob,
-            usr,
-            pas,
-            svr,
-            dba,
-            port,
-            usrdba,
-            pasdba
-        FROM mapasoft.usrmob
+            U.idusrmob,
+            U.usr,
+            U.pas,
+            U.svr,
+            U.dba,
+            U.port,
+            U.usrdba,
+            U.pasdba,
+            S.descripcio AS empresa,
+            S.ncomercial AS razonsocial
+        FROM mapasoft.usrmob U
+        JOIN mapasoft.sucursal S ON U.idsucursal = S.idsucursal
         WHERE idusrmob = $1
     `,
     updateCodbar: `
@@ -52,7 +58,9 @@ exports.querys = {
     getModules: `
         SELECT 
             P.idappmob,
-            A.appmob
+            P.permisos,
+            A.appmob,
+            A.activo
         FROM mapasoft.permob P
         JOIN mapasoft.appmob A ON P.idappmob = A.idappmob
         WHERE P.idusrmob = $1 AND A.activo = 1;

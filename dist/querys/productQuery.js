@@ -26,10 +26,12 @@ exports.productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
             JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
-            WHERE clave = $1
+        WHERE clave = $1
     `,
     getProductById: `
         SELECT
@@ -40,8 +42,10 @@ exports.productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
             JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
         WHERE idinvearts =  $1
     `,
@@ -54,8 +58,10 @@ exports.productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
             JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
         WHERE codbarras = $1
     `,

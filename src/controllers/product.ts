@@ -1,7 +1,7 @@
 import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { productQuerys } from "../querys/productQuery";
-import { verifyIfIsEAN13 } from "../utils/identifyBarcodeType";
+import { identifyBarcodeType } from "../utils/identifyBarcodeType";
 import { Req } from "../helpers/validate-jwt";
 
 
@@ -71,11 +71,9 @@ const getProductByClave = async (req: Req, res: Response) => {
         const { clave } = req.query;
 
         const result = await pool.query(productQuerys.getProductByClave, [clave]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
+        const product = result.rows
 
-        res.json({
-            product
-        })
+        res.json({ product })
 
     } catch (error: any) {
         console.log({ error })
@@ -95,13 +93,11 @@ const getProductById = async (req: Req, res: Response) => {
     try {
         const { idinvearts } = req.query;
 
-        console.log({idinvearts})
         const result = await pool.query(productQuerys.getProductById, [idinvearts]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
+        const product = result.rows[0]
 
-        res.json({
-            product
-        })
+        console.log({product})
+        res.json({ product })
 
     } catch (error) {
         console.log({ error })
@@ -120,9 +116,16 @@ const getProducByCodebar = async (req: Req, res: Response) => {
 
     try {
         const { codbarras } = req.query;
+        let codbar : string = codbarras as string;
 
-        const result = await pool.query(productQuerys.getProductByCodebar, [codbarras]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
+        const identifycodebarType = identifyBarcodeType(codbar)
+
+        if (identifycodebarType === "UPC-A convertido a EAN-13") {
+            codbar = codbar?.substring(1)
+        }
+
+        const result = await pool.query(productQuerys.getProductByCodebar, [codbar]);
+        const product = result.rows
 
         res.json({ product });
 
@@ -202,12 +205,9 @@ const updateProductCodebar = async (req: Req, res: Response) => {
             return res.status(400).json({ error: 'El campo idinvearts es requerido' });
         }
 
-        let isEAN13 = false;
-        if (codbar) {
-            isEAN13 = verifyIfIsEAN13(codbar)
-        }
+        const identifycodebarType = identifyBarcodeType(codbar)
 
-        if (isEAN13) {
+        if (identifycodebarType === "UPC-A convertido a EAN-13") {
             codbar = codbar?.substring(1)
         }
 

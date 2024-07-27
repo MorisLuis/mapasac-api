@@ -59,10 +59,8 @@ const getProductByClave = async (req, res) => {
     try {
         const { clave } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductByClave, [clave]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
-        res.json({
-            product
-        });
+        const product = result.rows;
+        res.json({ product });
     }
     catch (error) {
         console.log({ error });
@@ -80,12 +78,10 @@ const getProductById = async (req, res) => {
     const pool = await (0, connection_1.dbConnection)(idusrmob);
     try {
         const { idinvearts } = req.query;
-        console.log({ idinvearts });
         const result = await pool.query(productQuery_1.productQuerys.getProductById, [idinvearts]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
-        res.json({
-            product
-        });
+        const product = result.rows[0];
+        console.log({ product });
+        res.json({ product });
     }
     catch (error) {
         console.log({ error });
@@ -102,8 +98,13 @@ const getProducByCodebar = async (req, res) => {
     const pool = await (0, connection_1.dbConnection)(idusrmob);
     try {
         const { codbarras } = req.query;
-        const result = await pool.query(productQuery_1.productQuerys.getProductByCodebar, [codbarras]);
-        const product = result.rows.length > 0 ? result.rows[0] : result.rows;
+        let codbar = codbarras;
+        const identifycodebarType = (0, identifyBarcodeType_1.identifyBarcodeType)(codbar);
+        if (identifycodebarType === "UPC-A convertido a EAN-13") {
+            codbar = codbar?.substring(1);
+        }
+        const result = await pool.query(productQuery_1.productQuerys.getProductByCodebar, [codbar]);
+        const product = result.rows;
         res.json({ product });
     }
     catch (error) {
@@ -171,11 +172,8 @@ const updateProductCodebar = async (req, res) => {
         if (!idinvearts) {
             return res.status(400).json({ error: 'El campo idinvearts es requerido' });
         }
-        let isEAN13 = false;
-        if (codbar) {
-            isEAN13 = (0, identifyBarcodeType_1.verifyIfIsEAN13)(codbar);
-        }
-        if (isEAN13) {
+        const identifycodebarType = (0, identifyBarcodeType_1.identifyBarcodeType)(codbar);
+        if (identifycodebarType === "UPC-A convertido a EAN-13") {
             codbar = codbar?.substring(1);
         }
         await client.query('BEGIN');

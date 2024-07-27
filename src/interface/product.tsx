@@ -27,5 +27,13 @@ export default interface ProductInterface {
     precio1: number;
 
     // The amount added to the stock
-    cantidad?: number
+    cantidad?: number,
+
+    idenlacemob?: number
+
+    // Id of the 'unidad'
+    unidad?: number,
+
+    // The name of the 'unidad'
+    unidad_nombre?: string
 }

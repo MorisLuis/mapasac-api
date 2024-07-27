@@ -46,6 +46,7 @@ const inserPoductToBag = async (req, res) => {
     try {
         const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
         const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion];
+        console.log({ productBody });
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.addProductToBag, productBody);
         await client.query('COMMIT');

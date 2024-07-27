@@ -37,4 +37,8 @@ export default interface UserInterface {
 
     // Specify when the use was created.
     alta?: Date;
+
+    empresa?: string;
+
+    razonsocial?: string;
 }
