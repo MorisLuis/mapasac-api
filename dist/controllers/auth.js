@@ -6,7 +6,7 @@ const querys_1 = require("../querys/querys");
 const generate_jwt_1 = require("../helpers/generate-jwt");
 const login = async (req, res) => {
     try {
-        const pool = await (0, connection_1.dbConnection)();
+        const pool = await (0, connection_1.dbConnection)({});
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;
@@ -47,7 +47,7 @@ const renewLogin = async (req, res) => {
     }
     ;
     try {
-        const pool = await (0, connection_1.dbConnection)(idusrmob);
+        const pool = await (0, connection_1.dbConnection)({ idusrmob });
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
             return;

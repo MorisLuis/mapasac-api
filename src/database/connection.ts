@@ -22,16 +22,32 @@ export const dbConnectionInitial = async () => {
     const pool = new Pool(poolConfig);
     console.log("Connected to the database initial!");
     return pool;
-
 }
 
-export const dbConnection = async (idusrmob?: number) => {
+interface dbConnectionInterface {
+    idusrmob?: number;
+    database?: string
+}
+
+export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface) => {
     let poolConfig: PoolConfig;
 
+    console.log(`dbConnection idusrmob: ${idusrmob} and ${database}`)
     if (idusrmob) {
 
         // Verificar si la configuración de la base de datos está en el caché.
         const cachedConfig = cache.get<PoolConfig>(`dbConfig_${idusrmob}`);
+
+
+        if(cachedConfig && database) {
+            poolConfig = {
+                ...cachedConfig,
+                database
+            };
+            console.log("Using cached database configuration and new database");
+            return new Pool(poolConfig);
+        }
+
         if (cachedConfig) {
             console.log("Using cached database configuration");
             return new Pool(cachedConfig);
@@ -41,16 +57,18 @@ export const dbConnection = async (idusrmob?: number) => {
         const dbConfig = await getDbConfig({ idusrmob, poolInitial })
 
         // Guardar la configuración en el caché.
-        cache.set(`dbConfig_${idusrmob}`, dbConfig);
+        if(!database){
+            cache.set(`dbConfig_${idusrmob}`, dbConfig);
+        }
 
         poolConfig = {
             ...dbConfig,
-
             max: 10,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000
         };
 
+        console.log({poolConfig})
         const pool = new Pool(poolConfig);
         console.log("Connected to the database!");
         return pool;

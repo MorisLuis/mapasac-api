@@ -1,9 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
+exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
+// Module 1 - Inventory
 const getProducts = async (req, res) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
@@ -11,7 +12,7 @@ const getProducts = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     try {
         const { limit, page } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
@@ -34,7 +35,7 @@ const getTotalProducts = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     try {
         const result = await pool.query(productQuery_1.productQuerys.getTotalProducts);
         const total = result.rows[0].count;
@@ -55,7 +56,7 @@ const getProductByClave = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     try {
         const { clave } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductByClave, [clave]);
@@ -75,12 +76,11 @@ const getProductById = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     try {
         const { idinvearts } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductById, [idinvearts]);
         const product = result.rows[0];
-        console.log({ product });
         res.json({ product });
     }
     catch (error) {
@@ -95,7 +95,7 @@ const getProducByCodebar = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     try {
         const { codbarras } = req.query;
         let codbar = codbarras;
@@ -120,7 +120,7 @@ const updateProduct = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -159,7 +159,7 @@ const updateProductCodebar = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -191,4 +191,76 @@ const updateProductCodebar = async (req, res) => {
     }
 };
 exports.updateProductCodebar = updateProductCodebar;
+// Module 2 - Sells
+const getProductsSells = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const { limit, page } = req.query;
+        const result = await pool.query(productQuery_1.productQuerys.getProductsSells, [page, limit]);
+        const products = result.rows.map((product) => {
+            if (product.imagen) {
+                product.imagen = Buffer.from(product.imagen, 'base64').toString();
+            }
+            return product;
+        });
+        res.json({
+            total: products.length,
+            products
+        });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getProductsSells = getProductsSells;
+const getTotalProductsSells = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const result = await pool.query(productQuery_1.productQuerys.getTotalProductsSells);
+        const total = result.rows[0].count;
+        res.json({
+            total
+        });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getTotalProductsSells = getTotalProductsSells;
+const getProductsSellsFromFamily = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const { cvefamilia } = req.query;
+        const result = await pool.query(productQuery_1.productQuerys.getProductsSellsFromFamily, [cvefamilia]);
+        const products = result.rows;
+        res.json({
+            total: products.length,
+            products
+        });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getProductsSellsFromFamily = getProductsSellsFromFamily;
 //# sourceMappingURL=product.js.map

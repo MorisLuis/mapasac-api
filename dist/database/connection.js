@@ -26,11 +26,20 @@ const dbConnectionInitial = async () => {
     return pool;
 };
 exports.dbConnectionInitial = dbConnectionInitial;
-const dbConnection = async (idusrmob) => {
+const dbConnection = async ({ idusrmob, database }) => {
     let poolConfig;
+    console.log(`dbConnection idusrmob: ${idusrmob} and ${database}`);
     if (idusrmob) {
         // Verificar si la configuración de la base de datos está en el caché.
         const cachedConfig = cache.get(`dbConfig_${idusrmob}`);
+        if (cachedConfig && database) {
+            poolConfig = {
+                ...cachedConfig,
+                database
+            };
+            console.log("Using cached database configuration and new database");
+            return new pg_1.Pool(poolConfig);
+        }
         if (cachedConfig) {
             console.log("Using cached database configuration");
             return new pg_1.Pool(cachedConfig);
@@ -38,13 +47,16 @@ const dbConnection = async (idusrmob) => {
         const poolInitial = await (0, exports.dbConnectionInitial)();
         const dbConfig = await (0, getDbConfig_1.getDbConfig)({ idusrmob, poolInitial });
         // Guardar la configuración en el caché.
-        cache.set(`dbConfig_${idusrmob}`, dbConfig);
+        if (!database) {
+            cache.set(`dbConfig_${idusrmob}`, dbConfig);
+        }
         poolConfig = {
             ...dbConfig,
             max: 10,
             idleTimeoutMillis: 30000,
             connectionTimeoutMillis: 2000
         };
+        console.log({ poolConfig });
         const pool = new pg_1.Pool(poolConfig);
         console.log("Connected to the database!");
         return pool;

@@ -10,7 +10,7 @@ const getBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -37,7 +37,7 @@ const inserPoductToBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -46,7 +46,6 @@ const inserPoductToBag = async (req, res) => {
     try {
         const { idinvearts, codbarras, unidad, cantidad, precio1: precio, opcion } = req.body;
         const productBody = [idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion];
-        console.log({ productBody });
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.addProductToBag, productBody);
         await client.query('COMMIT');
@@ -69,7 +68,7 @@ const updatePoductFromBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -99,7 +98,7 @@ const deletePoductFromBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -129,7 +128,7 @@ const getTotalProductsInBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -156,7 +155,7 @@ const deleteAllProductsInBag = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)(idusrmob);
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

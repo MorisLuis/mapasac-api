@@ -12,7 +12,7 @@ const searchProduct = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({idusrmob});
 
     try {
         const { term } = req.query;
@@ -46,7 +46,7 @@ const searchProductInBag = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({idusrmob});
 
     try {
         const { term, opcion } = req.query;

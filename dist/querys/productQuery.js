@@ -74,6 +74,27 @@ exports.productQuerys = {
         UPDATE mapasoft.invearts 
         SET codbarras = $1 
         WHERE idinvearts = $2
+    `,
+    getProductsSells: `
+        SELECT 
+            V.imagen,
+            F.idinvefami,
+            F.cvefamilia,
+            F.descripcio
+        FROM mapasoft.vw_invefami_mob V
+        JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
+        ORDER BY 
+            F.idinvefami ASC
+        OFFSET ($1 - 1) * $2
+        LIMIT $2;
+    `,
+    getTotalProductsSells: `
+        SELECT COUNT(*)
+        FROM mapasoft.vw_invefami_mob V
+        JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
+    `,
+    getProductsSellsFromFamily: `
+        SELECT * FROM mapasoft.fn_invearts_cvefamilia_mob($1)
     `
 };
 //# sourceMappingURL=productQuery.js.map

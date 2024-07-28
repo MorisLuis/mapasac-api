@@ -52,7 +52,7 @@ class Server {
     }
 
     async connectDB() {
-        await dbConnection()
+        await dbConnection({})
     }
 
     routes() {

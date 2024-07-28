@@ -8,7 +8,7 @@ import { Req } from '../helpers/validate-jwt';
 const login = async (req: Req, res: Response) => {
 
     try {
-        const pool = await dbConnection();
+        const pool = await dbConnection({});
 
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -60,7 +60,7 @@ const renewLogin = async (req: Req, res: Response) => {
 
 
     try {
-        const pool = await dbConnection(idusrmob);
+        const pool = await dbConnection({idusrmob});
 
         if (!pool) {
             res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

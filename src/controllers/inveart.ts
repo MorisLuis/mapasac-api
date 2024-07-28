@@ -11,7 +11,7 @@ const postInventory = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({idusrmob});
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -49,7 +49,7 @@ const postSell = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({idusrmob});
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

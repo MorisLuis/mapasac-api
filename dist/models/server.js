@@ -39,7 +39,7 @@ class Server {
         this.app.use(express_1.default.urlencoded({ extended: true, limit: '50mb' }));
     }
     async connectDB() {
-        await (0, connection_1.dbConnection)();
+        await (0, connection_1.dbConnection)({});
     }
     routes() {
         this.app.use(this.paths.invearts, inverartRouter_1.default);

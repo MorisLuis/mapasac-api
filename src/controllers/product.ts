@@ -5,6 +5,7 @@ import { identifyBarcodeType } from "../utils/identifyBarcodeType";
 import { Req } from "../helpers/validate-jwt";
 
 
+// Module 1 - Inventory
 const getProducts = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
@@ -13,7 +14,7 @@ const getProducts = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
 
     try {
         const { limit, page } = req.query;
@@ -40,7 +41,7 @@ const getTotalProducts = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
 
     try {
 
@@ -65,7 +66,7 @@ const getProductByClave = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
 
     try {
         const { clave } = req.query;
@@ -88,7 +89,7 @@ const getProductById = async (req: Req, res: Response) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
 
     try {
         const { idinvearts } = req.query;
@@ -96,7 +97,6 @@ const getProductById = async (req: Req, res: Response) => {
         const result = await pool.query(productQuerys.getProductById, [idinvearts]);
         const product = result.rows[0]
 
-        console.log({product})
         res.json({ product })
 
     } catch (error) {
@@ -112,11 +112,11 @@ const getProducByCodebar = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
 
     try {
         const { codbarras } = req.query;
-        let codbar : string = codbarras as string;
+        let codbar: string = codbarras as string;
 
         const identifycodebarType = identifyBarcodeType(codbar)
 
@@ -142,7 +142,7 @@ const updateProduct = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -189,7 +189,7 @@ const updateProductCodebar = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection(idusrmob);
+    const pool = await dbConnection({ idusrmob });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -228,13 +228,103 @@ const updateProductCodebar = async (req: Req, res: Response) => {
     }
 }
 
+// Module 2 - Sells
+
+const getProductsSells = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+        const { limit, page } = req.query;
+
+        const result = await pool.query(productQuerys.getProductsSells, [page, limit]);
+        const products = result.rows.map((product: any) => {
+            if (product.imagen) {
+                product.imagen = Buffer.from( product.imagen, 'base64').toString();
+            }
+            return product;
+        });
+
+        res.json({
+            products
+        });
+
+    } catch (error: any) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+
+
+const getTotalProductsSells = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+
+        const result = await pool.query(productQuerys.getTotalProductsSells);
+        const total = result.rows[0].count;
+
+        res.json({
+            total
+        });
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    }
+}
+
+const getProductsSellsFromFamily = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+        const { cvefamilia } = req.query;
+
+        const result = await pool.query(productQuerys.getProductsSellsFromFamily, [cvefamilia]);
+        const products = result.rows;
+
+        res.json({
+            products
+        })
+
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    }
+}
+
+
+
 
 export {
+    // Module 1 - Inventory
     getProducts,
     getTotalProducts,
     getProductByClave,
     getProductById,
     getProducByCodebar,
     updateProduct,
-    updateProductCodebar
+    updateProductCodebar,
+
+    // Module 2 - Sells
+    getProductsSells,
+    getTotalProductsSells,
+    getProductsSellsFromFamily
 }
