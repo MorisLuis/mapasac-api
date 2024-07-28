@@ -12,6 +12,9 @@ const login = async (req, res) => {
             return;
         }
         const { usr, pas } = req.body;
+        if (usr.trim() === "" || pas.trim() === "") {
+            return res.status(400).json({ error: 'Necesario escribir usuario y contraseña' });
+        }
         const userName = usr.toUpperCase();
         const result = await pool.query(querys_1.querys.auth, [userName]);
         const user = result.rows[0];

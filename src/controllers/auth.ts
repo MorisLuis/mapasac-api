@@ -3,7 +3,6 @@ import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
-import { getDbConfig } from '../utils/getDbConfig';
 
 
 const login = async (req: Req, res: Response) => {
@@ -17,6 +16,10 @@ const login = async (req: Req, res: Response) => {
         }
 
         const { usr, pas } = req.body;
+
+        if (usr.trim() === "" || pas.trim() === "") {
+            return res.status(400).json({ error: 'Necesario escribir usuario y contraseña' });
+        }
 
         const userName = usr.toUpperCase()
         const result = await pool.query(querys.auth, [userName]);
