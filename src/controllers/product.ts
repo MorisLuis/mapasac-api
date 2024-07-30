@@ -3,6 +3,7 @@ import { dbConnection } from "../database/connection";
 import { productQuerys } from "../querys/productQuery";
 import { identifyBarcodeType } from "../utils/identifyBarcodeType";
 import { Req } from "../helpers/validate-jwt";
+import ProductSellsFamilyInterface from "../interface/productSell";
 
 
 // Module 1 - Inventory
@@ -298,7 +299,7 @@ const getProductsSellsFromFamily = async (req: Req, res: Response) => {
         const { cvefamilia } = req.query;
 
         const result = await pool.query(productQuerys.getProductsSellsFromFamily, [cvefamilia]);
-        const products = result.rows;
+        const products : ProductSellsFamilyInterface[] = result.rows;
 
         res.json({
             products

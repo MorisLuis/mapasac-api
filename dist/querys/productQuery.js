@@ -94,7 +94,14 @@ exports.productQuerys = {
         JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
     `,
     getProductsSellsFromFamily: `
-        SELECT * FROM mapasoft.fn_invearts_cvefamilia_mob($1)
+        SELECT 
+            F.rproducto,
+            F.ridinvearts,
+            F.ridinveclas,
+            F.rcapa,
+            C.descripcio AS Clase
+            FROM mapasoft.fn_invearts_cvefamilia_mob($1) F
+        JOIN mapasoft.inveclas C ON C.idinveclas = F.ridinveclas
     `
 };
 //# sourceMappingURL=productQuery.js.map

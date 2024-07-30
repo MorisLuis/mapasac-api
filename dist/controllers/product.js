@@ -209,7 +209,6 @@ const getProductsSells = async (req, res) => {
             return product;
         });
         res.json({
-            total: products.length,
             products
         });
     }
@@ -253,7 +252,6 @@ const getProductsSellsFromFamily = async (req, res) => {
         const result = await pool.query(productQuery_1.productQuerys.getProductsSellsFromFamily, [cvefamilia]);
         const products = result.rows;
         res.json({
-            total: products.length,
             products
         });
     }
