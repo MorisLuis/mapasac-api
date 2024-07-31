@@ -70,7 +70,7 @@ export const querys = {
     `,
 
     createInventory: `
-        UPDATE mapasoft.enlacemob
+        UPDATE mapasoft.enlacemob,
         SET opcion = 1, folcontado = $2
         WHERE opcion = 0 AND idusrmob = $1
     `,

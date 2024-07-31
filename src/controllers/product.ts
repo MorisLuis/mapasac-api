@@ -100,8 +100,8 @@ const getProductById = async (req: Req, res: Response) => {
 
         res.json({ product })
 
-    } catch (error) {
-        console.log({ error })
+    } catch (error: any) {
+        res.status(500).send(error.message);
     }
 }
 
@@ -130,9 +130,9 @@ const getProducByCodebar = async (req: Req, res: Response) => {
 
         res.json({ product });
 
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        res.status(500).send(error.message);
     }
 }
 
@@ -173,10 +173,10 @@ const updateProduct = async (req: Req, res: Response) => {
 
         res.json({ success: true, message: 'Producto actualizado correctamente' });
 
-    } catch (error) {
+    } catch (error: any) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        res.status(500).send(error.message);
     } finally {
         client.release();
     }
@@ -220,10 +220,10 @@ const updateProductCodebar = async (req: Req, res: Response) => {
 
         res.json({ success: true, message: 'Producto actualizado correctamente' });
 
-    } catch (error) {
+    } catch (error: any) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        res.status(500).send(error.message);
     } finally {
         client.release();
     }

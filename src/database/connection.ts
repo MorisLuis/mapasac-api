@@ -32,7 +32,6 @@ interface dbConnectionInterface {
 export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface) => {
     let poolConfig: PoolConfig;
 
-    console.log(`dbConnection idusrmob: ${idusrmob} and ${database}`)
     if (idusrmob) {
 
         // Verificar si la configuración de la base de datos está en el caché.
@@ -44,12 +43,10 @@ export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface
                 ...cachedConfig,
                 database
             };
-            console.log("Using cached database configuration and new database");
             return new Pool(poolConfig);
         }
 
         if (cachedConfig) {
-            console.log("Using cached database configuration");
             return new Pool(cachedConfig);
         }
 
@@ -68,7 +65,6 @@ export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface
             connectionTimeoutMillis: 2000
         };
 
-        console.log({poolConfig})
         const pool = new Pool(poolConfig);
         console.log("Connected to the database!");
         return pool;

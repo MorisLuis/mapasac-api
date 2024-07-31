@@ -31,9 +31,9 @@ const postInventory = async (req, res) => {
         res.status(201).json({ message: 'Datos insertados exitosamente' });
     }
     catch (error) {
+        console.log('Error:', error);
+        res.status(500).send(error.message);
         await client.query('ROLLBACK');
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
     }
     finally {
         client.release();
@@ -65,8 +65,8 @@ const postSell = async (req, res) => {
     }
     catch (error) {
         await client.query('ROLLBACK');
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+        console.log('Error:', error);
+        res.status(500).send(error.message);
     }
     finally {
         client.release();

@@ -54,7 +54,7 @@ const inserPoductToBag = async (req, res) => {
     catch (error) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+        res.status(500).send(error.message);
     }
     finally {
         client.release();
@@ -84,7 +84,7 @@ const updatePoductFromBag = async (req, res) => {
     catch (error) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+        res.status(500).send(error.message);
     }
     finally {
         client.release();
@@ -114,7 +114,7 @@ const deletePoductFromBag = async (req, res) => {
     catch (error) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+        res.status(500).send(error.message);
     }
     finally {
         client.release();
@@ -171,7 +171,7 @@ const deleteAllProductsInBag = async (req, res) => {
     catch (error) {
         await client.query('ROLLBACK');
         console.error('Error:', error);
-        res.status(500).json({ error: 'Error al insertar los datos', details: error.message });
+        res.status(500).send(error.message);
     }
     finally {
         client.release();
