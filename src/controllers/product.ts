@@ -136,6 +136,30 @@ const getProducByCodebar = async (req: Req, res: Response) => {
     }
 }
 
+const getProductByNoArticulo = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection({ idusrmob });
+
+    try {
+        const { noarticulo } = req.query;
+
+        const result = await pool.query(productQuerys.getProductByNoarticulo, [noarticulo]);
+        const product = result.rows
+
+        res.json({ product })
+
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    }
+}
+
 const updateProduct = async (req: Req, res: Response) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
@@ -246,7 +270,7 @@ const getProductsSells = async (req: Req, res: Response) => {
         const result = await pool.query(productQuerys.getProductsSells, [page, limit]);
         const products = result.rows.map((product: any) => {
             if (product.imagen) {
-                product.imagen = Buffer.from( product.imagen, 'base64').toString();
+                product.imagen = Buffer.from(product.imagen, 'base64').toString();
             }
             return product;
         });
@@ -299,7 +323,7 @@ const getProductsSellsFromFamily = async (req: Req, res: Response) => {
         const { cvefamilia } = req.query;
 
         const result = await pool.query(productQuerys.getProductsSellsFromFamily, [cvefamilia]);
-        const products : ProductSellsFamilyInterface[] = result.rows;
+        const products: ProductSellsFamilyInterface[] = result.rows;
 
         res.json({
             products
@@ -319,6 +343,7 @@ export {
     getProducts,
     getTotalProducts,
     getProductByClave,
+    getProductByNoArticulo,
     getProductById,
     getProducByCodebar,
     updateProduct,

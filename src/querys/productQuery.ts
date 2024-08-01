@@ -69,6 +69,23 @@ export const productQuerys = {
         WHERE codbarras = $1
     `,
 
+    getProductByNoarticulo: `
+        SELECT
+            P.idinvearts,
+            P.codbarras,
+            P.producto,
+			P.noarticulo,
+            P.clave,
+            P.precio1,
+            P.cvefamilia,
+            P.unidad,
+            U.descripcio AS unidad_nombre,
+            F.descripcio AS Familia
+        FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
+            JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
+        WHERE noarticulo = $1
+    `,
 
     updateProduct: `
         UPDATE mapasoft.invearts 
