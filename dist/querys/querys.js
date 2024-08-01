@@ -66,7 +66,7 @@ exports.querys = {
         WHERE P.idusrmob = $1 AND A.activo = 1;
     `,
     createInventory: `
-        UPDATE mapasoft.enlacemob,
+        UPDATE mapasoft.enlacemob
         SET opcion = 1, folcontado = $2
         WHERE opcion = 0 AND idusrmob = $1
     `,
