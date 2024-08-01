@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
+exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
@@ -113,6 +113,26 @@ const getProducByCodebar = async (req, res) => {
     }
 };
 exports.getProducByCodebar = getProducByCodebar;
+const getProductByNoArticulo = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    try {
+        const { noarticulo } = req.query;
+        const result = await pool.query(productQuery_1.productQuerys.getProductByNoarticulo, [noarticulo]);
+        const product = result.rows;
+        res.json({ product });
+    }
+    catch (error) {
+        console.log({ error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getProductByNoArticulo = getProductByNoArticulo;
 const updateProduct = async (req, res) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {

@@ -9,6 +9,7 @@ router.get('/', validate_jwt_1.validateJWT, product_1.getProducts);
 router.get('/total', validate_jwt_1.validateJWT, product_1.getTotalProducts);
 router.get('/byid', validate_jwt_1.validateJWT, product_1.getProductById);
 router.get('/byclave', validate_jwt_1.validateJWT, product_1.getProductByClave);
+router.get('/bynoarticulo', validate_jwt_1.validateJWT, product_1.getProductByNoArticulo);
 router.get('/bycodebar', validate_jwt_1.validateJWT, product_1.getProducByCodebar);
 router.put('/:idinvearts', validate_jwt_1.validateJWT, product_1.updateProduct);
 router.put('/codebar/:idinvearts', validate_jwt_1.validateJWT, product_1.updateProductCodebar);
