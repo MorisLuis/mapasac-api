@@ -74,7 +74,6 @@ const renewLogin = async (req, res) => {
 exports.renewLogin = renewLogin;
 const getModules = async (req, res) => {
     const idusrmob = req.idusrmob;
-    console.log({ idusrmob });
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;

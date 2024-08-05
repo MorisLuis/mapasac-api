@@ -100,8 +100,7 @@ exports.productQuerys = {
             F.descripcio
         FROM mapasoft.vw_invefami_mob V
         JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
-        ORDER BY 
-            F.idinvefami ASC
+        ORDER BY F.idinvefami ASC
         OFFSET ($1 - 1) * $2
         LIMIT $2;
     `,
@@ -119,6 +118,37 @@ exports.productQuerys = {
             C.descripcio AS Clase
             FROM mapasoft.fn_invearts_cvefamilia_mob($1) F
         JOIN mapasoft.inveclas C ON C.idinveclas = F.ridinveclas
+    `,
+    getUnits: `
+        SELECT 
+            idinveunid,
+            unidad,
+            descripcio,
+            abrevia
+            FROM mapasoft.inveunid
+        WHERE activo = 1
+    `,
+    getProductSellsById: `
+        SELECT
+            P.idinvearts,
+            P.producto,
+            P.clave,
+            P.precio1,
+            P.unidad,
+            U.descripcio AS unidad_nombre
+        FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
+            WHERE idinvearts =  $1
+    `,
+    getProductSellsByCvefamilia: `
+        SELECT
+            P.idinvearts,
+            P.unidad,
+            P.precio1,
+            U.descripcio AS unidad_nombre
+            FROM mapasoft.invearts P
+            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
+        WHERE cvefamilia = $1 AND estatus = 1
     `
 };
 //# sourceMappingURL=productQuery.js.map

@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
+exports.getUnits = exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductSellsByCvefamilia = exports.getProductSellsById = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
@@ -212,6 +212,44 @@ const updateProductCodebar = async (req, res) => {
 };
 exports.updateProductCodebar = updateProductCodebar;
 // Module 2 - Sells
+const getProductSellsById = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const { idinvearts } = req.query;
+        const result = await pool.query(productQuery_1.productQuerys.getProductSellsById, [idinvearts]);
+        const product = result.rows[0];
+        res.json({ product });
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+exports.getProductSellsById = getProductSellsById;
+const getProductSellsByCvefamilia = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const { cvefamilia } = req.query;
+        const result = await pool.query(productQuery_1.productQuerys.getProductSellsByCvefamilia, [cvefamilia]);
+        const product = result.rows[0];
+        res.json({ product });
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+exports.getProductSellsByCvefamilia = getProductSellsByCvefamilia;
 const getProductsSells = async (req, res) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
@@ -281,4 +319,22 @@ const getProductsSellsFromFamily = async (req, res) => {
     }
 };
 exports.getProductsSellsFromFamily = getProductsSellsFromFamily;
+const getUnits = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const result = await pool.query(productQuery_1.productQuerys.getUnits);
+        const units = result.rows;
+        res.json({ units });
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+};
+exports.getUnits = getUnits;
 //# sourceMappingURL=product.js.map

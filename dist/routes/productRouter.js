@@ -15,7 +15,10 @@ router.put('/:idinvearts', validate_jwt_1.validateJWT, product_1.updateProduct);
 router.put('/codebar/:idinvearts', validate_jwt_1.validateJWT, product_1.updateProductCodebar);
 // Module 2 - Sells
 router.get('/sells', validate_jwt_1.validateJWT, product_1.getProductsSells);
+router.get('/sells/byid', validate_jwt_1.validateJWT, product_1.getProductSellsById);
+router.get('/sells/bycvefamilia', validate_jwt_1.validateJWT, product_1.getProductSellsByCvefamilia);
 router.get('/sells/total', validate_jwt_1.validateJWT, product_1.getTotalProductsSells);
 router.get('/sells/byfamily', validate_jwt_1.validateJWT, product_1.getProductsSellsFromFamily);
+router.get('/sells/units', validate_jwt_1.validateJWT, product_1.getUnits);
 exports.default = router;
 //# sourceMappingURL=productRouter.js.map

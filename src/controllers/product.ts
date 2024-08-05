@@ -255,6 +255,50 @@ const updateProductCodebar = async (req: Req, res: Response) => {
 
 // Module 2 - Sells
 
+const getProductSellsById = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+        const { idinvearts } = req.query;
+
+        const result = await pool.query(productQuerys.getProductSellsById, [idinvearts]);
+        const product = result.rows[0]
+
+        res.json({ product })
+
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    }
+}
+
+const getProductSellsByCvefamilia = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+        const { cvefamilia } = req.query;
+
+        const result = await pool.query(productQuerys.getProductSellsByCvefamilia, [cvefamilia]);
+        const product = result.rows[0]
+
+        res.json({ product })
+
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    }
+}
+
 const getProductsSells = async (req: Req, res: Response) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
@@ -335,6 +379,25 @@ const getProductsSellsFromFamily = async (req: Req, res: Response) => {
     }
 }
 
+const getUnits = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+
+        const result = await pool.query(productQuerys.getUnits);
+        const units = result.rows
+        res.json({ units })
+
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    }
+}
 
 
 
@@ -351,6 +414,9 @@ export {
 
     // Module 2 - Sells
     getProductsSells,
+    getProductSellsById,
+    getProductSellsByCvefamilia,
     getTotalProductsSells,
-    getProductsSellsFromFamily
+    getProductsSellsFromFamily,
+    getUnits
 }
