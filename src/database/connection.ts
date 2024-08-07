@@ -4,7 +4,7 @@ import { getDbConfig } from "../utils/getDbConfig";
 import NodeCache from "node-cache";
 const cache = new NodeCache({ stdTTL: 86400, checkperiod: 600 }); // TTL de 1 dia, checkperiod de 10 minutos
 
-export const dbConnectionInitial = async () => {
+export const dbConnectionInitial = async (database?: string) => {
     let poolConfig: PoolConfig;
 
     poolConfig = {
@@ -12,7 +12,7 @@ export const dbConnectionInitial = async () => {
         user: config.user,
         password: config.password,
         port: config.port,
-        database: config.database,
+        database: database ? database : config.database,
 
         max: 10,
         idleTimeoutMillis: 30000,
@@ -48,7 +48,13 @@ export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface
             return new Pool(cachedConfig);
         }
 
-        const poolInitial = await dbConnectionInitial();
+        let poolInitial;
+        if (database) {
+            poolInitial = await dbConnectionInitial(database);
+        } else {
+            poolInitial = await dbConnectionInitial();
+        }
+
         const dbConfig = await getDbConfig({ idusrmob, poolInitial })
 
         if(!database){

@@ -9,14 +9,14 @@ const config_1 = __importDefault(require("../config"));
 const getDbConfig_1 = require("../utils/getDbConfig");
 const node_cache_1 = __importDefault(require("node-cache"));
 const cache = new node_cache_1.default({ stdTTL: 86400, checkperiod: 600 }); // TTL de 1 dia, checkperiod de 10 minutos
-const dbConnectionInitial = async () => {
+const dbConnectionInitial = async (database) => {
     let poolConfig;
     poolConfig = {
         host: config_1.default.host,
         user: config_1.default.user,
         password: config_1.default.password,
         port: config_1.default.port,
-        database: config_1.default.database,
+        database: database ? database : config_1.default.database,
         max: 10,
         idleTimeoutMillis: 30000,
         connectionTimeoutMillis: 2000
@@ -41,7 +41,13 @@ const dbConnection = async ({ idusrmob, database }) => {
         if (cachedConfig) {
             return new pg_1.Pool(cachedConfig);
         }
-        const poolInitial = await (0, exports.dbConnectionInitial)();
+        let poolInitial;
+        if (database) {
+            poolInitial = await (0, exports.dbConnectionInitial)(database);
+        }
+        else {
+            poolInitial = await (0, exports.dbConnectionInitial)();
+        }
         const dbConfig = await (0, getDbConfig_1.getDbConfig)({ idusrmob, poolInitial });
         if (!database) {
             cache.set(`dbConfig_${idusrmob}`, dbConfig);
