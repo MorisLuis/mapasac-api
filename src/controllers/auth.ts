@@ -3,10 +3,11 @@ import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
+import config from '../config';
 
 
 const login = async (req: Req, res: Response) => {
-    
+
     const pool = await dbConnection({});
     if (!pool) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -59,12 +60,11 @@ const renewLogin = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
 
-    if(!idusrmob) {
+    if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
-
-    const pool = await dbConnection({idusrmob});
+    const pool = await dbConnection({ idusrmob, database: 'desarrollo' });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -95,11 +95,11 @@ const getModules = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
 
-    if(!idusrmob) {
+    if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
-    
+
     const pool = await dbConnectionInitial();
     const client = await pool.connect();
     if (!client) {

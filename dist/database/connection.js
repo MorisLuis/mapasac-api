@@ -28,8 +28,8 @@ const dbConnectionInitial = async () => {
 exports.dbConnectionInitial = dbConnectionInitial;
 const dbConnection = async ({ idusrmob, database }) => {
     let poolConfig;
-    if (idusrmob) {
-        // Verificar si la configuración de la base de datos está en el caché.
+    if (idusrmob && database !== "desarrollo") {
+        // We check the data in cache.
         const cachedConfig = cache.get(`dbConfig_${idusrmob}`);
         if (cachedConfig && database) {
             poolConfig = {
@@ -43,7 +43,6 @@ const dbConnection = async ({ idusrmob, database }) => {
         }
         const poolInitial = await (0, exports.dbConnectionInitial)();
         const dbConfig = await (0, getDbConfig_1.getDbConfig)({ idusrmob, poolInitial });
-        // Guardar la configuración en el caché.
         if (!database) {
             cache.set(`dbConfig_${idusrmob}`, dbConfig);
         }
@@ -58,6 +57,7 @@ const dbConnection = async ({ idusrmob, database }) => {
         return pool;
     }
     else {
+        // This is the firs connection with the database
         const pool = await (0, exports.dbConnectionInitial)();
         return pool;
     }

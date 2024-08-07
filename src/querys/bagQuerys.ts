@@ -68,7 +68,7 @@ export const bagQuerys = {
 
     getTotalProductsInBag: `
         SELECT COUNT(*) FROM mapasoft.enlacemob
-        WHERE opcion = $1
+        WHERE opcion = $1 AND idusrmob = $2
     `,
 
     deleteAllProductsInBag: `

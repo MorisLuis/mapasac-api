@@ -55,7 +55,7 @@ const renewLogin = async (req, res) => {
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: 'desarrollo' });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

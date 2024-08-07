@@ -26,18 +26,16 @@ export const dbConnectionInitial = async () => {
 
 interface dbConnectionInterface {
     idusrmob?: number;
-    database?: string
+    database?: string // We specify when we will connect to 'mercado' database.
 }
 
 export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface) => {
     let poolConfig: PoolConfig;
 
-    if (idusrmob) {
-
-        // Verificar si la configuración de la base de datos está en el caché.
+    if (idusrmob && database !== "desarrollo" ) {
+        
+        // We check the data in cache.
         const cachedConfig = cache.get<PoolConfig>(`dbConfig_${idusrmob}`);
-
-
         if(cachedConfig && database) {
             poolConfig = {
                 ...cachedConfig,
@@ -50,10 +48,9 @@ export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface
             return new Pool(cachedConfig);
         }
 
-        const poolInitial = await dbConnectionInitial()
+        const poolInitial = await dbConnectionInitial();
         const dbConfig = await getDbConfig({ idusrmob, poolInitial })
 
-        // Guardar la configuración en el caché.
         if(!database){
             cache.set(`dbConfig_${idusrmob}`, dbConfig);
         }
@@ -69,6 +66,7 @@ export const dbConnection = async ({ idusrmob, database }: dbConnectionInterface
         console.log("Connected to the database!");
         return pool;
     } else {
+        // This is the firs connection with the database
         const pool = await dbConnectionInitial()
         return pool;
     }

@@ -191,6 +191,7 @@ const getTotalProductsInBag = async (req, res) => {
         pool = await (0, connection_1.dbConnection)({ idusrmob });
     }
     ;
+    console.log({ pool });
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -198,7 +199,7 @@ const getTotalProductsInBag = async (req, res) => {
     }
     try {
         const { opcion } = req.query;
-        const result = await pool.query(bagQuerys_1.bagQuerys.getTotalProductsInBag, [opcion]);
+        const result = await pool.query(bagQuerys_1.bagQuerys.getTotalProductsInBag, [opcion, idusrmob]);
         const totalproducts = result.rows[0].count;
         res.json({
             total: totalproducts
