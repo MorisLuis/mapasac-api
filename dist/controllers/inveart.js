@@ -42,12 +42,20 @@ const postInventory = async (req, res) => {
 exports.postInventory = postInventory;
 const postSell = async (req, res) => {
     const idusrmob = req.idusrmob;
+    const { mercado } = req.query;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     }
     ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    let pool;
+    if (mercado === 'true') {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    }
+    else {
+        pool = await (0, connection_1.dbConnection)({ idusrmob });
+    }
+    ;
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

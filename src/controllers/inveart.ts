@@ -5,6 +5,7 @@ import { querys } from "../querys/querys";
 import moment from "moment";
 
 const postInventory = async (req: Req, res: Response) => {
+
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
@@ -44,12 +45,21 @@ const postInventory = async (req: Req, res: Response) => {
 const postSell = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
+    const { mercado } = req.query;
+
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
 
-    const pool = await dbConnection({idusrmob});
+    let pool;
+    if ( mercado === 'true' ) {
+        pool = await dbConnection({ idusrmob, database: "mercado" });
+    } else {
+        pool = await dbConnection({ idusrmob });
+    };
+
+
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

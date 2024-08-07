@@ -12,7 +12,12 @@ const searchProduct = async (req: Req, res: Response) => {
         return;
     };
 
-    const pool = await dbConnection({idusrmob});
+    const pool = await dbConnection({ idusrmob });
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
         const { term } = req.query;
@@ -34,19 +39,36 @@ const searchProduct = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         return res.status(500).json({ error: error.message || 'Unexpected error' });
+    } finally {
+        client.release();
     }
+
 };
 
 
 const searchProductInBag = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
+    const { mercado } = req.query;
+
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
 
-    const pool = await dbConnection({idusrmob});
+
+    let pool;
+    if (mercado === 'true') {
+        pool = await dbConnection({ idusrmob, database: "mercado" });
+    } else {
+        pool = await dbConnection({ idusrmob });
+    }
+
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
         const { term, opcion } = req.query;
@@ -59,7 +81,10 @@ const searchProductInBag = async (req: Req, res: Response) => {
             searchTerm = term
         }
 
-        const result = await pool.query(searchQuerys.searchProductInBag, [opcion, idusrmob, searchTerm]);
+        const result = await pool.query(
+            mercado === 'true' ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
+            [opcion, idusrmob, searchTerm]
+        );
         const products = result.rows;
 
         res.json({
@@ -69,6 +94,8 @@ const searchProductInBag = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
+    } finally {
+        client.release();
     }
 };
 

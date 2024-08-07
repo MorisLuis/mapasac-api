@@ -7,6 +7,7 @@ import productRouter from '../routes/productRouter';
 import searchRouter from '../routes/searchRouter';
 import utilsRouter from '../routes/utilsRouter';
 import bagRouter from '../routes/bagRouter';
+import { Pool } from "pg";
 
 class Server {
     public app: Application;
@@ -19,6 +20,7 @@ class Server {
         utils: string,
         bag: string
     }
+    private pool: Pool | undefined; // Añadir propiedad para el pool
 
     constructor() {
         this.app = express();
@@ -40,6 +42,9 @@ class Server {
 
         // Routes of the app
         this.routes();
+
+        // Shutdown
+        this.handleShutdown();
     }
 
     middlewares() {
@@ -47,12 +52,12 @@ class Server {
         this.app.use(cors());
 
         // Lectura y parseo del body
-        this.app.use(express.json({ limit: '50mb' }))
-        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }))
+        this.app.use(express.json({ limit: '50mb' }));
+        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
     }
 
     async connectDB() {
-        await dbConnection({})
+        this.pool = await dbConnection({});
     }
 
     routes() {
@@ -66,9 +71,22 @@ class Server {
 
     listen() {
         this.app.listen(this.port, () => {
-            console.log("Servidor corriendo en puerto " + this.port)
-        })
+            console.log("Servidor corriendo en puerto " + this.port);
+        });
     };
+
+    private handleShutdown() {
+        process.on('SIGTERM', () => this.shutdown());
+        process.on('SIGINT', () => this.shutdown());
+    }
+
+    private async shutdown() {
+        console.log('Cerrando el servidor...');
+        if (this.pool) {
+            await this.pool.end();
+        }
+        process.exit(0);
+    }
 }
 
 export default Server;

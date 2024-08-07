@@ -254,52 +254,9 @@ const updateProductCodebar = async (req: Req, res: Response) => {
 }
 
 // Module 2 - Sells
-
-const getProductSellsById = async (req: Req, res: Response) => {
-
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    };
-    const pool = await dbConnection({ idusrmob, database: "mercado" });
-
-    try {
-        const { idinvearts } = req.query;
-
-        const result = await pool.query(productQuerys.getProductSellsById, [idinvearts]);
-        const product = result.rows[0]
-
-        res.json({ product })
-
-    } catch (error: any) {
-        res.status(500).send(error.message);
-    }
-}
-
-const getProductSellsByCvefamilia = async (req: Req, res: Response) => {
-
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    };
-    const pool = await dbConnection({ idusrmob, database: "mercado" });
-
-    try {
-        const { cvefamilia } = req.query;
-
-        const result = await pool.query(productQuerys.getProductSellsByCvefamilia, [cvefamilia]);
-        const product = result.rows[0]
-
-        res.json({ product })
-
-    } catch (error: any) {
-        res.status(500).send(error.message);
-    }
-}
-
 const getProductsSells = async (req: Req, res: Response) => {
+
+    //This controller show just the families not the products.
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
@@ -329,32 +286,8 @@ const getProductsSells = async (req: Req, res: Response) => {
     }
 };
 
-
-const getTotalProductsSells = async (req: Req, res: Response) => {
-
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    };
-
-    const pool = await dbConnection({ idusrmob, database: "mercado" });
-
-    try {
-
-        const result = await pool.query(productQuerys.getTotalProductsSells);
-        const total = result.rows[0].count;
-
-        res.json({
-            total
-        });
-    } catch (error: any) {
-        console.log({ error })
-        res.status(500).send(error.message);
-    }
-}
-
 const getProductsSellsFromFamily = async (req: Req, res: Response) => {
+    //This controller show just the clases and capas.
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
@@ -379,6 +312,32 @@ const getProductsSellsFromFamily = async (req: Req, res: Response) => {
     }
 }
 
+const getProductByEnlacemob = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+    const client = await pool.connect(); // Obtener una conexión del pool
+
+    try {
+        const { idinvearts, idinveclas, capa } = req.query;
+
+        const result = await client.query(productQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
+        const product = result.rows[0];
+        res.json({ product });
+
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    } finally {
+        client.release();
+    }
+}
+
+
+
 const getUnits = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
@@ -399,7 +358,29 @@ const getUnits = async (req: Req, res: Response) => {
     }
 }
 
+const getTotalProductsSells = async (req: Req, res: Response) => {
 
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+    const { cvefamilia } = req.query;
+
+    try {
+        const result = await pool.query(productQuerys.getTotalProductsSells, [cvefamilia]);
+        const total = result.rows[0].count;
+
+        res.json({
+            total
+        });
+    } catch (error: any) {
+        console.log({ "error-getTotalProductsSells": error  })
+        res.status(500).send(error.message);
+    }
+}
 
 export {
     // Module 1 - Inventory
@@ -414,9 +395,8 @@ export {
 
     // Module 2 - Sells
     getProductsSells,
-    getProductSellsById,
-    getProductSellsByCvefamilia,
     getTotalProductsSells,
     getProductsSellsFromFamily,
-    getUnits
+    getUnits,
+    getProductByEnlacemob
 }

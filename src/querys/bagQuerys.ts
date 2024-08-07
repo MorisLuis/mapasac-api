@@ -1,9 +1,15 @@
 export const bagQuerys = {
 
     addProductToBag: `
-        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, codbarras, unidad, cantidad, precio, idusrmob, opcion)
+        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, unidad, cantidad, precio, idusrmob, opcion, codbarras)
         VALUES
         ((SELECT COALESCE(MAX(idenlacemob), 0) + 1 FROM mapasoft.enlacemob), $1, $2, $3, $4, $5, $6, $7)
+    `,
+
+    addProductSellToBag: `
+        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, unidad, cantidad, precio, idusrmob, opcion, codbarras, idinveclas, capa )
+        VALUES
+        ((SELECT COALESCE(MAX(idenlacemob), 0) + 1 FROM mapasoft.enlacemob), $1, $2, $3, $4, $5, $6, $7, $8, $9)
     `,
 
     updateProductFromBag: `
@@ -31,6 +37,29 @@ export const bagQuerys = {
         FROM mapasoft.enlacemob E
             JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
             JOIN mapasoft.inveunid U ON E.unidad = U.unidad
+        WHERE opcion = $1 AND E.idusrmob = $2
+        ORDER BY idenlacemob ASC
+        OFFSET ($3 - 1) * $4
+        LIMIT $4;
+    `,
+
+    getBagSells: `
+        SELECT 
+            I.producto,
+            I.clave,
+            E.idenlacemob,
+            E.opcion,
+            E.unidad,
+            E.cantidad,
+            U.descripcio AS unidad_nombre,
+            E.precio,
+            E.capa,
+            E.codbarras,
+            C.descripcio AS Clase
+        FROM mapasoft.enlacemob E
+            JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
+            JOIN mapasoft.inveunid U ON E.unidad = U.unidad
+            JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
         WHERE opcion = $1 AND E.idusrmob = $2
         ORDER BY idenlacemob ASC
         OFFSET ($3 - 1) * $4

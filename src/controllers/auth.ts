@@ -6,15 +6,19 @@ import { Req } from '../helpers/validate-jwt';
 
 
 const login = async (req: Req, res: Response) => {
+    
+    const pool = await dbConnection({});
+    if (!pool) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    };
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
-        const pool = await dbConnection({});
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const { usr, pas } = req.body;
 
         if (usr.trim() === "" || pas.trim() === "") {
@@ -46,6 +50,8 @@ const login = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         return res.status(500).json({ error: error.message || 'Unexpected error' });
+    } finally {
+        client.release();
     }
 }
 
@@ -58,19 +64,14 @@ const renewLogin = async (req: Req, res: Response) => {
         return;
     };
 
+    const pool = await dbConnection({idusrmob});
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
-        const pool = await dbConnection({idusrmob});
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
-        if (!idusrmob) {
-            return res.status(401).json({ message: 'No se encontro el id del usuario' });
-        };
-
         const result = await pool.query(querys.getUserById, [idusrmob]);
         const user = result.rows[0]
         const token = await generateJWT({
@@ -85,6 +86,8 @@ const renewLogin = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
+    } finally {
+        client.release();
     }
 }
 
@@ -96,26 +99,26 @@ const getModules = async (req: Req, res: Response) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
     };
+    
+    const pool = await dbConnectionInitial();
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
 
     try {
-        //const pool = await dbConnection(idusrmob);
-        const pool = await dbConnectionInitial();
-
-        if (!pool) {
-            res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-            return;
-        }
-
         const result = await pool.query(querys.getModules, [idusrmob]);
         const modules = result.rows;
 
         res.json({
             modules
         })
-
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
+    } finally {
+        client.release();
     }
 }
 

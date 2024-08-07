@@ -92,6 +92,7 @@ exports.productQuerys = {
         SET codbarras = $1 
         WHERE idinvearts = $2
     `,
+    /* SELLS */
     getProductsSells: `
         SELECT 
             V.imagen,
@@ -106,8 +107,8 @@ exports.productQuerys = {
     `,
     getTotalProductsSells: `
         SELECT COUNT(*)
-        FROM mapasoft.vw_invefami_mob V
-        JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
+        FROM mapasoft.fn_invearts_cvefamilia_mob($1) F
+        JOIN mapasoft.inveclas C ON C.idinveclas = F.ridinveclas
     `,
     getProductsSellsFromFamily: `
         SELECT 
@@ -128,27 +129,33 @@ exports.productQuerys = {
             FROM mapasoft.inveunid
         WHERE activo = 1
     `,
-    getProductSellsById: `
-        SELECT
-            P.idinvearts,
-            P.producto,
-            P.clave,
-            P.precio1,
-            P.unidad,
-            U.descripcio AS unidad_nombre
-        FROM mapasoft.invearts P
-            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
-            WHERE idinvearts =  $1
-    `,
-    getProductSellsByCvefamilia: `
-        SELECT
-            P.idinvearts,
-            P.unidad,
-            P.precio1,
-            U.descripcio AS unidad_nombre
-            FROM mapasoft.invearts P
-            JOIN mapasoft.inveunid U ON P.unidad = U.unidad
-        WHERE cvefamilia = $1 AND estatus = 1
+    getProductByEnlacemob: `
+        WITH RankedRows AS (
+            SELECT 
+                E.unidad,
+                U.descripcio AS unidad_nombre,
+                E.precio,
+                E.idinvearts,
+                E.cantidad,
+                E.idenlacemob,
+                E.idinveclas,
+                E.capa,
+                E.codbarras,
+                CASE 
+                    WHEN E.idinveclas = $2 AND E.capa = $3 THEN 3
+                    WHEN E.idinveclas = $2 THEN 2
+                    WHEN E.capa = $3 THEN 1
+                    ELSE 0
+                END AS MatchScore
+            FROM mapasoft.enlacemob E
+            JOIN mapasoft.inveunid U ON E.unidad = U.unidad
+            WHERE E.idinvearts = $1
+            ORDER BY idenlacemob DESC
+        )
+        SELECT *
+        FROM RankedRows
+        ORDER BY MatchScore DESC
+        LIMIT(1)
     `
 };
 //# sourceMappingURL=productQuery.js.map

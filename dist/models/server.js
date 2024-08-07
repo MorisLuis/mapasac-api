@@ -30,6 +30,8 @@ class Server {
         this.middlewares();
         // Routes of the app
         this.routes();
+        // Shutdown
+        this.handleShutdown();
     }
     middlewares() {
         // CORS
@@ -39,7 +41,7 @@ class Server {
         this.app.use(express_1.default.urlencoded({ extended: true, limit: '50mb' }));
     }
     async connectDB() {
-        await (0, connection_1.dbConnection)({});
+        this.pool = await (0, connection_1.dbConnection)({});
     }
     routes() {
         this.app.use(this.paths.invearts, inverartRouter_1.default);
@@ -55,6 +57,17 @@ class Server {
         });
     }
     ;
+    handleShutdown() {
+        process.on('SIGTERM', () => this.shutdown());
+        process.on('SIGINT', () => this.shutdown());
+    }
+    async shutdown() {
+        console.log('Cerrando el servidor...');
+        if (this.pool) {
+            await this.pool.end();
+        }
+        process.exit(0);
+    }
 }
 exports.default = Server;
 //# sourceMappingURL=server.js.map
