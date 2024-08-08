@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getTotalProductsSells, getUnits, updateProduct, updateProductCodebar, getIdinveartsProduct } from "../controllers/product";
 import { validateJWT } from "../helpers/validate-jwt";
+import { getTotalPriceBag } from "../controllers/bag";
 
 const router = Router();
 

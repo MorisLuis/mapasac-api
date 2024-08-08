@@ -281,12 +281,49 @@ const deleteAllProductsInBag = async (req: Req, res: Response) => {
 
 }
 
+const getTotalPriceBag = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    const { mercado } = req.query;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
 
+    let pool;
+    if (mercado === 'true') {
+        pool = await dbConnection({ idusrmob, database: "mercado" });
+    } else {
+        pool = await dbConnection({ idusrmob });
+    };
+
+    const client = await pool.connect();
+    if (!client) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+        return;
+    }
+
+    try {
+        const { opcion } = req.query;
+        const result = await pool.query(bagQuerys.getTotalPriceBag, [opcion, idusrmob]);
+        const totalproducts = result.rows[0].total;
+
+        res.json({
+            total: totalproducts
+        })
+
+    } catch (error: any) {
+        console.log({ error })
+        res.status(500).send(error.message);
+    } finally {
+        client.release();
+    }
+}
 export {
     getBag,
     inserPoductToBag,
     updatePoductFromBag,
     deletePoductFromBag,
     getTotalProductsInBag,
-    deleteAllProductsInBag
+    deleteAllProductsInBag,
+    getTotalPriceBag
 }

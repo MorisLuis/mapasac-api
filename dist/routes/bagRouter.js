@@ -10,5 +10,6 @@ router.put('/', validate_jwt_1.validateJWT, bag_1.updatePoductFromBag);
 router.delete('/all', validate_jwt_1.validateJWT, bag_1.deleteAllProductsInBag);
 router.delete('/:idenlacemob', validate_jwt_1.validateJWT, bag_1.deletePoductFromBag);
 router.get('/total', validate_jwt_1.validateJWT, bag_1.getTotalProductsInBag);
+router.get('/price', validate_jwt_1.validateJWT, bag_1.getTotalPriceBag);
 exports.default = router;
 //# sourceMappingURL=bagRouter.js.map

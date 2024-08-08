@@ -54,7 +54,8 @@ export const bagQuerys = {
             U.descripcio AS unidad_nombre,
             E.precio,
             E.capa,
-            E.codbarras
+            E.codbarras,
+            C.descripcio AS clase
         FROM mapasoft.enlacemob E
         JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
         JOIN mapasoft.inveunid U ON E.unidad = U.unidad
@@ -73,5 +74,11 @@ export const bagQuerys = {
     deleteAllProductsInBag: `
         DELETE FROM mapasoft.enlacemob
         WHERE idusrmob = $1 AND opcion = $2
+    `,
+
+    getTotalPriceBag: `
+        SELECT SUM(E.precio * E.cantidad) AS total
+        FROM mapasoft.enlacemob E
+        WHERE E.opcion = $1 AND E.idusrmob = $2;
     `
 }
