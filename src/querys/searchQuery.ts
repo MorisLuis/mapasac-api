@@ -51,7 +51,7 @@ export const searchQuerys = {
         FROM mapasoft.enlacemob E
             JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
             JOIN mapasoft.inveunid U ON E.unidad = U.unidad
-            JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
+            LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
         WHERE opcion = $1 AND E.idusrmob = $2 AND producto ILIKE '%' || $3 || '%'
         ORDER BY idenlacemob ASC
     `

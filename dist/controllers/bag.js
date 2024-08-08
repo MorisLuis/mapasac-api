@@ -178,7 +178,6 @@ exports.deletePoductFromBag = deletePoductFromBag;
 const getTotalProductsInBag = async (req, res) => {
     const idusrmob = req.idusrmob;
     const { mercado } = req.query;
-    console.log({ idusrmob });
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
@@ -197,7 +196,6 @@ const getTotalProductsInBag = async (req, res) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    console.log({ pool });
     try {
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys_1.bagQuerys.getTotalProductsInBag, [opcion, idusrmob]);

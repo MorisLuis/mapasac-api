@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getProductByEnlacemob = exports.getUnits = exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
+exports.getIdinveartsProduct = exports.getProductByEnlacemob = exports.getUnits = exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
@@ -324,4 +324,27 @@ const getTotalProductsSells = async (req, res) => {
     }
 };
 exports.getTotalProductsSells = getTotalProductsSells;
+//TEMPORAL
+const getIdinveartsProduct = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const client = await pool.connect(); // Obtener una conexión del pool
+    try {
+        const { cvefamilia } = req.query;
+        const result = await client.query(productQuery_1.productQuerys.getIdinveartsProduct, [cvefamilia]);
+        const product = result.rows[0];
+        res.json({ product });
+    }
+    catch (error) {
+        res.status(500).send(error.message);
+    }
+    finally {
+        client.release();
+    }
+};
+exports.getIdinveartsProduct = getIdinveartsProduct;
 //# sourceMappingURL=product.js.map

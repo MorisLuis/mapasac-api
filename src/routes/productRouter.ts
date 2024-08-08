@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getTotalProductsSells, getUnits, updateProduct, updateProductCodebar } from "../controllers/product";
+import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getTotalProductsSells, getUnits, updateProduct, updateProductCodebar, getIdinveartsProduct } from "../controllers/product";
 import { validateJWT } from "../helpers/validate-jwt";
 
 const router = Router();
@@ -20,5 +20,6 @@ router.get('/sells/total', validateJWT, getTotalProductsSells);
 router.get('/sells/byfamily', validateJWT, getProductsSellsFromFamily);
 router.get('/sells/units', validateJWT, getUnits);
 router.get('/sells/byenlacemob', validateJWT, getProductByEnlacemob);
+router.get('/sells/getidinvearts', validateJWT, getIdinveartsProduct);
 
 export default router;

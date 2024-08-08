@@ -19,5 +19,6 @@ router.get('/sells/total', validate_jwt_1.validateJWT, product_1.getTotalProduct
 router.get('/sells/byfamily', validate_jwt_1.validateJWT, product_1.getProductsSellsFromFamily);
 router.get('/sells/units', validate_jwt_1.validateJWT, product_1.getUnits);
 router.get('/sells/byenlacemob', validate_jwt_1.validateJWT, product_1.getProductByEnlacemob);
+router.get('/sells/getidinvearts', validate_jwt_1.validateJWT, product_1.getIdinveartsProduct);
 exports.default = router;
 //# sourceMappingURL=productRouter.js.map

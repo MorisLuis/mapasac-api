@@ -337,7 +337,6 @@ const getProductByEnlacemob = async (req: Req, res: Response) => {
 }
 
 
-
 const getUnits = async (req: Req, res: Response) => {
 
     const idusrmob = req.idusrmob;
@@ -377,8 +376,33 @@ const getTotalProductsSells = async (req: Req, res: Response) => {
             total
         });
     } catch (error: any) {
-        console.log({ "error-getTotalProductsSells": error  })
+        console.log({ "error-getTotalProductsSells": error })
         res.status(500).send(error.message);
+    }
+}
+
+//TEMPORAL
+const getIdinveartsProduct = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
+    const client = await pool.connect(); // Obtener una conexión del pool
+
+    try {
+        const { cvefamilia } = req.query;
+
+        const result = await client.query(productQuerys.getIdinveartsProduct, [cvefamilia]);
+        const product = result.rows[0];
+        res.json({ product });
+
+    } catch (error: any) {
+        res.status(500).send(error.message);
+    } finally {
+        client.release();
     }
 }
 
@@ -398,5 +422,6 @@ export {
     getTotalProductsSells,
     getProductsSellsFromFamily,
     getUnits,
-    getProductByEnlacemob
+    getProductByEnlacemob,
+    getIdinveartsProduct
 }

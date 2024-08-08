@@ -72,6 +72,7 @@ const searchProductInBag = async (req, res) => {
         }
         const result = await pool.query(mercado === 'true' ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, idusrmob, searchTerm]);
         const products = result.rows;
+        console.log({ products: products.length });
         res.json({
             products
         });

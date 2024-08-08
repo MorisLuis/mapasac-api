@@ -168,5 +168,11 @@ export const productQuerys = {
         FROM RankedRows
         ORDER BY MatchScore DESC
         LIMIT(1)
+    `,
+
+
+    //TEMPORAL
+    getIdinveartsProduct : `
+        SELECT idinvearts FROM mapasoft.invearts WHERE cvefamilia = $1 AND estatus = 1
     `
 }
