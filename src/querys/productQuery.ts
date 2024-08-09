@@ -115,6 +115,10 @@ export const productQuerys = {
     `,
 
     getTotalProductsSells: `
+        SELECT COUNT(*) as total FROM mapasoft.vw_invefami_mob
+    `,
+
+    getTotalClassesSells: `
         SELECT COUNT(*)
         FROM mapasoft.fn_invearts_cvefamilia_mob($1) F
         JOIN mapasoft.inveclas C ON C.idinveclas = F.ridinveclas
@@ -145,14 +149,15 @@ export const productQuerys = {
         WITH RankedRows AS (
             SELECT 
                 E.unidad,
-                U.descripcio AS unidad_nombre,
                 E.precio,
+                U.descripcio AS unidad_nombre,
+                U.decimales,
                 E.idinvearts,
-                E.cantidad,
                 E.idenlacemob,
                 E.idinveclas,
                 E.capa,
                 E.codbarras,
+                ROUND(E.cantidad, U.decimales::integer) AS cantidad,
                 CASE 
                     WHEN E.idinveclas = $2 AND E.capa = $3 THEN 3
                     WHEN E.idinveclas = $2 THEN 2

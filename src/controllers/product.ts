@@ -320,7 +320,7 @@ const getProductByEnlacemob = async (req: Req, res: Response) => {
     }
 
     const pool = await dbConnection({ idusrmob, database: "mercado" });
-    const client = await pool.connect(); // Obtener una conexión del pool
+    const client = await pool.connect();
 
     try {
         const { idinvearts, idinveclas, capa } = req.query;
@@ -330,6 +330,7 @@ const getProductByEnlacemob = async (req: Req, res: Response) => {
         res.json({ product });
 
     } catch (error: any) {
+        console.log({error})
         res.status(500).send(error.message);
     } finally {
         client.release();
@@ -366,17 +367,40 @@ const getTotalProductsSells = async (req: Req, res: Response) => {
     };
 
     const pool = await dbConnection({ idusrmob, database: "mercado" });
+
+    try {
+        const result = await pool.query(productQuerys.getTotalProductsSells);
+        const total = result.rows[0].total;
+
+        res.json({
+            total
+        });
+    } catch (error: any) {
+        console.log({ "error-getTotalClassesSells": error })
+        res.status(500).send(error.message);
+    }
+}
+
+const getTotalClassesSells = async (req: Req, res: Response) => {
+
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    };
+
+    const pool = await dbConnection({ idusrmob, database: "mercado" });
     const { cvefamilia } = req.query;
 
     try {
-        const result = await pool.query(productQuerys.getTotalProductsSells, [cvefamilia]);
+        const result = await pool.query(productQuerys.getTotalClassesSells, [cvefamilia]);
         const total = result.rows[0].count;
 
         res.json({
             total
         });
     } catch (error: any) {
-        console.log({ "error-getTotalProductsSells": error })
+        console.log({ "error-getTotalClassesSells": error })
         res.status(500).send(error.message);
     }
 }
@@ -420,6 +444,7 @@ export {
     // Module 2 - Sells
     getProductsSells,
     getTotalProductsSells,
+    getTotalClassesSells,
     getProductsSellsFromFamily,
     getUnits,
     getProductByEnlacemob,

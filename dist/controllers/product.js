@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getIdinveartsProduct = exports.getProductByEnlacemob = exports.getUnits = exports.getProductsSellsFromFamily = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
+exports.getIdinveartsProduct = exports.getProductByEnlacemob = exports.getUnits = exports.getProductsSellsFromFamily = exports.getTotalClassesSells = exports.getTotalProductsSells = exports.getProductsSells = exports.updateProductCodebar = exports.updateProduct = exports.getProducByCodebar = exports.getProductById = exports.getProductByNoArticulo = exports.getProductByClave = exports.getTotalProducts = exports.getProducts = void 0;
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
@@ -269,7 +269,7 @@ const getProductByEnlacemob = async (req, res) => {
         return;
     }
     const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    const client = await pool.connect(); // Obtener una conexión del pool
+    const client = await pool.connect();
     try {
         const { idinvearts, idinveclas, capa } = req.query;
         const result = await client.query(productQuery_1.productQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
@@ -277,6 +277,7 @@ const getProductByEnlacemob = async (req, res) => {
         res.json({ product });
     }
     catch (error) {
+        console.log({ error });
         res.status(500).send(error.message);
     }
     finally {
@@ -310,20 +311,41 @@ const getTotalProductsSells = async (req, res) => {
     }
     ;
     const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        const result = await pool.query(productQuery_1.productQuerys.getTotalProductsSells);
+        const total = result.rows[0].total;
+        res.json({
+            total
+        });
+    }
+    catch (error) {
+        console.log({ "error-getTotalClassesSells": error });
+        res.status(500).send(error.message);
+    }
+};
+exports.getTotalProductsSells = getTotalProductsSells;
+const getTotalClassesSells = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        return;
+    }
+    ;
+    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
     const { cvefamilia } = req.query;
     try {
-        const result = await pool.query(productQuery_1.productQuerys.getTotalProductsSells, [cvefamilia]);
+        const result = await pool.query(productQuery_1.productQuerys.getTotalClassesSells, [cvefamilia]);
         const total = result.rows[0].count;
         res.json({
             total
         });
     }
     catch (error) {
-        console.log({ "error-getTotalProductsSells": error });
+        console.log({ "error-getTotalClassesSells": error });
         res.status(500).send(error.message);
     }
 };
-exports.getTotalProductsSells = getTotalProductsSells;
+exports.getTotalClassesSells = getTotalClassesSells;
 //TEMPORAL
 const getIdinveartsProduct = async (req, res) => {
     const idusrmob = req.idusrmob;

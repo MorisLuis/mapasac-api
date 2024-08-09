@@ -1,7 +1,6 @@
 import { Router } from "express";
-import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getTotalProductsSells, getUnits, updateProduct, updateProductCodebar, getIdinveartsProduct } from "../controllers/product";
+import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getUnits, updateProduct, updateProductCodebar, getIdinveartsProduct, getTotalClassesSells, getTotalProductsSells } from "../controllers/product";
 import { validateJWT } from "../helpers/validate-jwt";
-import { getTotalPriceBag } from "../controllers/bag";
 
 const router = Router();
 
@@ -18,6 +17,7 @@ router.put('/codebar/:idinvearts', validateJWT, updateProductCodebar);
 // Module 2 - Sells
 router.get('/sells', validateJWT, getProductsSells);
 router.get('/sells/total', validateJWT, getTotalProductsSells);
+router.get('/sells/totalclasses', validateJWT, getTotalClassesSells);
 router.get('/sells/byfamily', validateJWT, getProductsSellsFromFamily);
 router.get('/sells/units', validateJWT, getUnits);
 router.get('/sells/byenlacemob', validateJWT, getProductByEnlacemob);
