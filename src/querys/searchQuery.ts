@@ -9,7 +9,8 @@ export const searchQuerys = {
             P.clave,
             P.precio1,
             P.cvefamilia,
-            F.descripcio AS Familia
+            F.descripcio AS Familia,
+            P.noarticulo
         FROM mapasoft.invearts P
             JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
             WHERE producto ILIKE '%' || $1 || '%'

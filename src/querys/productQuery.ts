@@ -27,6 +27,7 @@ export const productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            P.noarticulo,
             U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
@@ -44,6 +45,7 @@ export const productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            P.noarticulo,
             U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
@@ -61,6 +63,7 @@ export const productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            P.noarticulo,
             U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
@@ -79,6 +82,7 @@ export const productQuerys = {
             P.precio1,
             P.cvefamilia,
             P.unidad,
+            P.noarticulo,
             U.descripcio AS unidad_nombre,
             F.descripcio AS Familia
         FROM mapasoft.invearts P
