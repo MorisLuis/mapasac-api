@@ -305,7 +305,6 @@ const getUnits = async (req, res) => {
 };
 exports.getUnits = getUnits;
 const getTotalProductsSells = async (req, res) => {
-    console.log("getTotalProductsSells -----------------------------------------------------------------------");
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });

@@ -94,6 +94,7 @@ const getModules = async (req, res) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
+    console.log({ pool });
     try {
         const result = await pool.query(querys_1.querys.getModules, [idusrmob]);
         const modules = result.rows;

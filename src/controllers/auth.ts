@@ -106,6 +106,8 @@ const getModules = async (req: Req, res: Response) => {
         return;
     }
 
+    console.log({pool})
+
     try {
         const result = await pool.query(querys.getModules, [idusrmob]);
         const modules = result.rows;
