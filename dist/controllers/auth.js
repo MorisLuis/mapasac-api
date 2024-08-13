@@ -50,39 +50,26 @@ const login = async (req, res) => {
 exports.login = login;
 const renewLogin = async (req, res) => {
     const idusrmob = req.idusrmob;
-    console.log({ idusrmob });
+    const pool = await (0, connection_1.dbConnection)({ database: 'desarrollo' });
     if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+        return res.status(400).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: 'desarrollo' });
-    const client = await pool.connect();
+    /* const client = await pool.connect();
     if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
-    console.log("pass connection renew");
+        return res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
+    } */
     try {
         const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
-        console.log({ result });
         const user = result.rows[0];
-        const token = await (0, generate_jwt_1.generateJWT)({
-            idusrmob: idusrmob,
-        });
-        console.log({ tokenRENEW: token });
-        res.json({
-            user,
-            token
-        });
+        const token = await (0, generate_jwt_1.generateJWT)({ idusrmob });
+        res.json({ user, token });
     }
     catch (error) {
-        console.log({ error });
+        console.error('Error in renewLogin:', error);
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
-    }
+    } /* finally {
+        pool.release(); // Asegúrate de liberar el cliente siempre
+    } */
 };
 exports.renewLogin = renewLogin;
 const getModules = async (req, res) => {

@@ -11,7 +11,7 @@ const node_cache_1 = __importDefault(require("node-cache"));
 // Initialize a cache with a TTL of 1 day and a check period of 10 minutes
 const cache = new node_cache_1.default({ stdTTL: 86400, checkperiod: 600 });
 // Constants for Pool configuration
-const POOL_MAX = 10;
+const POOL_MAX = 20;
 const IDLE_TIMEOUT_MS = 30000;
 const CONNECTION_TIMEOUT_MS = 2000;
 /**
