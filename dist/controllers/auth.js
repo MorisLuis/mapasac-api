@@ -50,6 +50,7 @@ const login = async (req, res) => {
 exports.login = login;
 const renewLogin = async (req, res) => {
     const idusrmob = req.idusrmob;
+    console.log({ idusrmob });
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
         return;
@@ -61,12 +62,15 @@ const renewLogin = async (req, res) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
+    console.log("pass connection renew");
     try {
         const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
+        console.log({ result });
         const user = result.rows[0];
         const token = await (0, generate_jwt_1.generateJWT)({
             idusrmob: idusrmob,
         });
+        console.log({ tokenRENEW: token });
         res.json({
             user,
             token
@@ -94,7 +98,6 @@ const getModules = async (req, res) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-    console.log({ pool });
     try {
         const result = await pool.query(querys_1.querys.getModules, [idusrmob]);
         const modules = result.rows;
