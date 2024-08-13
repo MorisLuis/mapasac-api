@@ -5,6 +5,7 @@ const querys_1 = require("../querys/querys");
 const getDbConfig = async ({ idusrmob, poolInitial }) => {
     //Always has to go to "grupomac" and "database".
     const client = await poolInitial.connect();
+    console.log({ client });
     try {
         const result = await client.query(querys_1.querys.getDbConfig, [idusrmob]);
         const { pasdba, usrdba, svr, dba, port } = result.rows[0];

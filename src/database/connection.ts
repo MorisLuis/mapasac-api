@@ -37,7 +37,8 @@ export const dbConnection = async ({ idusrmob, database }: DbConnectionOptions):
         }
 
         // Create an initial pool to get configuration from `getDbConfig`
-        const poolInitial = database ? await dbConnectionInitial(database) : await dbConnectionInitial();
+        //const poolInitial = database ? await dbConnectionInitial(database) : await dbConnectionInitial();
+        const poolInitial = await dbConnectionInitial();
         const dbConfig = await getDbConfig({ idusrmob, poolInitial });
 
         // Cache the configuration if `database` is not specified

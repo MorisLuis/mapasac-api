@@ -13,6 +13,7 @@ const getProducts = async (req, res) => {
     }
     ;
     const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    console.log({ pool });
     try {
         const { limit, page } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);

@@ -11,6 +11,7 @@ export const getDbConfig = async ({ idusrmob, poolInitial }: getDbConfigInterfac
     //Always has to go to "grupomac" and "database".
     const client = await poolInitial.connect();
 
+    console.log({client})
     try {
         const result = await client.query(querys.getDbConfig, [idusrmob]);
         const { pasdba, usrdba, svr, dba, port } = result.rows[0]
