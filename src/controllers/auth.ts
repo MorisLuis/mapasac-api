@@ -3,7 +3,6 @@ import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { querys } from '../querys/querys';
 import { generateJWT } from '../helpers/generate-jwt';
 import { Req } from '../helpers/validate-jwt';
-import config from '../config';
 
 
 const login = async (req: Req, res: Response) => {

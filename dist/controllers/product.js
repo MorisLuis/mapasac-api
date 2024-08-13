@@ -13,7 +13,6 @@ const getProducts = async (req, res) => {
     }
     ;
     const pool = await (0, connection_1.dbConnection)({ idusrmob });
-    console.log({ pool });
     try {
         const { limit, page } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
@@ -306,6 +305,7 @@ const getUnits = async (req, res) => {
 };
 exports.getUnits = getUnits;
 const getTotalProductsSells = async (req, res) => {
+    console.log("getTotalProductsSells -----------------------------------------------------------------------");
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
