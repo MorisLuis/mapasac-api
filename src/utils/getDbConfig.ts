@@ -8,6 +8,7 @@ interface getDbConfigInterface {
 
 export const getDbConfig = async ({ idusrmob, poolInitial }: getDbConfigInterface): Promise<PoolConfig> => {
 
+    //Always has to go to "grupomac" and "database".
     const client = await poolInitial.connect();
 
     try {

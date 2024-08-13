@@ -20,12 +20,11 @@ export const querys = {
     getDbConfig: `
         SELECT
             idusrmob,
-            usr,
+            usrdba,
             pas,
             svr,
             dba,
             port,
-            usrdba,
             pasdba
         FROM mapasoft.usrmob
         WHERE idusrmob = $1

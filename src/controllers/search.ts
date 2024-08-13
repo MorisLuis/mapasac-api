@@ -87,8 +87,6 @@ const searchProductInBag = async (req: Req, res: Response) => {
         );
         const products = result.rows;
 
-        console.log({products: products.length})
-
         res.json({
             products
         })

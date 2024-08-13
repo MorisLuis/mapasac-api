@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getDbConfig = void 0;
 const querys_1 = require("../querys/querys");
 const getDbConfig = async ({ idusrmob, poolInitial }) => {
+    //Always has to go to "grupomac" and "database".
     const client = await poolInitial.connect();
     try {
         const result = await client.query(querys_1.querys.getDbConfig, [idusrmob]);
