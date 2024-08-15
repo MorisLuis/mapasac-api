@@ -110,7 +110,8 @@ export const productQuerys = {
             V.imagen,
             F.idinvefami,
             F.cvefamilia,
-            F.descripcio
+            F.descripcio,
+            ( SELECT COUNT(*) FROM mapasoft.fn_invearts_cvefamilia_mob(F.cvefamilia) ) AS classCount
         FROM mapasoft.vw_invefami_mob V
         JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
         ORDER BY F.idinvefami ASC

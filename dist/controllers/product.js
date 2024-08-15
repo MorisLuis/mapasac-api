@@ -213,7 +213,6 @@ const updateProductCodebar = async (req, res) => {
 exports.updateProductCodebar = updateProductCodebar;
 // Module 2 - Sells
 const getProductsSells = async (req, res) => {
-    console.log("getProductsSells!! ----------------------------------------------------------------------");
     //This controller show just the families not the products.
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
