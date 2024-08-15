@@ -158,7 +158,7 @@ exports.productQuerys = {
                 END AS MatchScore
             FROM mapasoft.enlacemob E
             JOIN mapasoft.inveunid U ON E.unidad = U.unidad
-            WHERE E.idinvearts = $1
+            WHERE E.idinvearts = $1 AND E.idinveclas = $2
             ORDER BY idenlacemob DESC
         )
         SELECT *
