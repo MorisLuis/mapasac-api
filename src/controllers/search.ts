@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { dbConnection } from "../database/connection";
 import { Req } from '../helpers/validate-jwt';
 import { searchQuerys } from '../querys/searchQuery';
+import { Pool } from 'pg';
 
 
 const searchProduct = async (req: Req, res: Response) => {
@@ -13,11 +14,6 @@ const searchProduct = async (req: Req, res: Response) => {
     };
 
     const pool = await dbConnection({ idusrmob });
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
 
     try {
         const { term } = req.query;
@@ -39,8 +35,6 @@ const searchProduct = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         return res.status(500).json({ error: error.message || 'Unexpected error' });
-    } finally {
-        client.release();
     }
 
 };
@@ -56,18 +50,12 @@ const searchProductInBag = async (req: Req, res: Response) => {
         return;
     };
 
-
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    }
-
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
+    let pool: Pool;
+    try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
 
     try {
@@ -94,8 +82,6 @@ const searchProductInBag = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
-    } finally {
-        client.release();
     }
 };
 

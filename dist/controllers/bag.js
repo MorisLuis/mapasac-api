@@ -12,17 +12,12 @@ const getBag = async (req, res) => {
     }
     ;
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    ;
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
     try {
         const { limit, page, option } = req.query;
@@ -36,9 +31,6 @@ const getBag = async (req, res) => {
         console.log({ error });
         res.status(500).send(error.message);
     }
-    finally {
-        client.release();
-    }
 };
 exports.getBag = getBag;
 const inserPoductToBag = async (req, res) => {
@@ -49,11 +41,12 @@ const inserPoductToBag = async (req, res) => {
         return;
     }
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
     const client = await pool.connect();
     if (!client) {
@@ -108,13 +101,13 @@ const updatePoductFromBag = async (req, res) => {
     }
     ;
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
-    ;
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -146,13 +139,13 @@ const deletePoductFromBag = async (req, res) => {
     }
     ;
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
-    ;
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -184,17 +177,12 @@ const getTotalProductsInBag = async (req, res) => {
     }
     ;
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    ;
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
     try {
         const { opcion } = req.query;
@@ -207,9 +195,6 @@ const getTotalProductsInBag = async (req, res) => {
     catch (error) {
         console.log({ error });
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.getTotalProductsInBag = getTotalProductsInBag;
@@ -267,11 +252,6 @@ const getTotalPriceBag = async (req, res) => {
         pool = await (0, connection_1.dbConnection)({ idusrmob });
     }
     ;
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
     try {
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys_1.bagQuerys.getTotalPriceBag, [opcion, idusrmob]);
@@ -283,9 +263,6 @@ const getTotalPriceBag = async (req, res) => {
     catch (error) {
         console.log({ error });
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.getTotalPriceBag = getTotalPriceBag;

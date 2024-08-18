@@ -12,11 +12,6 @@ const login = async (req: Req, res: Response) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     };
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
 
     try {
         const { usr, pas } = req.body;
@@ -50,8 +45,6 @@ const login = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         return res.status(500).json({ error: error.message || 'Unexpected error' });
-    } finally {
-        client.release();
     }
 }
 
@@ -64,11 +57,6 @@ const renewLogin = async (req: Req, res: Response) => {
         return res.status(400).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
 
-    /* const client = await pool.connect();
-    if (!client) {
-        return res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-    } */
-
     try {
         const result = await pool.query(querys.getUserById, [idusrmob]);
         const user = result.rows[0];
@@ -79,9 +67,7 @@ const renewLogin = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.error('Error in renewLogin:', error);
         res.status(500).send(error.message);
-    } /* finally {
-        pool.release(); // Asegúrate de liberar el cliente siempre
-    } */
+    }
 }
 
 const getModules = async (req: Req, res: Response) => {
@@ -94,12 +80,6 @@ const getModules = async (req: Req, res: Response) => {
     };
 
     const pool = await dbConnectionInitial();
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
-
     try {
         const result = await pool.query(querys.getModules, [idusrmob]);
         const modules = result.rows;
@@ -110,8 +90,6 @@ const getModules = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
-    } finally {
-        client.release();
     }
 }
 

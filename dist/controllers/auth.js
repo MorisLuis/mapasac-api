@@ -11,11 +11,6 @@ const login = async (req, res) => {
         return;
     }
     ;
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
     try {
         const { usr, pas } = req.body;
         if (usr.trim() === "" || pas.trim() === "") {
@@ -43,9 +38,6 @@ const login = async (req, res) => {
         console.log({ error });
         return res.status(500).json({ error: error.message || 'Unexpected error' });
     }
-    finally {
-        client.release();
-    }
 };
 exports.login = login;
 const renewLogin = async (req, res) => {
@@ -54,10 +46,6 @@ const renewLogin = async (req, res) => {
     if (!idusrmob) {
         return res.status(400).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
-    /* const client = await pool.connect();
-    if (!client) {
-        return res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-    } */
     try {
         const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
         const user = result.rows[0];
@@ -67,9 +55,7 @@ const renewLogin = async (req, res) => {
     catch (error) {
         console.error('Error in renewLogin:', error);
         res.status(500).send(error.message);
-    } /* finally {
-        pool.release(); // Asegúrate de liberar el cliente siempre
-    } */
+    }
 };
 exports.renewLogin = renewLogin;
 const getModules = async (req, res) => {
@@ -80,11 +66,6 @@ const getModules = async (req, res) => {
     }
     ;
     const pool = await (0, connection_1.dbConnectionInitial)();
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
     try {
         const result = await pool.query(querys_1.querys.getModules, [idusrmob]);
         const modules = result.rows;
@@ -95,9 +76,6 @@ const getModules = async (req, res) => {
     catch (error) {
         console.log({ error });
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.getModules = getModules;

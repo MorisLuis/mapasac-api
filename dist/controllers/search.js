@@ -11,11 +11,6 @@ const searchProduct = async (req, res) => {
     }
     ;
     const pool = await (0, connection_1.dbConnection)({ idusrmob });
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
     try {
         const { term } = req.query;
         let searchTerm;
@@ -35,9 +30,6 @@ const searchProduct = async (req, res) => {
         console.log({ error });
         return res.status(500).json({ error: error.message || 'Unexpected error' });
     }
-    finally {
-        client.release();
-    }
 };
 exports.searchProduct = searchProduct;
 const searchProductInBag = async (req, res) => {
@@ -49,16 +41,12 @@ const searchProductInBag = async (req, res) => {
     }
     ;
     let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    try {
+        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
     }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
+    catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
     try {
         const { term, opcion } = req.query;
@@ -79,9 +67,6 @@ const searchProductInBag = async (req, res) => {
     catch (error) {
         console.log({ error });
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.searchProductInBag = searchProductInBag;

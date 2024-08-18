@@ -269,19 +269,15 @@ const getProductByEnlacemob = async (req, res) => {
         return;
     }
     const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    const client = await pool.connect();
     try {
         const { idinvearts, idinveclas, capa } = req.query;
-        const result = await client.query(productQuery_1.productQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
+        const result = await pool.query(productQuery_1.productQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
         const product = result.rows[0];
         res.json({ product });
     }
     catch (error) {
         console.log({ error });
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.getProductByEnlacemob = getProductByEnlacemob;
@@ -354,18 +350,14 @@ const getIdinveartsProduct = async (req, res) => {
         return;
     }
     const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    const client = await pool.connect(); // Obtener una conexión del pool
     try {
         const { cvefamilia } = req.query;
-        const result = await client.query(productQuery_1.productQuerys.getIdinveartsProduct, [cvefamilia]);
+        const result = await pool.query(productQuery_1.productQuerys.getIdinveartsProduct, [cvefamilia]);
         const product = result.rows[0];
         res.json({ product });
     }
     catch (error) {
         res.status(500).send(error.message);
-    }
-    finally {
-        client.release();
     }
 };
 exports.getIdinveartsProduct = getIdinveartsProduct;

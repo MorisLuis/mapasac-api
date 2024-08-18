@@ -17,13 +17,6 @@ interface DbConnectionOptions {
     database?: string; // Specifies which database to connect to
 }
 
-/**
- * Establishes a database connection.
- * If `idusrmob` is provided and `database` is not "desarrollo", attempts to use cached configuration.
- * If configuration is not cached, retrieves it using `getDbConfig` and stores it in the cache.
- *
- * @param {DbConnectionOptions} options - Options for database connection.
- */
 
 export const dbConnection = async ({ idusrmob, database }: DbConnectionOptions): Promise<Pool> => {
     let poolConfig: PoolConfig;
@@ -67,12 +60,6 @@ export const dbConnection = async ({ idusrmob, database }: DbConnectionOptions):
     }
 };
 
-/**
- * Establishes an initial database connection with default configuration.
- * Used for obtaining the default configuration or for the first connection.
- *
- * @param {string} [database] - The name of the database to connect to.
- */
 
 export const dbConnectionInitial = async (database?: string): Promise<Pool> => {
     const poolConfig: PoolConfig = {

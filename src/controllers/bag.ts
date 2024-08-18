@@ -2,6 +2,7 @@ import { Response } from "express";
 import { dbConnection } from "../database/connection";
 import { bagQuerys } from "../querys/bagQuerys";
 import { Req } from "../helpers/validate-jwt";
+import { Pool } from "pg";
 
 const getBag = async (req: Req, res: Response) => {
 
@@ -13,20 +14,15 @@ const getBag = async (req: Req, res: Response) => {
         return;
     };
 
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    };
-
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
+    let pool: Pool;
     try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
+    }
 
+    try {
         const { limit, page, option } = req.query;
         const result = await pool.query(
             mercado === 'true' ? bagQuerys.getBagSells : bagQuerys.getBag,
@@ -41,8 +37,6 @@ const getBag = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
-    } finally {
-        client.release();
     }
 
 }
@@ -56,11 +50,12 @@ const inserPoductToBag = async (req: Req, res: Response) => {
         return;
     }
 
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
+    let pool: Pool;
+    try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
 
     const client = await pool.connect();
@@ -125,12 +120,13 @@ const updatePoductFromBag = async (req: Req, res: Response) => {
         return;
     };
 
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    };
+    let pool: Pool;
+    try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
+    }
 
     const client = await pool.connect();
     if (!client) {
@@ -167,12 +163,14 @@ const deletePoductFromBag = async (req: Req, res: Response) => {
         return;
     };
 
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    };
+    let pool: Pool;
+    try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
+    }
+
 
     const client = await pool.connect();
     if (!client) {
@@ -207,17 +205,12 @@ const getTotalProductsInBag = async (req: Req, res: Response) => {
         return;
     };
 
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    };
-
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
+    let pool: Pool;
+    try {
+        pool = await dbConnection({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
+    } catch (error) {
+        console.error('Error al conectar a la base de datos:', error);
+        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
 
     try {
@@ -232,8 +225,6 @@ const getTotalProductsInBag = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
-    } finally {
-        client.release();
     }
 
 }
@@ -296,12 +287,6 @@ const getTotalPriceBag = async (req: Req, res: Response) => {
         pool = await dbConnection({ idusrmob });
     };
 
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
-
     try {
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys.getTotalPriceBag, [opcion, idusrmob]);
@@ -314,10 +299,9 @@ const getTotalPriceBag = async (req: Req, res: Response) => {
     } catch (error: any) {
         console.log({ error })
         res.status(500).send(error.message);
-    } finally {
-        client.release();
     }
 }
+
 export {
     getBag,
     inserPoductToBag,

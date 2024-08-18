@@ -14,13 +14,6 @@ const cache = new node_cache_1.default({ stdTTL: 86400, checkperiod: 600 });
 const POOL_MAX = 20;
 const IDLE_TIMEOUT_MS = 30000;
 const CONNECTION_TIMEOUT_MS = 2000;
-/**
- * Establishes a database connection.
- * If `idusrmob` is provided and `database` is not "desarrollo", attempts to use cached configuration.
- * If configuration is not cached, retrieves it using `getDbConfig` and stores it in the cache.
- *
- * @param {DbConnectionOptions} options - Options for database connection.
- */
 const dbConnection = async ({ idusrmob, database }) => {
     let poolConfig;
     // Checks if it's a user connection, when i send 'desarollo' as database i force to go to the 'else'.
@@ -58,12 +51,6 @@ const dbConnection = async ({ idusrmob, database }) => {
     }
 };
 exports.dbConnection = dbConnection;
-/**
- * Establishes an initial database connection with default configuration.
- * Used for obtaining the default configuration or for the first connection.
- *
- * @param {string} [database] - The name of the database to connect to.
- */
 const dbConnectionInitial = async (database) => {
     const poolConfig = {
         host: config_1.default.host,
