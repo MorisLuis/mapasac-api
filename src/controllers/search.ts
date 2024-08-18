@@ -64,7 +64,7 @@ const searchProductInBag = async (req: Req, res: Response) => {
 
         let searchTerm;
         if (!term) {
-            searchTerm = "a"
+            searchTerm = ""
         } else {
             searchTerm = term
         }

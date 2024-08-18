@@ -53,7 +53,7 @@ const searchProductInBag = async (req, res) => {
         const idusrmob = req.idusrmob;
         let searchTerm;
         if (!term) {
-            searchTerm = "a";
+            searchTerm = "";
         }
         else {
             searchTerm = term;
