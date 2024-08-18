@@ -48,7 +48,6 @@ const login = async (req: Req, res: Response) => {
     }
 }
 
-
 const renewLogin = async (req: Req, res: Response) => {
     const idusrmob = req.idusrmob;
     const pool = await dbConnection({ database: 'desarrollo' });

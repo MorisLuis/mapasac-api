@@ -62,7 +62,7 @@ exports.querys = {
             A.activo
         FROM mapasoft.permob P
         JOIN mapasoft.appmob A ON P.idappmob = A.idappmob
-        WHERE P.idusrmob = $1 AND A.activo = 1;
+        WHERE P.idusrmob = $1 AND A.activo = 1 AND P.permisos = 1
     `,
     createInventory: `
         UPDATE mapasoft.enlacemob
