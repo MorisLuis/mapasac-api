@@ -41,7 +41,13 @@ class Server {
         this.app.use(express_1.default.urlencoded({ extended: true, limit: '50mb' }));
     }
     async connectDB() {
-        this.pool = await (0, connection_1.dbConnection)({});
+        try {
+            this.pool = await (0, connection_1.dbConnection)({});
+        }
+        catch (error) {
+            console.error('Database connection error:', error);
+            process.exit(-1); // Exit if DB connection fails
+        }
     }
     routes() {
         this.app.use(this.paths.invearts, inverartRouter_1.default);
@@ -64,7 +70,13 @@ class Server {
     async shutdown() {
         console.log('Cerrando el servidor...');
         if (this.pool) {
-            await this.pool.end();
+            try {
+                await this.pool.end();
+                console.log('Database pool closed');
+            }
+            catch (error) {
+                console.error('Error closing the database pool:', error);
+            }
         }
         process.exit(0);
     }

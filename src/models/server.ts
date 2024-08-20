@@ -9,6 +9,8 @@ import utilsRouter from '../routes/utilsRouter';
 import bagRouter from '../routes/bagRouter';
 import { Pool } from "pg";
 
+
+
 class Server {
     public app: Application;
     private port: string;
@@ -21,6 +23,8 @@ class Server {
         bag: string
     }
     private pool: Pool | undefined; // Añadir propiedad para el pool
+
+    
 
     constructor() {
         this.app = express();
@@ -56,8 +60,13 @@ class Server {
         this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
     }
 
-    async connectDB() {
-        this.pool = await dbConnection({});
+    private async connectDB() {
+        try {
+            this.pool = await dbConnection({});
+        } catch (error) {
+            console.error('Database connection error:', error);
+            process.exit(-1); // Exit if DB connection fails
+        }
     }
 
     routes() {
@@ -83,7 +92,12 @@ class Server {
     private async shutdown() {
         console.log('Cerrando el servidor...');
         if (this.pool) {
-            await this.pool.end();
+            try {
+                await this.pool.end();
+                console.log('Database pool closed');
+            } catch (error) {
+                console.error('Error closing the database pool:', error);
+            }
         }
         process.exit(0);
     }

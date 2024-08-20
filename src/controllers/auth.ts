@@ -13,6 +13,7 @@ const login = async (req: Req, res: Response) => {
         return;
     };
 
+
     try {
         const { usr, pas } = req.body;
 
