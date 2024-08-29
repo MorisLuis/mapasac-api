@@ -55,5 +55,20 @@ export const searchQuerys = {
             LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
         WHERE opcion = $1 AND E.idusrmob = $2 AND producto ILIKE '%' || $3 || '%'
         ORDER BY idenlacemob ASC
+    `,
+
+    searchClients: `
+        SELECT 
+            idclientes,
+            nombres
+        FROM mapasoft.clientes
+        WHERE nombres ILIKE '%' || $1 || '%'
+        ORDER BY 
+            CASE 
+                WHEN nombres ILIKE $1 || '%' THEN 1 -- Prioridad para los que inician con la variable $1
+                ELSE 2 -- Luego, los que contienen la variable $1 en cualquier parte
+            END,
+            nombres ASC -- Orden alfabético secundario
+        LIMIT 10
     `
 }

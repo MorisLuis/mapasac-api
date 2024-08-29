@@ -78,6 +78,25 @@ export const querys = {
         UPDATE mapasoft.enlacemob
         SET opcion = 3, folcontado = $2
         WHERE opcion = 2 AND idusrmob = $1
-    `
+    `,
 
+    getPaymentType: `
+        SELECT 
+            idtipopago,
+            clavepago,
+            descrip
+            FROM mapasoft.tipopago
+        WHERE activo = true
+    `,
+
+    getClients: `
+        SELECT 
+            idclientes,
+            nombres
+        FROM mapasoft.clientes
+            WHERE nombres !=  ''
+        ORDER BY nombres ASC
+        OFFSET ($1 - 1) * $2
+        LIMIT $2;
+    `
 }

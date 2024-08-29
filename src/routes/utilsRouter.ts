@@ -1,10 +1,11 @@
 import { Router } from "express";
-import { login, renewLogin } from "../controllers/auth";
 import { validateJWT } from "../helpers/validate-jwt";
-import { utilsController } from "../controllers/utils";
+import { getClients, getPaymentType, utilsController } from "../controllers/utils";
 
 const router = Router();
 
 router.get('/', utilsController);
+router.get('/paymentType', validateJWT, getPaymentType);
+router.get('/clients', validateJWT, getClients);
 
 export default router;

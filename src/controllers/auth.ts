@@ -38,7 +38,7 @@ const login = async (req: Req, res: Response) => {
             idusrmob: user.idusrmob,
         });
 
-        res.json({
+        res.json({ 
             user,
             token
         })
