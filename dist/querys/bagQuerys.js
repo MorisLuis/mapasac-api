@@ -17,6 +17,11 @@ exports.bagQuerys = {
         SET cantidad = $1
         WHERE idenlacemob = $2
     `,
+    updateProductCommentsFromBag: `
+        UPDATE mapasoft.enlacemob
+        SET comentario = $1, idclientes = $2, clavepago = $3
+        WHERE idusrmob = $4 AND opcion = 2
+    `,
     deleteProductFromBag: `
         DELETE FROM mapasoft.enlacemob
         WHERE idenlacemob = $1
