@@ -8,14 +8,16 @@ const connection_1 = require("../database/connection");
 const querys_1 = require("../querys/querys");
 const moment_1 = __importDefault(require("moment"));
 const bagQuerys_1 = require("../querys/bagQuerys");
+const getSession_1 = require("../utils/Redis/getSession");
 const postInventory = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -42,22 +44,15 @@ const postInventory = async (req, res) => {
 };
 exports.postInventory = postInventory;
 const postSell = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
     const { clavepago, idclientes, comments } = req.body;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    ;
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });

@@ -1,19 +1,24 @@
+// server.ts
 import express, { Application } from "express";
 import cors from 'cors';
-import { dbConnection } from "../database/connection";
+import { dbConnectionInitial } from "../database/connection";
+import Redis from 'ioredis';
+import RedisStore from 'connect-redis';
+import session, { Store } from 'express-session';
+
+// Rutas
 import inverRouter from '../routes/inverartRouter';
 import authRouter from '../routes/authRouter';
 import productRouter from '../routes/productRouter';
 import searchRouter from '../routes/searchRouter';
 import utilsRouter from '../routes/utilsRouter';
 import bagRouter from '../routes/bagRouter';
-import { Pool } from "pg";
-
-
 
 class Server {
     public app: Application;
     private port: string;
+    public redis: Redis | null;
+
     private paths: {
         invearts: string,
         auth: string,
@@ -22,13 +27,11 @@ class Server {
         utils: string,
         bag: string
     }
-    private pool: Pool | undefined; // Añadir propiedad para el pool
-
-    
 
     constructor() {
         this.app = express();
         this.port = process.env.PORT || "5001";
+        this.redis = null;
         this.paths = {
             auth: "/api/auth",
             invearts: "/api/invearts",
@@ -38,35 +41,70 @@ class Server {
             bag: "/api/bag"
         }
 
-        // Connect to database
         this.connectDB();
-
-        // Middlewares
+        this.configureRedis();
+        this.configureSessions();
         this.middlewares();
-
-        // Routes of the app
         this.routes();
-
-        // Shutdown
-        this.handleShutdown();
+        this.errorHandler();
     }
+
+    async connectDB() {
+        await dbConnectionInitial();
+    }
+
+    configureRedis() {
+        this.redis = new Redis({
+            host: process.env.REDIS_HOST || '127.0.0.1',
+            port: Number(process.env.REDIS_PORT as string) || 6379,
+            password: process.env.REDIS_PASSWORD
+        });
+
+        this.redis.on('connect', () => {
+            console.log('Conectado a Redis');
+        });
+
+        this.redis.on('error', (err) => {
+            console.error('Error de conexión a Redis:', err);
+        });
+    }
+
+    configureSessions() {
+        if (this.redis) {
+            // Define el TTL y maxAge en segundos y milisegundos
+            const oneYearInSeconds = 28800; // 8 horas
+            const oneYearInMilliseconds = oneYearInSeconds * 1000; // 8 horas en milisegundos
+    
+            console.log({oneYearInMilliseconds})
+    
+            const store = new RedisStore({
+                client: this.redis,
+                ttl: oneYearInSeconds,
+            }) as Store;
+    
+            this.app.use(session({
+                secret: process.env.REDIS_SECRET as string,
+                name: 'sid',
+                store: store,
+                resave: false,
+                saveUninitialized: false,
+                cookie: {
+                    secure:  'auto',
+                    httpOnly: true,
+                    maxAge: oneYearInMilliseconds, // MaxAge en milisegundos para la cookie
+                    sameSite: 'lax'
+                }
+            }));
+        } else {
+            console.error('Redis no está configurado, las sesiones no se almacenarán en Redis');
+        }
+    }
+    
 
     middlewares() {
-        // CORS
         this.app.use(cors());
-
-        // Lectura y parseo del body
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-    }
-
-    private async connectDB() {
-        try {
-            this.pool = await dbConnection({});
-        } catch (error) {
-            console.error('Database connection error:', error);
-            process.exit(-1); // Exit if DB connection fails
-        }
     }
 
     routes() {
@@ -78,29 +116,21 @@ class Server {
         this.app.use(this.paths.bag, bagRouter);
     }
 
+    errorHandler() {
+        this.app.use((err: any, req: express.Request, res: express.Response, next: express.NextFunction) => {
+            res.status(500).json({ error: 'Ocurrió un error en el servidor', err });
+        });
+    }
+
     listen() {
         this.app.listen(this.port, () => {
             console.log("Servidor corriendo en puerto " + this.port);
         });
-    };
-
-    private handleShutdown() {
-        process.on('SIGTERM', () => this.shutdown());
-        process.on('SIGINT', () => this.shutdown());
-    }
-
-    private async shutdown() {
-        console.log('Cerrando el servidor...');
-        if (this.pool) {
-            try {
-                await this.pool.end();
-                console.log('Database pool closed');
-            } catch (error) {
-                console.error('Error closing the database pool:', error);
-            }
-        }
-        process.exit(0);
     }
 }
 
 export default Server;
+
+// Exportar la instancia de Redis
+const server = new Server();
+export const redisClient = server.redis;

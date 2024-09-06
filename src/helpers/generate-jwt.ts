@@ -9,7 +9,7 @@ const generateJWT = ({ idusrmob }: generateJWTProps) => {
     return new Promise((resolve, reject) => {
         const payload = { idusrmob }
         jwt.sign(payload, process.env.SECRETORPRIVATEKEY || '', {
-            expiresIn: '1y'
+            expiresIn: process.env.JWT_EXPIRATION
         }, (error, token) => {
             if (error) {
                 console.log(error)

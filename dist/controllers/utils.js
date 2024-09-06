@@ -9,14 +9,16 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const image_1 = require("../image");
 const querys_1 = require("../querys/querys");
+const getSession_1 = require("../utils/Redis/getSession");
 const getPaymentType = async (req, res) => {
-    //This controller show just the families not the products.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const result = await pool.query(querys_1.querys.getPaymentType);
         const typePayments = result.rows;
@@ -37,13 +39,14 @@ const getPaymentType = async (req, res) => {
 };
 exports.getPaymentType = getPaymentType;
 const getClients = async (req, res) => {
-    //This controller show just the families not the products.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page } = req.query;
         const result = await pool.query(querys_1.querys.getClients, [page, limit]);

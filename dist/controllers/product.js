@@ -4,15 +4,17 @@ exports.getIdinveartsProduct = exports.getProductByEnlacemob = exports.getUnits 
 const connection_1 = require("../database/connection");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
+const getSession_1 = require("../utils/Redis/getSession");
 // Module 1 - Inventory
 const getProducts = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
@@ -29,13 +31,14 @@ const getProducts = async (req, res) => {
 };
 exports.getProducts = getProducts;
 const getTotalProducts = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const result = await pool.query(productQuery_1.productQuerys.getTotalProducts);
         const total = result.rows[0].count;
@@ -50,13 +53,14 @@ const getTotalProducts = async (req, res) => {
 };
 exports.getTotalProducts = getTotalProducts;
 const getProductByClave = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { clave } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductByClave, [clave]);
@@ -70,13 +74,14 @@ const getProductByClave = async (req, res) => {
 };
 exports.getProductByClave = getProductByClave;
 const getProductById = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { idinvearts } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductById, [idinvearts]);
@@ -89,13 +94,14 @@ const getProductById = async (req, res) => {
 };
 exports.getProductById = getProductById;
 const getProducByCodebar = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { codbarras } = req.query;
         let codbar = codbarras;
@@ -114,13 +120,14 @@ const getProducByCodebar = async (req, res) => {
 };
 exports.getProducByCodebar = getProducByCodebar;
 const getProductByNoArticulo = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { noarticulo } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductByNoarticulo, [noarticulo]);
@@ -134,13 +141,14 @@ const getProductByNoArticulo = async (req, res) => {
 };
 exports.getProductByNoArticulo = getProductByNoArticulo;
 const updateProduct = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -173,13 +181,14 @@ const updateProduct = async (req, res) => {
 };
 exports.updateProduct = updateProduct;
 const updateProductCodebar = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -213,13 +222,14 @@ const updateProductCodebar = async (req, res) => {
 exports.updateProductCodebar = updateProductCodebar;
 // Module 2 - Sells
 const getProductsSells = async (req, res) => {
-    //This controller show just the families not the products.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductsSells, [page, limit]);
@@ -241,13 +251,14 @@ const getProductsSells = async (req, res) => {
 exports.getProductsSells = getProductsSells;
 const getProductsSellsFromFamily = async (req, res) => {
     //This controller show just the clases and capas.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { cvefamilia } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductsSellsFromFamily, [cvefamilia]);
@@ -263,12 +274,14 @@ const getProductsSellsFromFamily = async (req, res) => {
 };
 exports.getProductsSellsFromFamily = getProductsSellsFromFamily;
 const getProductByEnlacemob = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { idinvearts, idinveclas, capa } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
@@ -282,13 +295,14 @@ const getProductByEnlacemob = async (req, res) => {
 };
 exports.getProductByEnlacemob = getProductByEnlacemob;
 const getUnits = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const result = await pool.query(productQuery_1.productQuerys.getUnits);
         const units = result.rows;
@@ -300,13 +314,14 @@ const getUnits = async (req, res) => {
 };
 exports.getUnits = getUnits;
 const getTotalProductsSells = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const result = await pool.query(productQuery_1.productQuerys.getTotalProductsSells);
         const total = result.rows[0].total;
@@ -321,13 +336,14 @@ const getTotalProductsSells = async (req, res) => {
 };
 exports.getTotalProductsSells = getTotalProductsSells;
 const getTotalClassesSells = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const { cvefamilia } = req.query;
     try {
         const result = await pool.query(productQuery_1.productQuerys.getTotalClassesSells, [cvefamilia]);
@@ -344,12 +360,14 @@ const getTotalClassesSells = async (req, res) => {
 exports.getTotalClassesSells = getTotalClassesSells;
 //TEMPORAL
 const getIdinveartsProduct = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    const pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { cvefamilia } = req.query;
         const result = await pool.query(productQuery_1.productQuerys.getIdinveartsProduct, [cvefamilia]);

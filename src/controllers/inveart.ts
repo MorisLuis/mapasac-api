@@ -1,19 +1,21 @@
 import { Response } from "express";
-import { dbConnection } from "../database/connection";
+import { dbConnection, getGlobalPool } from "../database/connection";
 import { Req } from "../helpers/validate-jwt";
 import { querys } from "../querys/querys";
 import moment from "moment";
 import { bagQuerys } from "../querys/bagQuerys";
+import { handleGetSession } from "../utils/Redis/getSession";
 
 const postInventory = async (req: Req, res: Response) => {
 
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    };
-
-    const pool = await dbConnection({ idusrmob });
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await handleGetSession({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
+    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await getGlobalPool(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -45,21 +47,16 @@ const postInventory = async (req: Req, res: Response) => {
 
 const postSell = async (req: Req, res: Response) => {
 
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
     const { clavepago, idclientes, comments } = req.body;
 
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    };
-
-    let pool;
-    if (mercado === 'true') {
-        pool = await dbConnection({ idusrmob, database: "mercado" });
-    } else {
-        pool = await dbConnection({ idusrmob });
-    };
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await handleGetSession({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
+    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await getGlobalPool(connection);
 
 
     const client = await pool.connect();

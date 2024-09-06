@@ -3,22 +3,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTotalPriceBag = exports.deleteAllProductsInBag = exports.getTotalProductsInBag = exports.deletePoductFromBag = exports.updatePoductFromBag = exports.inserPoductToBag = exports.getBag = void 0;
 const connection_1 = require("../database/connection");
 const bagQuerys_1 = require("../querys/bagQuerys");
+const getSession_1 = require("../utils/Redis/getSession");
 const getBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
     const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    try {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
-    }
-    catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page, option } = req.query;
         const result = await pool.query(mercado === 'true' ? bagQuerys_1.bagQuerys.getBagSells : bagQuerys_1.bagQuerys.getBag, [option, idusrmob, page, limit]);
@@ -34,20 +29,15 @@ const getBag = async (req, res) => {
 };
 exports.getBag = getBag;
 const inserPoductToBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
     const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    let pool;
-    try {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
-    }
-    catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -93,21 +83,14 @@ const inserPoductToBag = async (req, res) => {
 };
 exports.inserPoductToBag = inserPoductToBag;
 const updatePoductFromBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    try {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
-    }
-    catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -131,21 +114,14 @@ const updatePoductFromBag = async (req, res) => {
 };
 exports.updatePoductFromBag = updatePoductFromBag;
 const deletePoductFromBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    try {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
-    }
-    catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -169,21 +145,14 @@ const deletePoductFromBag = async (req, res) => {
 };
 exports.deletePoductFromBag = deletePoductFromBag;
 const getTotalProductsInBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    try {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: mercado === 'true' ? "mercado" : undefined });
-    }
-    catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys_1.bagQuerys.getTotalProductsInBag, [opcion, idusrmob]);
@@ -199,21 +168,14 @@ const getTotalProductsInBag = async (req, res) => {
 };
 exports.getTotalProductsInBag = getTotalProductsInBag;
 const deleteAllProductsInBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    ;
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     const client = await pool.connect();
     if (!client) {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
@@ -237,21 +199,13 @@ const deleteAllProductsInBag = async (req, res) => {
 };
 exports.deleteAllProductsInBag = deleteAllProductsInBag;
 const getTotalPriceBag = async (req, res) => {
-    const idusrmob = req.idusrmob;
-    const { mercado } = req.query;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    const sessionId = req.sessionID;
+    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-    ;
-    let pool;
-    if (mercado === 'true') {
-        pool = await (0, connection_1.dbConnection)({ idusrmob, database: "mercado" });
-    }
-    else {
-        pool = await (0, connection_1.dbConnection)({ idusrmob });
-    }
-    ;
+    const { idusrmob, ...connection } = userFR;
+    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { opcion } = req.query;
         const result = await pool.query(bagQuerys_1.bagQuerys.getTotalPriceBag, [opcion, idusrmob]);

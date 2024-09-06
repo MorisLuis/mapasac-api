@@ -42,3 +42,16 @@ export default interface UserInterface {
 
     razonsocial?: string;
 }
+
+export interface UserSessionInterface {
+    idusrmob: number,
+    usr: string,
+    pas: string,
+    svr: string,
+    dba: string,
+    port: number,
+    usrdba: string,
+    pasdba: string,
+    empresa: string,
+    razonsocial: string
+}

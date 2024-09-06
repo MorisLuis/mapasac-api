@@ -1,0 +1,152 @@
+import express, { Application } from "express";
+import cors from 'cors';
+import { Pool } from "pg";
+import Redis from 'ioredis';
+import RedisStore from 'connect-redis';
+import session, { Store } from 'express-session';
+import { dbConnection } from "../database/connection";
+
+import inverRouter from '../routes/inverartRouter';
+import authRouter from '../routes/authRouter';
+import productRouter from '../routes/productRouter';
+import searchRouter from '../routes/searchRouter';
+import utilsRouter from '../routes/utilsRouter';
+import bagRouter from '../routes/bagRouter';
+
+class Server {
+    public app: Application;
+    private port: string;
+    private pool: Pool | undefined;
+    public redis: Redis | null;
+
+    private paths: {
+        invearts: string,
+        auth: string,
+        product: string,
+        search: string,
+        utils: string,
+        bag: string
+    }
+
+
+    constructor() {
+        this.app = express();
+        this.port = process.env.PORT || "5001";
+        this.redis = null;
+        this.paths = {
+            auth: "/api/auth",
+            invearts: "/api/invearts",
+            product: "/api/product",
+            search: "/api/search",
+            utils: "/api/utils",
+            bag: "/api/bag"
+        }
+
+        // Connect to database
+        this.connectDB();
+
+        // Middlewares
+        this.middlewares();
+
+        // Routes of the app
+        this.routes();
+
+        // Shutdown
+        this.handleShutdown();
+
+        //this.configureRedis();
+        this.configureSessions();
+    }
+
+    configureRedis() {
+        this.redis = new Redis({
+            host: process.env.REDIS_HOST || '127.0.0.1',
+            port: Number(process.env.REDIS_PORT as string) || 6379,
+            password: process.env.REDIS_PASSWORD
+        });
+
+        this.redis.on('connect', () => {
+            console.log('Conectado a Redis');
+        });
+
+        this.redis.on('error', (err) => {
+            console.error('Error de conexión a Redis:', err);
+        });
+    }
+
+    configureSessions() {
+        if (this.redis) {
+            // Define el TTL y maxAge en segundos y milisegundos
+            const eightHoursInSeconds = 31536000;
+            const eightHoursInSecondsInMilliseconds = eightHoursInSeconds * 1000;
+
+            const store = new RedisStore({
+                client: this.redis,
+                ttl: eightHoursInSeconds,
+            }) as Store;
+
+            this.app.use(session({
+                secret: 'moRado1998', // Cambia este valor a un valor seguro
+                resave: false,
+                saveUninitialized: true,
+                cookie: { secure: false },
+                store: store
+            }));
+        } else {
+            console.error('Redis no está configurado, las sesiones no se almacenarán en Redis');
+        }
+    }
+
+    private async connectDB() {
+        try {
+            this.pool = await dbConnection({});
+        } catch (error) {
+            console.error('Database connection error:', error);
+            process.exit(-1); // Exit if DB connection fails
+        }
+    }
+
+    routes() {
+        this.app.use(this.paths.invearts, inverRouter);
+        this.app.use(this.paths.auth, authRouter);
+        this.app.use(this.paths.product, productRouter);
+        this.app.use(this.paths.search, searchRouter);
+        this.app.use(this.paths.utils, utilsRouter);
+        this.app.use(this.paths.bag, bagRouter);
+    }
+    middlewares() {
+        this.app.use(cors());
+        this.app.use(express.json({ limit: '50mb' }));
+        this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+    }
+
+
+    listen() {
+        this.app.listen(this.port, () => {
+            console.log("Servidor corriendo en puerto " + this.port);
+        });
+    };
+
+    private handleShutdown() {
+        process.on('SIGTERM', () => this.shutdown());
+        process.on('SIGINT', () => this.shutdown());
+    }
+
+    private async shutdown() {
+        console.log('Cerrando el servidor...');
+        if (this.pool) {
+            try {
+                await this.pool.end();
+                console.log('Database pool closed');
+            } catch (error) {
+                console.error('Error closing the database pool:', error);
+            }
+        }
+        process.exit(0);
+    }
+}
+
+export default Server;
+
+const server = new Server();
+export const redisClient = server.redis;

@@ -1,81 +1,68 @@
 import { Pool, PoolConfig } from 'pg';
 import config from '../config';
-import { getDbConfig } from '../utils/getDbConfig';
-import NodeCache from 'node-cache';
-
-const cache = new NodeCache({ stdTTL: 86400, checkperiod: 600 });
+import ConnectionInterface from '../interface/connection';
 
 const POOL_MAX = 50;
 const IDLE_TIMEOUT_MS = 30000;
-const CONNECTION_TIMEOUT_MS = 5000;
+const CONNECTION_TIMEOUT_MS = 10000;
 
-interface DbConnectionOptions {
-    idusrmob?: number;
-    database?: string; 
-}
+let globalPool: Pool | null = null;
 
-// Map para almacenar pools por combinación de `idusrmob` y `database`
-const pools: Map<string, Pool> = new Map();
+export const dbConnection = async ({ database }: { database?: ConnectionInterface }): Promise<Pool> => {
 
-export const dbConnection = async ({ idusrmob, database }: DbConnectionOptions): Promise<Pool> => {
-    const key = `${idusrmob || 'default'}_${database || 'default'}`;
-    
-    if (pools.has(key)) {
-        return pools.get(key)!;
-    }
+    const { svr, dba, port, usrdba, pasdba } = database ?? {};
 
-    let poolConfig: PoolConfig;
-    const isUserConnection = idusrmob && database !== 'desarrollo';
+    const poolConfig: PoolConfig = {
+        host: svr || config.host,
+        user: usrdba || config.user,
+        password: pasdba || config.password,
+        port: port || config.port,
+        database: dba || database?.dba || config.database,
 
-    if (isUserConnection) {
-        const cachedConfig = cache.get<PoolConfig>(`dbConfig_${idusrmob}`);
-        if (cachedConfig) {
-            poolConfig = { ...cachedConfig, database: database || cachedConfig.database };
-        } else {
-            const poolInitial = await dbConnectionInitial(); 
-            const dbConfig = await getDbConfig({ idusrmob, poolInitial });
+        max: POOL_MAX,
+        idleTimeoutMillis: IDLE_TIMEOUT_MS,
+        connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
+    };
 
-            if (!database) {
-                cache.set(`dbConfig_${idusrmob}`, dbConfig);
-            }
-
-            poolConfig = {
-                ...dbConfig,
-                database: database || dbConfig.database,
-                max: POOL_MAX,
-                idleTimeoutMillis: IDLE_TIMEOUT_MS,
-                connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
-            };
-        }
-    } else {
-        poolConfig = {
-            host: config.host,
-            user: config.user,
-            password: config.password,
-            port: config.port,
-            database: database || config.database,
-            max: POOL_MAX,
-            idleTimeoutMillis: IDLE_TIMEOUT_MS,
-            connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
-        };
-    }
-
-    const pool = new Pool(poolConfig);
-    pools.set(key, pool);
-    return pool;
+    globalPool = new Pool(poolConfig);
+    return globalPool;
 };
 
-export const dbConnectionInitial = async (database?: string): Promise<Pool> => {
+export const getGlobalPool = (connection?: ConnectionInterface): Pool => {
+
+    if (!globalPool) {
+        dbConnection({database: connection});
+    }
+
+    if (!globalPool) {
+        throw new Error('Global pool not initialized');
+    }
+
+    return globalPool;
+};
+
+
+
+export const dbConnectionInitial = async (): Promise<Pool> => {
     const poolConfig: PoolConfig = {
         host: config.host,
         user: config.user,
         password: config.password,
         port: config.port,
-        database: database || config.database,
+        database: config.database,
         max: POOL_MAX,
         idleTimeoutMillis: IDLE_TIMEOUT_MS,
         connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
     };
 
     return new Pool(poolConfig);
+};
+
+
+// Función para cerrar el pool
+export const closeGlobalPool = async (): Promise<void> => {
+    if (globalPool) {
+        await globalPool.end();
+        globalPool = null;
+    }
 };

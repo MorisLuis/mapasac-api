@@ -1,22 +1,23 @@
 import { Request, Response } from "express";
-import { dbConnection } from "../database/connection";
+import { dbConnection, getGlobalPool } from "../database/connection";
 import fs from 'fs';
 import path from 'path';
 import { imageBinary } from "../image";
 import { querys } from "../querys/querys";
 import { Req } from "../helpers/validate-jwt";
+import { handleGetSession } from "../utils/Redis/getSession";
 
 
 const getPaymentType = async (req: Req, res: Response) => {
 
-    //This controller show just the families not the products.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await handleGetSession({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
-
-    const pool = await dbConnection({ idusrmob, database: "mercado" });
+    const { idusrmob, ...connection } = userFR;
+    const pool = await getGlobalPool(connection);
 
     try {
         const result = await pool.query(querys.getPaymentType);
@@ -42,14 +43,16 @@ const getPaymentType = async (req: Req, res: Response) => {
 
 const getClients = async (req: Req, res: Response) => {
 
-    //This controller show just the families not the products.
-    const idusrmob = req.idusrmob;
-    if (!idusrmob) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
-        return;
-    }
 
-    const pool = await dbConnection({ idusrmob });
+    // Get session from REDIS.
+    const sessionId = req.sessionID;
+    const { user: userFR } = await handleGetSession({ sessionId });
+    if (!userFR) {
+        return res.status(400).json({ error: 'Sesion terminada' });
+    }
+    const { idusrmob, ...connection } = userFR;
+    const pool = await getGlobalPool(connection);
+
     try {
         const { limit, page } = req.query;
         const result = await pool.query(querys.getClients, [page, limit]);
