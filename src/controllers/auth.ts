@@ -108,7 +108,7 @@ const logout = async (req: Req, res: Response) => {
     const { user: userFR } = await handleGetSession({ sessionId });
 
     if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
+        return res.status(400).json({ error: 'Sesion terminada' });
     }
 
     const { idusrmob, ...connection } = userFR;
