@@ -15,7 +15,7 @@ const getPaymentType = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -43,7 +43,7 @@ const getClients = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);

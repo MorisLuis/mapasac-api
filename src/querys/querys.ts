@@ -98,5 +98,8 @@ export const querys = {
         ORDER BY nombres ASC
         OFFSET ($1 - 1) * $2
         LIMIT $2;
+    `,
+
+    postError: `
     `
 }

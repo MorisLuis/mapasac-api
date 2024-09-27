@@ -11,7 +11,7 @@ const getProducts = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -35,7 +35,7 @@ const getTotalProducts = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -57,7 +57,7 @@ const getProductByClave = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -78,7 +78,7 @@ const getProductById = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -98,7 +98,7 @@ const getProducByCodebar = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -124,7 +124,7 @@ const getProductByNoArticulo = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -145,7 +145,7 @@ const updateProduct = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -185,7 +185,7 @@ const updateProductCodebar = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -226,7 +226,7 @@ const getProductsSells = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -255,7 +255,7 @@ const getProductsSellsFromFamily = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -278,7 +278,7 @@ const getProductByEnlacemob = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -299,7 +299,7 @@ const getUnits = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -318,7 +318,7 @@ const getTotalProductsSells = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -340,7 +340,7 @@ const getTotalClassesSells = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);
@@ -364,7 +364,7 @@ const getIdinveartsProduct = async (req, res) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
+        return res.status(401).json({ error: 'Sesion terminada' });
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await (0, connection_1.getGlobalPool)(connection);

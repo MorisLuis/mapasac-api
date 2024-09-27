@@ -29,7 +29,8 @@ class Server {
             product: "/api/product",
             search: "/api/search",
             utils: "/api/utils",
-            bag: "/api/bag"
+            bag: "/api/bag",
+            errors: "/api/errors"
         };
         this.connectDB();
         this.configureRedis();
@@ -59,7 +60,6 @@ class Server {
             // Define el TTL y maxAge en segundos y milisegundos
             const oneYearInSeconds = 28800; // 8 horas
             const oneYearInMilliseconds = oneYearInSeconds * 1000; // 8 horas en milisegundos
-            console.log({ oneYearInMilliseconds });
             const store = new connect_redis_1.default({
                 client: this.redis,
                 ttl: oneYearInSeconds,
