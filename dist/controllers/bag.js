@@ -5,7 +5,6 @@ const connection_1 = require("../database/connection");
 const bagQuerys_1 = require("../querys/bagQuerys");
 const getSession_1 = require("../utils/Redis/getSession");
 const getBag = async (req, res) => {
-    const { mercado } = req.query;
     // Get session from REDIS.
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
@@ -16,7 +15,7 @@ const getBag = async (req, res) => {
     const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page, option } = req.query;
-        const result = await pool.query(mercado === 'true' ? bagQuerys_1.bagQuerys.getBagSells : bagQuerys_1.bagQuerys.getBag, [option, idusrmob, page, limit]);
+        const result = await pool.query(option === '2' ? bagQuerys_1.bagQuerys.getBagSells : bagQuerys_1.bagQuerys.getBag, [option, idusrmob, page, limit]);
         const products = result.rows;
         res.json({
             bag: products
@@ -29,7 +28,6 @@ const getBag = async (req, res) => {
 };
 exports.getBag = getBag;
 const inserPoductToBag = async (req, res) => {
-    const { mercado } = req.query;
     // Get session from REDIS.
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
@@ -68,7 +66,7 @@ const inserPoductToBag = async (req, res) => {
             codbarras !== undefined ? codbarras : ''
         ];
         await client.query('BEGIN');
-        await client.query(mercado === 'true' ? bagQuerys_1.bagQuerys.addProductSellToBag : bagQuerys_1.bagQuerys.addProductToBag, mercado === 'true' ? productBodySell : productBody);
+        await client.query(opcion === '2' ? bagQuerys_1.bagQuerys.addProductSellToBag : bagQuerys_1.bagQuerys.addProductToBag, opcion === '2' ? productBodySell : productBody);
         await client.query('COMMIT');
         res.status(201).json({ message: 'Datos insertados exitosamente' });
     }

@@ -44,7 +44,6 @@ const searchProduct = async (req: Req, res: Response) => {
 
 const searchProductInBag = async (req: Req, res: Response) => {
 
-    const { mercado } = req.query;
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -67,7 +66,7 @@ const searchProductInBag = async (req: Req, res: Response) => {
         }
 
         const result = await pool.query(
-            mercado === 'true' ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
+            opcion === '2' ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
             [opcion, idusrmob, searchTerm]
         );
         const products = result.rows;

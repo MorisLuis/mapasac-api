@@ -115,8 +115,6 @@ const logout = async (req: Req, res: Response) => {
 
     const pool = await getGlobalPool(connection);
 
-    console.log({ pool })
-
 
     try {
         // Eliminar la sesión de Redis

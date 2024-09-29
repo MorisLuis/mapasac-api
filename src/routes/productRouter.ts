@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProductByEnlacemob, getProducts, getProductsSells, getProductsSellsFromFamily, getTotalProducts, getUnits, updateProduct, updateProductCodebar, getIdinveartsProduct, getTotalClassesSells, getTotalProductsSells } from "../controllers/product";
+import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProducts, getTotalProducts, updateProduct, updateProductCodebar } from "../controllers/product";
 import { validateJWT } from "../helpers/validate-jwt";
+import { getIdinveartsProduct, getProductByEnlacemob, getProductSellsRestaurantDetails, getProductsSells, getProductsSellsFromFamily, getProductsSellsRestaurant, getTotalClassesSells, getTotalProductsSells, getTotalProductsSellsRestaurant, getUnits } from "../controllers/productSells";
 
 const router = Router();
 
@@ -22,5 +23,11 @@ router.get('/sells/byfamily', validateJWT, getProductsSellsFromFamily);
 router.get('/sells/units', validateJWT, getUnits);
 router.get('/sells/byenlacemob', validateJWT, getProductByEnlacemob);
 router.get('/sells/getidinvearts', validateJWT, getIdinveartsProduct);
+
+// Module 3 - Sells Restaurant
+router.get('/sellsRestaurant', validateJWT, getProductsSellsRestaurant);
+router.get('/sellsRestaurant/byid', validateJWT, getProductSellsRestaurantDetails);
+router.get('/sellsRestaurant/total', validateJWT, getTotalProductsSellsRestaurant);
+
 
 export default router;

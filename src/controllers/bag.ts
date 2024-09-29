@@ -6,7 +6,6 @@ import { handleGetSession } from "../utils/Redis/getSession";
 
 const getBag = async (req: Req, res: Response) => {
 
-    const { mercado } = req.query;
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -20,7 +19,7 @@ const getBag = async (req: Req, res: Response) => {
     try {
         const { limit, page, option } = req.query;
         const result = await pool.query(
-            mercado === 'true' ? bagQuerys.getBagSells : bagQuerys.getBag,
+            option === '2' ? bagQuerys.getBagSells : bagQuerys.getBag,
             [option, idusrmob, page, limit]
         );
         const products = result.rows;
@@ -37,8 +36,6 @@ const getBag = async (req: Req, res: Response) => {
 }
 
 const inserPoductToBag = async (req: Req, res: Response) => {
-
-    const { mercado } = req.query;
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -84,8 +81,8 @@ const inserPoductToBag = async (req: Req, res: Response) => {
         await client.query('BEGIN');
 
         await client.query(
-            mercado === 'true' ? bagQuerys.addProductSellToBag : bagQuerys.addProductToBag,
-            mercado === 'true' ? productBodySell : productBody
+            opcion === '2' ? bagQuerys.addProductSellToBag : bagQuerys.addProductToBag,
+            opcion === '2' ? productBodySell : productBody
         );
 
         await client.query('COMMIT');
@@ -116,7 +113,6 @@ const updatePoductFromBag = async (req: Req, res: Response) => {
         res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
         return;
     }
-
 
     try {
         const { idenlacemob, cantidad } = req.body;

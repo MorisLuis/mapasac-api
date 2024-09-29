@@ -1,19 +1,29 @@
 
-// Function: 
+// Market
 export default interface ProductSellsFamilyInterface {
+    rproducto?: string; // The name of the product
+    ridinvearts?: number; //The id of the table invearts
+    ridinveclas?: number; // The class id
+    clase?: string; // The class name
+    rcapa?: string; // The capa name
+};
 
-    // The name of the product
-    rproducto?: string;
+// Restaurant
+export default interface ProductSellsRestaurantFamilyInterface {
+    imagen: string;
+    idinvefami: number;
+    cvefamilia: string;
+    descripcio: string;
+};
 
-    //The id of the table invearts
-    ridinvearts?: number;
-
-    // The class id
-    ridinveclas?: number;
-
-    // The class name
-    clase?: string;
-
-    // The capa name
-    rcapa?: string;
+export default interface ProductSellsRestaurantInterface {
+    relacion: string;
+    noarticulo: number;
+    cvefamilia: string;
+    producto: string;
+    clave?: string;
+    precio: number;
+    capa?: string;
+    ctipo?: string;
+    idinveclas: number;
 }
