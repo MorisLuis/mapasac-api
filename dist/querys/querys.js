@@ -85,7 +85,8 @@ exports.querys = {
     getClients: `
         SELECT 
             idclientes,
-            nombres
+            nombres,
+            ncomercial
         FROM mapasoft.clientes
             WHERE nombres !=  ''
         ORDER BY nombres ASC

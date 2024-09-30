@@ -101,8 +101,7 @@ exports.productSellsQuerys = {
                 invearts.precio1 AS precio,
                 ''::character(20) AS capa,
                 ''::character(25) AS ctipo,
-                0::integer AS idinveclas,
-                invearts.unidad
+                0::integer AS idinveclas
             FROM mapasoft.invearts
             WHERE invearts.cvefamilia = CAST(right($1, 5) AS integer)
             AND invearts.precio1 > 0 
@@ -127,8 +126,7 @@ exports.productSellsQuerys = {
                 inveclas.precio, 
                 ''::character(20) AS capa, 
                 inveclas.descripcio::character(25) AS ctipo, 
-                inveclas.idinveclas,
-                invearts.unidad
+                inveclas.idinveclas
             FROM mapasoft.inveclas
             JOIN mapasoft.invearts ON inveclas.noarticulo = invearts.noarticulo
             JOIN mapasoft.invefami ON invearts.cvefamilia = invefami.cvefamilia
@@ -150,8 +148,7 @@ exports.productSellsQuerys = {
             w.precio, 
             w.capa, 
             w.ctipo, 
-            w.idinveclas,
-            w.unidad
+            w.idinveclas
         FROM w
     `,
     getTotalProductsSellsRestaurant: `
