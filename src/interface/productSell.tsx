@@ -26,4 +26,5 @@ export default interface ProductSellsRestaurantInterface {
     capa?: string;
     ctipo?: string;
     idinveclas: number;
-}
+};
+

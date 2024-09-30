@@ -219,7 +219,6 @@ const getProductsSellsRestaurant = async (req: Req, res: Response) => {
 };
 
 const getProductSellsRestaurantDetails = async (req: Req, res: Response) => {
-    //This controller show just the clases and capas.
     // Get session from REDIS.
     const sessionId = req.sessionID;
     const { user: userFR } = await handleGetSession({ sessionId });
@@ -233,10 +232,10 @@ const getProductSellsRestaurantDetails = async (req: Req, res: Response) => {
         const { cvefamilia } = req.query;
 
         const result = await pool.query(productSellsQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
-        const products = result.rows;
+        const product = result.rows;
 
         res.json({
-            products
+            product
         })
 
     } catch (error: any) {
