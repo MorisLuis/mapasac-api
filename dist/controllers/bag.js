@@ -111,7 +111,7 @@ exports.deleteProductFromBag = deleteProductFromBag;
 const deleteAllProductsInBag = async (req, res) => {
     const sessionId = req.sessionID;
     try {
-        const { opcion } = req.params;
+        const { opcion } = req.query;
         await (0, bagService_1.deleteAllProductsInBagService)(sessionId, opcion);
         res.status(200).json({ message: 'Producto eliminado exitosamente' });
     }

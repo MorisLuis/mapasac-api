@@ -126,8 +126,8 @@ const deleteAllProductsInBag = async (req: Req, res: Response) => {
     const sessionId = req.sessionID;
 
     try {
-        const { opcion } = req.params;
-        await deleteAllProductsInBagService(sessionId, opcion);
+        const { opcion } = req.query;
+        await deleteAllProductsInBagService(sessionId, opcion as string);
         res.status(200).json({ message: 'Producto eliminado exitosamente' });
     } catch (error: any) {
         console.error('Error:', error);
