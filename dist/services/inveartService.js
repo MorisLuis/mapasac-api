@@ -42,7 +42,7 @@ const postInventoryService = async (sessionId) => {
 exports.postInventoryService = postInventoryService;
 const postSellService = async (sessionId, body, opcion) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    const { clavepago, idclientes, comments } = body;
+    const { clavepago, idclientes, comments, domicilio } = body;
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
@@ -58,9 +58,16 @@ const postSellService = async (sessionId, body, opcion) => {
         const folioValue = await pool.query(folioQuery, [folioDate]);
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
         const optionDestination = Number(opcion) + 1;
+        console.log({ clavepago, idclientes, comments, domicilio });
         await client.query('BEGIN');
         if (comments) {
             await client.query(bagQuerys_1.bagQuerys.updateProductCommentsFromBag, [comments || "", idclientes || 0, clavepago, idusrmob]);
+        }
+        ;
+        if (domicilio) {
+            console.log("update domicilio");
+            console.log({ idusrmob });
+            await client.query(bagQuerys_1.bagQuerys.updateProductDomicilioFromBag, [domicilio || "", idclientes || 0, clavepago, idusrmob]);
         }
         ;
         console.log({ optionDestination });

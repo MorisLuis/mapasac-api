@@ -79,6 +79,12 @@ export const bagQuerys = {
         WHERE idusrmob = $4 AND opcion = 2
     `,
 
+    updateProductDomicilioFromBag: `
+        UPDATE mapasoft.enlacemob
+        SET domicilio = $1, idclientes = $2, clavepago = $3
+        WHERE idusrmob = $4 AND opcion = 4
+    `,
+
     /* delete */
     deleteProductFromBag: `
         DELETE FROM mapasoft.enlacemob

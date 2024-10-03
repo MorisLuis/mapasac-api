@@ -41,7 +41,7 @@ const postInventoryService = async (sessionId: string) => {
 const postSellService = async (sessionId: string, body: any, opcion: string) => {
 
     const { user: userFR } = await handleGetSession({ sessionId });
-    const { clavepago, idclientes, comments } = body;
+    const { clavepago, idclientes, comments, domicilio } = body;
 
     if (!userFR) {
         throw new Error('Sesion terminada');
@@ -60,9 +60,16 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
         const optionDestination = Number(opcion) + 1
 
+        console.log({clavepago, idclientes, comments, domicilio})
+
         await client.query('BEGIN');
         if( comments ) {
             await client.query(bagQuerys.updateProductCommentsFromBag, [comments || "", idclientes || 0, clavepago, idusrmob]);
+        };
+        if( domicilio ) {
+            console.log("update domicilio");
+            console.log({idusrmob})
+            await client.query(bagQuerys.updateProductDomicilioFromBag, [domicilio || "", idclientes || 0, clavepago, idusrmob]);
         };
         console.log({optionDestination})
         await client.query(inveartsQuerys.createSale, [idusrmob, folio, opcion, optionDestination]);

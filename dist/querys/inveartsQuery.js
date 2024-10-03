@@ -9,7 +9,7 @@ exports.inveartsQuerys = {
     `,
     createSale: `
         UPDATE mapasoft.enlacemob
-        SET opcion = $4, folcontado = $2
+        SET  opcion = $4, folcontado = $2
         WHERE opcion = $3 AND idusrmob = $1
     `
 };
