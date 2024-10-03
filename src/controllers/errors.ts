@@ -10,7 +10,7 @@ const handleErrors = async (req: Request, res: Response) => {
         const { From, Message, Id_Usuario, Metodo, code } = req.body;
 
         await pool.query('BEGIN');
-        await pool.query(querys.postError, [From, Message, Id_Usuario, Metodo, code]);
+        //await pool.query(querys.postError, [From, Message, Id_Usuario, Metodo, code]);
         await pool.query('COMMIT');
 
         return res.json({

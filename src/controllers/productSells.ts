@@ -3,284 +3,161 @@ import { Req } from "../helpers/validate-jwt";
 import { handleGetSession } from "../utils/Redis/getSession";
 import { getGlobalPool } from "../database/connection";
 import ProductSellsFamilyInterface from "../interface/productSell";
-import { productSellsQuerys } from "../querys/products/productSellsQuery";
-
+import { productSellsQuerys } from "../querys/productSellsQuery";
+import { getIdinveartsProductService, getProductByEnlacemobService, getProductsSellsFromFamilyService, getProductsSellsService, getTotalClassesSellsService, getTotalProductsSellsService, getUnitsService } from "../services/productSellsService";
 
 // Module 2 - Sells
 const getProductsSells = async (req: Req, res: Response) => {
 
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { limit, page } = req.query;
-
-        const result = await pool.query(productSellsQuerys.getProductsSells, [page, limit]);
-        const products = result.rows.map((product: any) => {
-            if (product.imagen) {
-                product.imagen = Buffer.from(product.imagen, 'base64').toString();
-            }
-            return product;
-        });
-
-        res.json({
-            products
-        });
+        const products = await getProductsSellsService(sessionId, page as string, limit as string)
+        res.json({ products });
 
     } catch (error: any) {
         console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         res.status(500).send(error.message);
-    }
+    };
+
 };
 
 const getProductsSellsFromFamily = async (req: Req, res: Response) => {
+
     //This controller show just the clases and capas.
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { cvefamilia } = req.query;
-
-        const result = await pool.query(productSellsQuerys.getProductsSellsFromFamily, [cvefamilia]);
-        const products: ProductSellsFamilyInterface[] = result.rows;
-
-        res.json({
-            products
-        })
-
+        const products: ProductSellsFamilyInterface[] = await getProductsSellsFromFamilyService(sessionId, cvefamilia as string);
+        res.json({ products })
     } catch (error: any) {
-        console.log({ error })
+        console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         res.status(500).send(error.message);
     }
-}
+};
 
 const getProductByEnlacemob = async (req: Req, res: Response) => {
 
+    try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
-        const { user: userFR } = await handleGetSession({ sessionId });
-        if (!userFR) {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        const { idusrmob, ...connection } = userFR;
-        const pool = await getGlobalPool(connection);
-
-    try {
         const { idinvearts, idinveclas, capa } = req.query;
 
-        const result = await pool.query(productSellsQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
-        const product = result.rows[0];
+        const product = await getProductByEnlacemobService(
+            sessionId,
+            idinvearts as string,
+            idinveclas as string,
+            capa as string
+        );
         res.json({ product });
-
-    } catch (error: any) {
-        console.log({ error })
-        res.status(500).send(error.message);
-    }
-}
-
-const getUnits = async (req: Req, res: Response) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
-    try {
-
-        const result = await pool.query(productSellsQuerys.getUnits);
-        const units = result.rows
-        res.json({ units })
-
-    } catch (error: any) {
-        res.status(500).send(error.message);
-    }
-}
-
-const getTotalProductsSells = async (req: Req, res: Response) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
-    try {
-        const result = await pool.query(productSellsQuerys.getTotalProductsSells);
-        const total = result.rows[0].total;
-
-        res.json({
-            total
-        });
-    } catch (error: any) {
-        console.log({ "error-getTotalClassesSells": error })
-        res.status(500).send(error.message);
-    }
-}
-
-const getTotalClassesSells = async (req: Req, res: Response) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
-    const { cvefamilia } = req.query;
-
-    try {
-        const result = await pool.query(productSellsQuerys.getTotalClassesSells, [cvefamilia]);
-        const total = result.rows[0].count;
-
-        res.json({
-            total
-        });
-    } catch (error: any) {
-        console.log({ "error-getTotalClassesSells": error })
-        res.status(500).send(error.message);
-    }
-}
-
-//TEMPORAL
-const getIdinveartsProduct = async (req: Req, res: Response) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
-    try {
-        const { cvefamilia } = req.query;
-
-        const result = await pool.query(productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
-        const product = result.rows[0];
-        res.json({ product });
-
-    } catch (error: any) {
-        res.status(500).send(error.message);
-    }
-}
-
-// Module 3 - Sells Restaurants
-const getProductsSellsRestaurant = async (req: Req, res: Response) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
-    try {
-        const { limit, page } = req.query;
-
-        const result = await pool.query(productSellsQuerys.getProductsSellsRestaurant, [page, limit]);
-        const products = result.rows.map((product: any) => {
-            if (product.imagen) {
-                product.imagen = Buffer.from(product.imagen, 'base64').toString();
-            }
-            return product;
-        });
-
-        res.json({
-            products
-        });
 
     } catch (error: any) {
         console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
+        res.status(500).send(error.message);
+    };
+
+};
+
+const getUnits = async (req: Req, res: Response) => {
+
+    try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const units = await getUnitsService(sessionId);
+        res.json({ units })
+
+    } catch (error: any) {
+        console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         res.status(500).send(error.message);
     }
 };
 
-const getProductSellsRestaurantDetails = async (req: Req, res: Response) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+const getTotalProductsSells = async (req: Req, res: Response) => {
 
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const total = await getTotalProductsSellsService(sessionId);
+        res.json({ total });
+    } catch (error: any) {
+        console.log({ "error-getTotalClassesSells": error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
+        res.status(500).send(error.message);
+    }
+};
+
+const getTotalClassesSells = async (req: Req, res: Response) => {
+
+    try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { cvefamilia } = req.query;
-
-        const result = await pool.query(productSellsQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
-        const product = result.rows;
-
-        res.json({
-            product
-        })
-
+        const total = await getTotalClassesSellsService(sessionId, cvefamilia as string);
+        res.json({ total });
     } catch (error: any) {
-        console.log({ error })
+        console.log({ "error-getTotalClassesSells": error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         res.status(500).send(error.message);
     }
 };
 
-const getTotalProductsSellsRestaurant = async (req: Req, res: Response) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+const getIdinveartsProduct = async (req: Req, res: Response) => {
 
     try {
-        const result = await pool.query(productSellsQuerys.getTotalProductsSellsRestaurant);
-        const total = result.rows[0].total;
-
-        res.json({
-            total
-        });
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const { cvefamilia } = req.query;
+        const product = await getIdinveartsProductService(sessionId, cvefamilia as string);
+        res.json({ product });
     } catch (error: any) {
-        console.log({ "error-getTotalClassesSells": error })
+        console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         res.status(500).send(error.message);
     }
-}
+};
 
 
 export {
     // Module 2 - Sells
     getProductsSells,
+    getProductsSellsFromFamily,
+    getProductByEnlacemob,
+    getUnits,
     getTotalProductsSells,
     getTotalClassesSells,
-    getProductsSellsFromFamily,
-    getUnits,
-    getProductByEnlacemob,
-    getIdinveartsProduct,
-
-    // Module 3 - Sells Restaurants
-    getProductsSellsRestaurant,
-    getProductSellsRestaurantDetails,
-    getTotalProductsSellsRestaurant
+    getIdinveartsProduct
 }

@@ -4,6 +4,7 @@ const express_1 = require("express");
 const product_1 = require("../controllers/product");
 const validate_jwt_1 = require("../helpers/validate-jwt");
 const productSells_1 = require("../controllers/productSells");
+const productSellsRestaurant_1 = require("../controllers/productSellsRestaurant");
 const router = (0, express_1.Router)();
 // Module 1 - Inventory
 router.get('/', validate_jwt_1.validateJWT, product_1.getProducts);
@@ -23,8 +24,8 @@ router.get('/sells/units', validate_jwt_1.validateJWT, productSells_1.getUnits);
 router.get('/sells/byenlacemob', validate_jwt_1.validateJWT, productSells_1.getProductByEnlacemob);
 router.get('/sells/getidinvearts', validate_jwt_1.validateJWT, productSells_1.getIdinveartsProduct);
 // Module 3 - Sells Restaurant
-router.get('/sellsRestaurant', validate_jwt_1.validateJWT, productSells_1.getProductsSellsRestaurant);
-router.get('/sellsRestaurant/byid', validate_jwt_1.validateJWT, productSells_1.getProductSellsRestaurantDetails);
-router.get('/sellsRestaurant/total', validate_jwt_1.validateJWT, productSells_1.getTotalProductsSellsRestaurant);
+router.get('/sellsRestaurant', validate_jwt_1.validateJWT, productSellsRestaurant_1.getProductsSellsRestaurant);
+router.get('/sellsRestaurant/byid', validate_jwt_1.validateJWT, productSellsRestaurant_1.getProductSellsRestaurantDetails);
+router.get('/sellsRestaurant/total', validate_jwt_1.validateJWT, productSellsRestaurant_1.getTotalProductsSellsRestaurant);
 exports.default = router;
 //# sourceMappingURL=productRouter.js.map

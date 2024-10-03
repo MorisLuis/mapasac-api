@@ -1,96 +1,61 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchClients = exports.searchProductInBag = exports.searchProduct = void 0;
-const connection_1 = require("../database/connection");
-const searchQuery_1 = require("../querys/searchQuery");
-const getSession_1 = require("../utils/Redis/getSession");
+const searchService_1 = require("../services/searchService");
 const searchProduct = async (req, res) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
+        // Get session from REDIS.
         const { term } = req.query;
-        let searchTerm;
-        if (!term) {
-            searchTerm = "a";
-        }
-        else {
-            searchTerm = term;
-        }
-        const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [searchTerm]);
-        const products = result.rows;
-        res.json({
-            products
-        });
+        const sessionId = req.sessionID;
+        const searchTerm = term ? term.toString() : 'a';
+        const products = await (0, searchService_1.searchProductService)(sessionId, searchTerm);
+        res.json({ products });
     }
     catch (error) {
         console.log({ error });
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
         return res.status(500).json({ error: error.message || 'Unexpected error' });
     }
 };
 exports.searchProduct = searchProduct;
 const searchProductInBag = async (req, res) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { term, opcion } = req.query;
-        const idusrmob = req.idusrmob;
-        let searchTerm;
-        if (!term) {
-            searchTerm = "";
-        }
-        else {
-            searchTerm = term;
-        }
-        const result = await pool.query(opcion === '2' ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, idusrmob, searchTerm]);
-        const products = result.rows;
-        res.json({
-            products
-        });
+        const searchTerm = term ? term.toString() : 'a';
+        const products = await (0, searchService_1.searchProductInBagService)(sessionId, searchTerm, opcion);
+        res.json({ products });
     }
     catch (error) {
         console.log({ error });
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
         res.status(500).send(error.message);
     }
+    ;
 };
 exports.searchProductInBag = searchProductInBag;
 const searchClients = async (req, res) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { term } = req.query;
-        let searchTerm;
-        if (!term) {
-            searchTerm = "a";
-        }
-        else {
-            searchTerm = term;
-        }
-        const result = await pool.query(searchQuery_1.searchQuerys.searchClients, [searchTerm]);
-        const clients = result.rows;
-        res.json({
-            clients
-        });
+        const searchTerm = term ? term.toString() : 'a';
+        const clients = await (0, searchService_1.searchClientsService)(sessionId, searchTerm);
+        res.json({ clients });
     }
     catch (error) {
         console.log({ error });
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
         return res.status(500).json({ error: error.message || 'Unexpected error' });
     }
 };

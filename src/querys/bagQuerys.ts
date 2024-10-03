@@ -1,34 +1,5 @@
 export const bagQuerys = {
 
-    addProductToBag: `
-        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, unidad, cantidad, precio, idusrmob, opcion, codbarras)
-        VALUES
-        ((SELECT COALESCE(MAX(idenlacemob), 0) + 1 FROM mapasoft.enlacemob), $1, $2, $3, $4, $5, $6, $7)
-    `,
-
-    addProductSellToBag: `
-        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, unidad, cantidad, precio, idusrmob, opcion, codbarras, idinveclas, capa )
-        VALUES
-        ((SELECT COALESCE(MAX(idenlacemob), 0) + 1 FROM mapasoft.enlacemob), $1, $2, $3, $4, $5, $6, $7, $8, $9)
-    `,
-
-    updateProductFromBag: `
-        UPDATE mapasoft.enlacemob
-        SET cantidad = $1
-        WHERE idenlacemob = $2
-    `,
-
-    updateProductCommentsFromBag: `
-        UPDATE mapasoft.enlacemob
-        SET comentario = $1, idclientes = $2, clavepago = $3
-        WHERE idusrmob = $4 AND opcion = 2
-    `,
-
-    deleteProductFromBag: `
-        DELETE FROM mapasoft.enlacemob
-        WHERE idenlacemob = $1
-    `,
-
     getBag: `
         SELECT 
             I.producto,
@@ -39,7 +10,8 @@ export const bagQuerys = {
             E.cantidad,
             U.descripcio AS unidad_nombre,
             E.precio,
-            E.codbarras
+            E.codbarras,
+            E.comentario
         FROM mapasoft.enlacemob E
             JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
             JOIN mapasoft.inveunid U ON E.unidad = U.unidad
@@ -49,7 +21,7 @@ export const bagQuerys = {
         LIMIT $4;
     `,
 
-    getBagSells: `
+   /*  getBagSells: `
         SELECT 
             I.producto,
             I.clave,
@@ -61,30 +33,60 @@ export const bagQuerys = {
             E.precio,
             E.capa,
             E.codbarras,
-            C.descripcio AS clase
+            C.descripcio AS clase,
+            E.comentario
         FROM mapasoft.enlacemob E
-        JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
-        JOIN mapasoft.inveunid U ON E.unidad = U.unidad
-        LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
+            JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
+            JOIN mapasoft.inveunid U ON E.unidad = U.unidad
+            LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
         WHERE opcion = $1 AND E.idusrmob = $2
         ORDER BY idenlacemob ASC
         OFFSET ($3 - 1) * $4
         LIMIT $4;
     `,
-
+ */
     getTotalProductsInBag: `
         SELECT COUNT(*) FROM mapasoft.enlacemob
         WHERE opcion = $1 AND idusrmob = $2
-    `,
-
-    deleteAllProductsInBag: `
-        DELETE FROM mapasoft.enlacemob
-        WHERE idusrmob = $1 AND opcion = $2
     `,
 
     getTotalPriceBag: `
         SELECT SUM(E.precio * E.cantidad) AS total
         FROM mapasoft.enlacemob E
         WHERE E.opcion = $1 AND E.idusrmob = $2;
+    `,
+
+    /* insertPoductToBag */
+
+    addProductSellToBag: `
+        INSERT INTO mapasoft.enlacemob (idenlacemob, idinvearts, unidad, cantidad, precio, idusrmob, opcion, codbarras, idinveclas, capa, comentario )
+        VALUES
+        ((SELECT COALESCE(MAX(idenlacemob), 0) + 1 FROM mapasoft.enlacemob), $1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    `,
+
+    /* updatePoductFromBag */
+    updateProductFromBag: `
+        UPDATE mapasoft.enlacemob
+        SET 
+            cantidad = COALESCE(NULLIF($1, 0), cantidad),
+            comentario = COALESCE(NULLIF($2, ''), comentario)
+        WHERE idenlacemob = $3;
+    `,
+
+    updateProductCommentsFromBag: `
+        UPDATE mapasoft.enlacemob
+        SET comentario = $1, idclientes = $2, clavepago = $3
+        WHERE idusrmob = $4 AND opcion = 2
+    `,
+
+    /* delete */
+    deleteProductFromBag: `
+        DELETE FROM mapasoft.enlacemob
+        WHERE idenlacemob = $1
+    `,
+
+    deleteAllProductsInBag: `
+        DELETE FROM mapasoft.enlacemob
+        WHERE idusrmob = $1 AND opcion = $2
     `
 }

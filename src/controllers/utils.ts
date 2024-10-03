@@ -1,95 +1,80 @@
-import { Request, Response } from "express";
-import { dbConnection, getGlobalPool } from "../database/connection";
-import fs from 'fs';
-import path from 'path';
-import { imageBinary } from "../image";
-import { querys } from "../querys/querys";
+import { Response } from "express";
 import { Req } from "../helpers/validate-jwt";
-import { handleGetSession } from "../utils/Redis/getSession";
-
+import { getAddressDirectionService, getClientsService, getModulesService, getPaymentTypeService } from "../services/utilsService";
 
 const getPaymentType = async (req: Req, res: Response) => {
 
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
     try {
-        const result = await pool.query(querys.getPaymentType);
-        const typePayments = result.rows;
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const typePayments = await getPaymentTypeService(sessionId);
+        res.json({ typePayments })
 
-        res.json({
-            typePayments: typePayments
-        })
-
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error al conectar a la base de datos:', error);
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
 
-    try {
-
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-
-}
+};
 
 const getClients = async (req: Req, res: Response) => {
 
-
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
-
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { limit, page } = req.query;
-        const result = await pool.query(querys.getClients, [page, limit]);
-        const clients = result.rows;
+        const clients = await getClientsService(sessionId, page as string, limit as string)
+        res.json({ clients })
 
-        res.json({
-            clients: clients
-        })
-
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error al conectar a la base de datos:', error);
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
         return res.status(500).json({ error: 'Error al conectar a la base de datos' });
     }
 
-    try {
+};
 
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+const getAddressDirection = async (req: Req, res: Response) => {
+    try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const { idpvtadomi } = req.query;
+        const address = await getAddressDirectionService(sessionId, idpvtadomi as string);
+        res.json({ address });
+    } catch (error: any) {
+        console.log({ error });
+
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        };
+
+        res.status(500).send(error.message);
+    }
+};
+
+const getModules = async (req: Req, res: Response) => {
+    const idusrmob = req.idusrmob;
+
+    if (!idusrmob) {
+        return res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
 
-}
-
-
-
-const utilsController = async (req: Request, res: Response) => {
     try {
-
-        const binaryData = Buffer.from(imageBinary, 'base64');
-        const outputImagePath = path.join(__dirname, '../', 'output.png'); // Ajusta la ruta donde quieres guardar la imagen
-        fs.writeFileSync(outputImagePath, binaryData);
-
-
-        res.status(200).json({ ok: true }); // Usamos base64 para representar los datos binarios como texto
-    } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        // Delegamos la obtención de los módulos al servicio
+        const modules = await getModulesService(idusrmob);
+        return res.json({ modules });
+    } catch (error: any) {
+        console.error({ error });
+        return res.status(500).send(error.message);
     }
 };
 
@@ -97,5 +82,6 @@ const utilsController = async (req: Request, res: Response) => {
 export {
     getPaymentType,
     getClients,
-    utilsController
+    getAddressDirection,
+    getModules
 }

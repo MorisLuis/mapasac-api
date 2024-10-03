@@ -1,83 +1,74 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.utilsController = exports.getClients = exports.getPaymentType = void 0;
-const connection_1 = require("../database/connection");
-const fs_1 = __importDefault(require("fs"));
-const path_1 = __importDefault(require("path"));
-const image_1 = require("../image");
-const querys_1 = require("../querys/querys");
-const getSession_1 = require("../utils/Redis/getSession");
+exports.getModules = exports.getAddressDirection = exports.getClients = exports.getPaymentType = void 0;
+const utilsService_1 = require("../services/utilsService");
 const getPaymentType = async (req, res) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
-        const result = await pool.query(querys_1.querys.getPaymentType);
-        const typePayments = result.rows;
-        res.json({
-            typePayments: typePayments
-        });
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const typePayments = await (0, utilsService_1.getPaymentTypeService)(sessionId);
+        res.json({ typePayments });
     }
     catch (error) {
         console.error('Error al conectar a la base de datos:', error);
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
         return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
-    try {
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
 exports.getPaymentType = getPaymentType;
 const getClients = async (req, res) => {
-    // Get session from REDIS.
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
         const { limit, page } = req.query;
-        const result = await pool.query(querys_1.querys.getClients, [page, limit]);
-        const clients = result.rows;
-        res.json({
-            clients: clients
-        });
+        const clients = await (0, utilsService_1.getClientsService)(sessionId, page, limit);
+        res.json({ clients });
     }
     catch (error) {
         console.error('Error al conectar a la base de datos:', error);
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
         return res.status(500).json({ error: 'Error al conectar a la base de datos' });
-    }
-    try {
-    }
-    catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
     }
 };
 exports.getClients = getClients;
-const utilsController = async (req, res) => {
+const getAddressDirection = async (req, res) => {
     try {
-        const binaryData = Buffer.from(image_1.imageBinary, 'base64');
-        const outputImagePath = path_1.default.join(__dirname, '../', 'output.png'); // Ajusta la ruta donde quieres guardar la imagen
-        fs_1.default.writeFileSync(outputImagePath, binaryData);
-        res.status(200).json({ ok: true }); // Usamos base64 para representar los datos binarios como texto
+        // Get session from REDIS.
+        const sessionId = req.sessionID;
+        const { idpvtadomi } = req.query;
+        const address = await (0, utilsService_1.getAddressDirectionService)(sessionId, idpvtadomi);
+        res.json({ address });
     }
     catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
+        console.log({ error });
+        if (error.message === 'Sesion terminada') {
+            return res.status(401).json({ error: 'Sesion terminada' });
+        }
+        ;
+        res.status(500).send(error.message);
     }
 };
-exports.utilsController = utilsController;
+exports.getAddressDirection = getAddressDirection;
+const getModules = async (req, res) => {
+    const idusrmob = req.idusrmob;
+    if (!idusrmob) {
+        return res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+    }
+    try {
+        // Delegamos la obtención de los módulos al servicio
+        const modules = await (0, utilsService_1.getModulesService)(idusrmob);
+        return res.json({ modules });
+    }
+    catch (error) {
+        console.error({ error });
+        return res.status(500).send(error.message);
+    }
+};
+exports.getModules = getModules;
 //# sourceMappingURL=utils.js.map

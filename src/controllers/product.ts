@@ -1,10 +1,9 @@
 import { Response } from "express";
 import { getGlobalPool } from "../database/connection";
-import { productQuerys } from "../querys/products/productQuery";
+import { productQuerys } from "../querys/productQuery";
 import { identifyBarcodeType } from "../utils/identifyBarcodeType";
 import { Req } from "../helpers/validate-jwt";
 import { handleGetSession } from "../utils/Redis/getSession";
-
 
 // Module 1 - Inventory
 const getProducts = async (req: Req, res: Response) => {

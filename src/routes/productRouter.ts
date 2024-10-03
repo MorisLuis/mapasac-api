@@ -1,7 +1,8 @@
 import { Router } from "express";
 import { getProducByCodebar, getProductByClave, getProductById, getProductByNoArticulo, getProducts, getTotalProducts, updateProduct, updateProductCodebar } from "../controllers/product";
 import { validateJWT } from "../helpers/validate-jwt";
-import { getIdinveartsProduct, getProductByEnlacemob, getProductSellsRestaurantDetails, getProductsSells, getProductsSellsFromFamily, getProductsSellsRestaurant, getTotalClassesSells, getTotalProductsSells, getTotalProductsSellsRestaurant, getUnits } from "../controllers/productSells";
+import { getIdinveartsProduct, getProductByEnlacemob, getProductsSells, getProductsSellsFromFamily, getTotalClassesSells, getTotalProductsSells, getUnits } from "../controllers/productSells";
+import { getProductSellsRestaurantDetails, getProductsSellsRestaurant, getTotalProductsSellsRestaurant } from "../controllers/productSellsRestaurant";
 
 const router = Router();
 

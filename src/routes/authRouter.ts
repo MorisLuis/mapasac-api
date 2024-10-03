@@ -1,6 +1,7 @@
 import { Router } from "express";
-import { getModules, login, logout, renewLogin } from "../controllers/auth";
+import { login, logout, renewLogin } from "../controllers/auth";
 import { validateJWT } from "../helpers/validate-jwt";
+import { getModules } from "../controllers/utils";
 
 const router = Router();
 
