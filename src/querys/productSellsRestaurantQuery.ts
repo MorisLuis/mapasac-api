@@ -35,39 +35,7 @@ export const productSellsRestaurantQuerys = {
             AND invearts.precio1 > 0 
             AND invearts.estatus = 1 
             AND invearts.negativo = FALSE 
-            AND invearts.conceptofa = FALSE 
-            AND NOT EXISTS (
-                SELECT idinveclas 
-                FROM mapasoft.inveclas 
-                WHERE inveclas.noarticulo = invearts.noarticulo
-            )
-            
-            UNION ALL
-            
-            SELECT 
-                idinvearts,
-                to_char(88888+((SELECT MAX(inveclas.noarticulo) FROM mapasoft.inveclas) + 
-                ROW_NUMBER() OVER (ORDER BY inveclas.noarticulo)), 'FMART0000000'::text)::character(10) AS relacion,                 
-                inveclas.noarticulo, 
-                to_char(invefami.cvefamilia, 'FMFAM0000000'::text)::character(10) AS cvefamilia, 
-                invearts.producto::character(100) AS producto,                 
-                ''::character(20) AS clave, 
-                inveclas.precio, 
-                ''::character(20) AS capa, 
-                inveclas.descripcio::character(25) AS ctipo, 
-                inveclas.idinveclas,
-                unidad
-            FROM mapasoft.inveclas
-            JOIN mapasoft.invearts ON inveclas.noarticulo = invearts.noarticulo
-            JOIN mapasoft.invefami ON invearts.cvefamilia = invefami.cvefamilia
-            WHERE invearts.cvefamilia = CAST(right($1, 5) AS integer)
-            AND inveclas.tipo = 'F' 
-            AND inveclas.estatus = 1 
-            AND invearts.estatus = 1 
-            AND invearts.negativo = FALSE 
-            AND invearts.conceptofa = FALSE 
-            AND invefami.touchscren = 1 
-            AND inveclas.precio > 0
+            AND invearts.conceptofa = FALSE
         )
         SELECT 
             w.idinvearts,
