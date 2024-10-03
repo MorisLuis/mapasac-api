@@ -60,7 +60,8 @@ export const searchQuerys = {
     searchClients: `
         SELECT 
             idclientes,
-            nombres
+            nombres,
+            ncomercial
         FROM mapasoft.clientes
         WHERE nombres ILIKE '%' || $1 || '%'
         ORDER BY 
