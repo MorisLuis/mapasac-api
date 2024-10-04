@@ -57,7 +57,8 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
         const folioQuery = querys.getFolio;
         const folioValue = await pool.query(folioQuery, [folioDate])
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
-        const optionDestination = Number(opcion) + 1
+        const optionDestination = Number(opcion) + 1;
+
 
         await client.query('BEGIN');
         await client.query(inveartsQuerys.createSaleTest, [
