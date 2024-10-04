@@ -42,7 +42,6 @@ exports.postInventoryService = postInventoryService;
 const postSellService = async (sessionId, body, opcion) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     const { clavepago, idclientes, comments, domicilio, idviaenvio } = body;
-    console.log({ clavepago, idclientes, comments, domicilio, idviaenvio });
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
@@ -59,11 +58,11 @@ const postSellService = async (sessionId, body, opcion) => {
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
         const optionDestination = Number(opcion) + 1;
         await client.query('BEGIN');
-        console.log({ optionDestination });
         await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
-            comments, domicilio ?? "",
+            comments.toUpperCase(),
+            domicilio.toUpperCase() ?? "",
             idviaenvio ?? 0,
             clavepago ?? 0,
             idclientes ?? 0,

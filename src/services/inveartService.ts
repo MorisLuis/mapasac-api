@@ -3,7 +3,6 @@ import { querys } from '../querys/querys';
 import { getGlobalPool } from '../database/connection';
 import { handleGetSession } from '../utils/Redis/getSession';
 import { inveartsQuerys } from '../querys/inveartsQuery';
-import { bagQuerys } from '../querys/bagQuerys';
 
 const postInventoryService = async (sessionId: string) => {
 
@@ -64,7 +63,8 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
         await client.query(inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
-            comments, domicilio ?? "",
+            comments.toUpperCase(), 
+            domicilio.toUpperCase() ?? "",
             idviaenvio ?? 0,
             clavepago ?? 0,
             idclientes ?? 0,
