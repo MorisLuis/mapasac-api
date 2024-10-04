@@ -21,30 +21,6 @@ export const bagQuerys = {
         LIMIT $4;
     `,
 
-   /*  getBagSells: `
-        SELECT 
-            I.producto,
-            I.clave,
-            E.idenlacemob,
-            E.opcion,
-            E.unidad,
-            E.cantidad,
-            U.descripcio AS unidad_nombre,
-            E.precio,
-            E.capa,
-            E.codbarras,
-            C.descripcio AS clase,
-            E.comentario
-        FROM mapasoft.enlacemob E
-            JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
-            JOIN mapasoft.inveunid U ON E.unidad = U.unidad
-            LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
-        WHERE opcion = $1 AND E.idusrmob = $2
-        ORDER BY idenlacemob ASC
-        OFFSET ($3 - 1) * $4
-        LIMIT $4;
-    `,
- */
     getTotalProductsInBag: `
         SELECT COUNT(*) FROM mapasoft.enlacemob
         WHERE opcion = $1 AND idusrmob = $2

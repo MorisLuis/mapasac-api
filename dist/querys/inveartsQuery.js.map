@@ -1,1 +1,1 @@
-{"version":3,"file":"inveartsQuery.js","sourceRoot":"","sources":["../../src/querys/inveartsQuery.ts"],"names":[],"mappings":";;;AAEa,QAAA,cAAc,GAAG;IAE1B,eAAe,EAAE;;;;KAIhB;IAED,UAAU,EAAE;;;;KAIX;CACJ,CAAA"}
+{"version":3,"file":"inveartsQuery.js","sourceRoot":"","sources":["../../src/querys/inveartsQuery.ts"],"names":[],"mappings":";;;AAEa,QAAA,cAAc,GAAG;IAE1B,eAAe,EAAE;;;;KAIhB;IAED,UAAU,EAAE;;;;KAIX;IAED,cAAc,EAAE;;;;;;;;;;;KAWf;CACJ,CAAA"}

@@ -20,6 +20,7 @@ const postSell = async (req, res) => {
         const sessionId = req.sessionID;
         const { opcion } = req.query;
         const body = req.body;
+        console.log({ body });
         await (0, inveartService_1.postSellService)(sessionId, body, opcion);
         res.status(201).json({ message: 'Datos insertados exitosamente' });
     }

@@ -9,7 +9,6 @@ const querys_1 = require("../querys/querys");
 const connection_1 = require("../database/connection");
 const getSession_1 = require("../utils/Redis/getSession");
 const inveartsQuery_1 = require("../querys/inveartsQuery");
-const bagQuerys_1 = require("../querys/bagQuerys");
 const postInventoryService = async (sessionId) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
@@ -42,7 +41,8 @@ const postInventoryService = async (sessionId) => {
 exports.postInventoryService = postInventoryService;
 const postSellService = async (sessionId, body, opcion) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    const { clavepago, idclientes, comments, domicilio } = body;
+    const { clavepago, idclientes, comments, domicilio, idviaenvio } = body;
+    console.log({ clavepago, idclientes, comments, domicilio, idviaenvio });
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
@@ -58,20 +58,18 @@ const postSellService = async (sessionId, body, opcion) => {
         const folioValue = await pool.query(folioQuery, [folioDate]);
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
         const optionDestination = Number(opcion) + 1;
-        console.log({ clavepago, idclientes, comments, domicilio });
         await client.query('BEGIN');
-        if (comments) {
-            await client.query(bagQuerys_1.bagQuerys.updateProductCommentsFromBag, [comments || "", idclientes || 0, clavepago, idusrmob]);
-        }
-        ;
-        if (domicilio) {
-            console.log("update domicilio");
-            console.log({ idusrmob });
-            await client.query(bagQuerys_1.bagQuerys.updateProductDomicilioFromBag, [domicilio || "", idclientes || 0, clavepago, idusrmob]);
-        }
-        ;
         console.log({ optionDestination });
-        await client.query(inveartsQuery_1.inveartsQuerys.createSale, [idusrmob, folio, opcion, optionDestination]);
+        await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
+            optionDestination,
+            folio,
+            comments, domicilio ?? "",
+            idviaenvio ?? 0,
+            clavepago ?? 0,
+            idclientes ?? 0,
+            opcion,
+            idusrmob
+        ]);
         await client.query('COMMIT');
         return { message: 'Datos insertados exitosamente' };
     }
