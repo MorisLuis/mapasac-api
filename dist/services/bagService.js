@@ -69,7 +69,7 @@ const insertProductToBagService = async (sessionId, productData) => {
             codbarras !== undefined ? codbarras : '',
             idinveclas !== undefined ? idinveclas : 0,
             capa !== undefined ? capa : '',
-            comentario !== undefined ? comentario : ''
+            comentario !== undefined ? (comentario ?? "").toUpperCase() : ''
         ];
         // Iniciar transacción
         await client.query('BEGIN');
@@ -94,9 +94,6 @@ const updateProductInBagService = async (sessionId, product) => {
         throw new Error('Sesion terminada');
     }
     const { cantidad, idenlacemob, comentarios } = product;
-    console.log({
-        cantidad, idenlacemob, comentarios
-    });
     // Convertir 'cantidad' a número si no es undefined o vacío
     const cantidadNumerica = cantidad ? Number(cantidad) : undefined;
     const { idusrmob, ...connection } = userFR;
@@ -104,9 +101,8 @@ const updateProductInBagService = async (sessionId, product) => {
     const client = await pool.connect();
     try {
         await client.query('BEGIN');
-        console.log({ cantidadNumerica, comentarios, idenlacemob });
         // Ejecutar la actualización en la base de datos
-        await client.query(bagQuerys_1.bagQuerys.updateProductFromBag, [cantidadNumerica, comentarios, idenlacemob]);
+        await client.query(bagQuerys_1.bagQuerys.updateProductFromBag, [cantidadNumerica, (comentarios ?? '').toUpperCase(), idenlacemob]);
         await client.query('COMMIT');
     }
     catch (error) {

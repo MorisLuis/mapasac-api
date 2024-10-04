@@ -61,8 +61,8 @@ const postSellService = async (sessionId, body, opcion) => {
         await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
-            comments.toUpperCase(),
-            domicilio.toUpperCase() ?? "",
+            (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
+            (domicilio ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
             idviaenvio ?? 0,
             clavepago ?? 0,
             idclientes ?? 0,

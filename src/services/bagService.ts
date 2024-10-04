@@ -14,7 +14,7 @@ const getBagService = async (sessionId: string, option: string, page: string, li
     /* const result = await pool.query(option === 'sells' ? bagQuerys.getBagSells : bagQuerys.getBag,
         [option, idusrmob, page, limit]
     ); */
-    const result = await pool.query( bagQuerys.getBag, [option, idusrmob, page, limit]);
+    const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
     const bag = result.rows;
     return bag;
 };
@@ -78,7 +78,7 @@ const insertProductToBagService = async (sessionId: string, productData: any) =>
             codbarras !== undefined ? codbarras : '',
             idinveclas !== undefined ? idinveclas : 0,
             capa !== undefined ? capa : '',
-            comentario !== undefined ? comentario : '' 
+            comentario !== undefined ? (comentario ?? "").toUpperCase() : ''
         ];
 
         // Iniciar transacción
@@ -99,7 +99,7 @@ const insertProductToBagService = async (sessionId: string, productData: any) =>
 };
 
 type producToEdit = {
-    idenlacemob: number, 
+    idenlacemob: number,
     cantidad: number,
     comentarios?: string
 }
@@ -112,10 +112,6 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
 
     const { cantidad, idenlacemob, comentarios } = product;
 
-    console.log({
-        cantidad, idenlacemob, comentarios 
-    })
-
     // Convertir 'cantidad' a número si no es undefined o vacío
     const cantidadNumerica = cantidad ? Number(cantidad) : undefined;
 
@@ -125,11 +121,8 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
 
     try {
         await client.query('BEGIN');
-
-        console.log({cantidadNumerica, comentarios, idenlacemob})
-
         // Ejecutar la actualización en la base de datos
-        await client.query(bagQuerys.updateProductFromBag, [cantidadNumerica, comentarios, idenlacemob]);
+        await client.query(bagQuerys.updateProductFromBag, [cantidadNumerica, (comentarios ?? '').toUpperCase(), idenlacemob]);
 
         await client.query('COMMIT');
     } catch (error: any) {
