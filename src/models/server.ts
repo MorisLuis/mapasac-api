@@ -13,6 +13,7 @@ import productRouter from '../routes/productRouter';
 import searchRouter from '../routes/searchRouter';
 import utilsRouter from '../routes/utilsRouter';
 import bagRouter from '../routes/bagRouter';
+import errorRouter from '../routes/errorRouter';
 
 class Server {
     public app: Application;
@@ -73,7 +74,6 @@ class Server {
 
     configureSessions() {
         if (this.redis) {
-            // Define el TTL y maxAge en segundos y milisegundos
             const oneYearInSeconds = 28800; // 8 horas
             const oneYearInMilliseconds = oneYearInSeconds * 1000; // 8 horas en milisegundos
         
@@ -114,6 +114,8 @@ class Server {
         this.app.use(this.paths.search, searchRouter);
         this.app.use(this.paths.utils, utilsRouter);
         this.app.use(this.paths.bag, bagRouter);
+        this.app.use(this.paths.errors, errorRouter);
+
     }
 
     errorHandler() {

@@ -55,5 +55,4 @@ export const productSellsRestaurantQuerys = {
     getTotalProductsSellsRestaurant: `
         SELECT COUNT(*) as total FROM mapasoft.vw_invefami_mob
     `,
-
 }

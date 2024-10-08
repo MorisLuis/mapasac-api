@@ -1,29 +1,44 @@
 import { Request, Response } from 'express';
-import sql from 'mssql';
 import { dbConnectionInitial } from '../database/connection';
-import { querys } from '../querys/querys';
+import { utilsQuery } from '../querys/utilsQuery';
 
-const handleErrors = async (req: Request, res: Response) => {
+const handleErrorsFrontend = async (req: Request, res: Response) => {
 
     try {
         const pool = await dbConnectionInitial();
-        const { From, Message, Id_Usuario, Metodo, code } = req.body;
-
+        const { Message, Id_Usuario, Metodo, code, From } = req.body;
+        const sendMessage = `${code} / ${From} / ${Metodo} / ${Message}`
         await pool.query('BEGIN');
-        //await pool.query(querys.postError, [From, Message, Id_Usuario, Metodo, code]);
+        await pool.query(utilsQuery.insertErrorFrontend, [Id_Usuario, sendMessage]);
         await pool.query('COMMIT');
-
-        return res.json({
-            ok: true
-        })
+        return res.json({ ok: true })
 
     } catch (error: any) {
         console.log({ error })
         return res.status(500).send(error.message);
     }
 
+};
+
+const handleErrorsBackend = async (req: Request, res: Response) => {
+
+    try {
+        const pool = await dbConnectionInitial();
+        const { Message, Id_Usuario, Metodo, code, From } = req.body;
+        const sendMessage = `${code} / ${From} / ${Metodo} / ${Message}`
+        await pool.query('BEGIN');
+        await pool.query(utilsQuery.insertErrorBackend, [Id_Usuario, sendMessage]);
+        await pool.query('COMMIT');
+        return res.json({ ok: true })
+
+    } catch (error: any) {
+        console.log({ error })
+        return res.status(500).send(error.message);
+    };
 }
 
+
 export {
-    handleErrors
+    handleErrorsFrontend,
+    handleErrorsBackend
 }

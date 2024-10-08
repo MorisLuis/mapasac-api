@@ -18,6 +18,7 @@ const productRouter_1 = __importDefault(require("../routes/productRouter"));
 const searchRouter_1 = __importDefault(require("../routes/searchRouter"));
 const utilsRouter_1 = __importDefault(require("../routes/utilsRouter"));
 const bagRouter_1 = __importDefault(require("../routes/bagRouter"));
+const errorRouter_1 = __importDefault(require("../routes/errorRouter"));
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -57,7 +58,6 @@ class Server {
     }
     configureSessions() {
         if (this.redis) {
-            // Define el TTL y maxAge en segundos y milisegundos
             const oneYearInSeconds = 28800; // 8 horas
             const oneYearInMilliseconds = oneYearInSeconds * 1000; // 8 horas en milisegundos
             const store = new connect_redis_1.default({
@@ -94,6 +94,7 @@ class Server {
         this.app.use(this.paths.search, searchRouter_1.default);
         this.app.use(this.paths.utils, utilsRouter_1.default);
         this.app.use(this.paths.bag, bagRouter_1.default);
+        this.app.use(this.paths.errors, errorRouter_1.default);
     }
     errorHandler() {
         this.app.use((err, req, res, next) => {
