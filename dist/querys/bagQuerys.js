@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.bagQuerys = void 0;
 exports.bagQuerys = {
     getBag: `
-        SELECT 
+        SELECT
             I.producto,
             I.clave,
             E.idenlacemob,

@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIdinveartsProduct = exports.getTotalClassesSells = exports.getTotalProductsSells = exports.getUnits = exports.getProductByEnlacemob = exports.getProductsSellsFromFamily = exports.getProductsSells = void 0;
 const productSellsService_1 = require("../services/productSellsService");
 // Module 2 - Sells
-const getProductsSells = async (req, res) => {
+const getProductsSells = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -12,17 +12,17 @@ const getProductsSells = async (req, res) => {
         res.json({ products });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };
 exports.getProductsSells = getProductsSells;
-const getProductsSellsFromFamily = async (req, res) => {
+const getProductsSellsFromFamily = async (req, res, next) => {
     //This controller show just the clases and capas.
     try {
         // Get session from REDIS.
@@ -32,16 +32,16 @@ const getProductsSellsFromFamily = async (req, res) => {
         res.json({ products });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getProductsSellsFromFamily = getProductsSellsFromFamily;
-const getProductByEnlacemob = async (req, res) => {
+const getProductByEnlacemob = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -50,17 +50,17 @@ const getProductByEnlacemob = async (req, res) => {
         res.json({ product });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };
 exports.getProductByEnlacemob = getProductByEnlacemob;
-const getUnits = async (req, res) => {
+const getUnits = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -68,16 +68,16 @@ const getUnits = async (req, res) => {
         res.json({ units });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getUnits = getUnits;
-const getTotalProductsSells = async (req, res) => {
+const getTotalProductsSells = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -85,16 +85,16 @@ const getTotalProductsSells = async (req, res) => {
         res.json({ total });
     }
     catch (error) {
-        console.log({ "error-getTotalClassesSells": error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getTotalProductsSells = getTotalProductsSells;
-const getTotalClassesSells = async (req, res) => {
+const getTotalClassesSells = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -103,16 +103,16 @@ const getTotalClassesSells = async (req, res) => {
         res.json({ total });
     }
     catch (error) {
-        console.log({ "error-getTotalClassesSells": error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getTotalClassesSells = getTotalClassesSells;
-const getIdinveartsProduct = async (req, res) => {
+const getIdinveartsProduct = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -121,12 +121,12 @@ const getIdinveartsProduct = async (req, res) => {
         res.json({ product });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getIdinveartsProduct = getIdinveartsProduct;

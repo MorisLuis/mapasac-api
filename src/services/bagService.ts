@@ -11,9 +11,6 @@ const getBagService = async (sessionId: string, option: string, page: string, li
     }
     const { idusrmob, ...connection } = userFR;
     const pool = await getGlobalPool(connection);
-    /* const result = await pool.query(option === 'sells' ? bagQuerys.getBagSells : bagQuerys.getBag,
-        [option, idusrmob, page, limit]
-    ); */
     const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
     const bag = result.rows;
     return bag;

@@ -19,6 +19,7 @@ const searchRouter_1 = __importDefault(require("../routes/searchRouter"));
 const utilsRouter_1 = __importDefault(require("../routes/utilsRouter"));
 const bagRouter_1 = __importDefault(require("../routes/bagRouter"));
 const errorRouter_1 = __importDefault(require("../routes/errorRouter"));
+const errorHandler_1 = require("../middleware/errorHandler");
 class Server {
     constructor() {
         this.app = (0, express_1.default)();
@@ -41,20 +42,33 @@ class Server {
         this.errorHandler();
     }
     async connectDB() {
-        await (0, connection_1.dbConnectionInitial)();
+        try {
+            await (0, connection_1.dbConnectionInitial)();
+        }
+        catch (error) {
+            console.error('Error al conectar a la base de datos:', error);
+            throw new errorHandler_1.DatabaseError('Error al conectar a la base de datos');
+        }
     }
     configureRedis() {
-        this.redis = new ioredis_1.default({
-            host: process.env.REDIS_HOST || '127.0.0.1',
-            port: Number(process.env.REDIS_PORT) || 6379,
-            password: process.env.REDIS_PASSWORD
-        });
-        this.redis.on('connect', () => {
-            console.log('Conectado a Redis');
-        });
-        this.redis.on('error', (err) => {
-            console.error('Error de conexión a Redis:', err);
-        });
+        try {
+            this.redis = new ioredis_1.default({
+                host: process.env.REDIS_HOST || '127.0.0.1',
+                port: Number(process.env.REDIS_PORT) || 6379,
+                password: process.env.REDIS_PASSWORD
+            });
+            this.redis.on('connect', () => {
+                console.log('Conectado a Redis');
+            });
+            this.redis.on('error', (err) => {
+                console.error('Error de conexión a Redis:', err);
+                throw new errorHandler_1.DatabaseError('Error de conexión a Redis');
+            });
+        }
+        catch (error) {
+            console.error('Error al configurar Redis:', error);
+            throw new errorHandler_1.DatabaseError('Error al configurar Redis');
+        }
     }
     configureSessions() {
         if (this.redis) {
@@ -97,9 +111,8 @@ class Server {
         this.app.use(this.paths.errors, errorRouter_1.default);
     }
     errorHandler() {
-        this.app.use((err, req, res, next) => {
-            res.status(500).json({ error: 'Ocurrió un error en el servidor', err });
-        });
+        // Usa el middleware de manejo de errores
+        this.app.use(errorHandler_1.errorHandler);
     }
     listen() {
         this.app.listen(this.port, () => {

@@ -1,4 +1,4 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { getGlobalPool } from "../database/connection";
 import { productQuerys } from "../querys/productQuery";
 import { identifyBarcodeType } from "../utils/identifyBarcodeType";
@@ -6,7 +6,7 @@ import { Req } from "../helpers/validate-jwt";
 import { handleGetSession } from "../utils/Redis/getSession";
 
 // Module 1 - Inventory
-const getProducts = async (req: Req, res: Response) => {
+const getProducts = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -29,12 +29,12 @@ const getProducts = async (req: Req, res: Response) => {
         })
 
     } catch (error: any) {
-        console.log({ error })
         res.status(500).send(error.message);
+        return next(error);
     }
 }
 
-const getTotalProducts = async (req: Req, res: Response) => {
+const getTotalProducts = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -54,13 +54,12 @@ const getTotalProducts = async (req: Req, res: Response) => {
             total
         });
     } catch (error: any) {
-        console.log({ error })
         res.status(500).send(error.message);
-
+        return next(error);
     }
 };
 
-const getProductByClave = async (req: Req, res: Response) => {
+const getProductByClave = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -80,12 +79,12 @@ const getProductByClave = async (req: Req, res: Response) => {
         res.json({ product })
 
     } catch (error: any) {
-        console.log({ error })
         res.status(500).send(error.message);
+        return next(error);
     }
 }
 
-const getProductById = async (req: Req, res: Response) => {
+const getProductById = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -98,18 +97,17 @@ const getProductById = async (req: Req, res: Response) => {
 
     try {
         const { idinvearts } = req.query;
-
         const result = await pool.query(productQuerys.getProductById, [idinvearts]);
         const product = result.rows[0]
-
         res.json({ product })
 
     } catch (error: any) {
         res.status(500).send(error.message);
+        return next(error);
     }
 }
 
-const getProducByCodebar = async (req: Req, res: Response) => {
+const getProducByCodebar = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -132,16 +130,15 @@ const getProducByCodebar = async (req: Req, res: Response) => {
 
         const result = await pool.query(productQuerys.getProductByCodebar, [codbar]);
         const product = result.rows
-
         res.json({ product });
 
     } catch (error: any) {
-        console.error('Error:', error);
         res.status(500).send(error.message);
+        return next(error);
     }
 }
 
-const getProductByNoArticulo = async (req: Req, res: Response) => {
+const getProductByNoArticulo = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -161,12 +158,12 @@ const getProductByNoArticulo = async (req: Req, res: Response) => {
         res.json({ product })
 
     } catch (error: any) {
-        console.log({ error })
         res.status(500).send(error.message);
+        return next(error);
     }
 }
 
-const updateProduct = async (req: Req, res: Response) => {
+const updateProduct = async (req: Req, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
     const sessionId = req.sessionID;
@@ -208,14 +205,14 @@ const updateProduct = async (req: Req, res: Response) => {
 
     } catch (error: any) {
         await client.query('ROLLBACK');
-        console.error('Error:', error);
         res.status(500).send(error.message);
+        return next(error);
     } finally {
         client.release();
     }
 };
 
-const updateProductCodebar = async (req: Req, res: Response) => {
+const updateProductCodebar = async (req: Req, res: Response, next: NextFunction) => {
 
 
     // Get session from REDIS.
@@ -258,8 +255,8 @@ const updateProductCodebar = async (req: Req, res: Response) => {
 
     } catch (error: any) {
         await client.query('ROLLBACK');
-        console.error('Error:', error);
         res.status(500).send(error.message);
+        return next(error);
     } finally {
         client.release();
     }

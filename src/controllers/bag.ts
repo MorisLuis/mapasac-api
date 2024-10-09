@@ -1,8 +1,9 @@
-import { Response } from "express";
+import { NextFunction, Response } from "express";
 import { Req } from "../helpers/validate-jwt";
 import { deleteAllProductsInBagService, deleteProductFromBagService, getBagService, getTotalPriceBagService, getTotalProductsInBagService, insertProductToBagService, updateProductInBagService } from "../services/bagService";
+import { handleErrorsBackend } from "./errors";
 
-const getBag = async (req: Req, res: Response) => {
+const getBag = async (req: Req, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
@@ -18,18 +19,18 @@ const getBag = async (req: Req, res: Response) => {
         res.json({ bag })
 
     } catch (error: any) {
-        console.log({ error })
 
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
 
         res.status(500).send(error.message);
+        return next(error);
     }
 
 };
 
-const getTotalProductsInBag = async (req: Req, res: Response) => {
+const getTotalProductsInBag = async (req: Req, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
@@ -39,18 +40,19 @@ const getTotalProductsInBag = async (req: Req, res: Response) => {
         res.json({ total })
 
     } catch (error: any) {
-        console.log({ error });
+        handleErrorsBackend(error)
 
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
 
         res.status(500).send(error.message);
+        next(error);
     }
 
 };
 
-const getTotalPriceBag = async (req: Req, res: Response) => {
+const getTotalPriceBag = async (req: Req, res: Response, next: NextFunction) => {
 
     try {
         const sessionId = req.sessionID;
@@ -66,10 +68,11 @@ const getTotalPriceBag = async (req: Req, res: Response) => {
         };
 
         res.status(500).send(error.message);
+        next(error);
     }
 }
 
-const insertPoductToBag = async (req: Req, res: Response) => {
+const insertPoductToBag = async (req: Req, res: Response, next: NextFunction) => {
     try {
         const sessionId = req.sessionID;
         const productData = req.body;
@@ -83,10 +86,11 @@ const insertPoductToBag = async (req: Req, res: Response) => {
         };
 
         res.status(500).json({ error: error.message });
+        next(error);
     };
 };
 
-const updateProductFromBag = async (req: Req, res: Response) => {
+const updateProductFromBag = async (req: Req, res: Response, next: NextFunction) => {
     try {
         const sessionId = req.sessionID;
         const product = req.body;
@@ -100,10 +104,11 @@ const updateProductFromBag = async (req: Req, res: Response) => {
         };
 
         res.status(500).send(error.message);
+        next(error);
     }
 };
 
-const deleteProductFromBag = async (req: Req, res: Response) => {
+const deleteProductFromBag = async (req: Req, res: Response, next: NextFunction) => {
 
     try {
         const sessionId = req.sessionID;
@@ -118,11 +123,12 @@ const deleteProductFromBag = async (req: Req, res: Response) => {
         };
 
         res.status(500).send(error.message);
+        next(error);
     };
 
 };
 
-const deleteAllProductsInBag = async (req: Req, res: Response) => {
+const deleteAllProductsInBag = async (req: Req, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
 
     try {
@@ -137,6 +143,7 @@ const deleteAllProductsInBag = async (req: Req, res: Response) => {
         };
 
         res.status(500).send(error.message);
+        next(error);
     }
 };
 

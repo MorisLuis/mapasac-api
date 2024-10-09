@@ -1,9 +1,9 @@
-import { Response } from 'express';
+import { NextFunction, Response } from 'express';
 import { Req } from '../helpers/validate-jwt';
 import { searchClientsService, searchProductInBagService, searchProductService } from '../services/searchService';
 
-const searchProduct = async (req: Req, res: Response) => {
-    
+const searchProduct = async (req: Req, res: Response, next: NextFunction) => {
+
     try {
         // Get session from REDIS.
         const { term } = req.query;
@@ -12,19 +12,17 @@ const searchProduct = async (req: Req, res: Response) => {
         const products = await searchProductService(sessionId, searchTerm);
         res.json({ products })
     } catch (error: any) {
-        console.log({ error });
-
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
-
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 
 };
 
-const searchProductInBag = async (req: Req, res: Response) => {
-    try {        
+const searchProductInBag = async (req: Req, res: Response, next: NextFunction) => {
+    try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
         const { term, opcion } = req.query;
@@ -33,17 +31,16 @@ const searchProductInBag = async (req: Req, res: Response) => {
         res.json({ products })
 
     } catch (error: any) {
-        console.log({ error });
-
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
 
         res.status(500).send(error.message);
+        return next(error);
     };
 };
 
-const searchClients = async (req: Req, res: Response) => {
+const searchClients = async (req: Req, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
@@ -54,13 +51,12 @@ const searchClients = async (req: Req, res: Response) => {
         res.json({ clients })
 
     } catch (error: any) {
-        console.log({ error });
-
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
-    
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 
 };

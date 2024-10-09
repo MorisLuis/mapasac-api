@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.searchClients = exports.searchProductInBag = exports.searchProduct = void 0;
 const searchService_1 = require("../services/searchService");
-const searchProduct = async (req, res) => {
+const searchProduct = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const { term } = req.query;
@@ -12,16 +12,16 @@ const searchProduct = async (req, res) => {
         res.json({ products });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 exports.searchProduct = searchProduct;
-const searchProductInBag = async (req, res) => {
+const searchProductInBag = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -31,17 +31,17 @@ const searchProductInBag = async (req, res) => {
         res.json({ products });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };
 exports.searchProductInBag = searchProductInBag;
-const searchClients = async (req, res) => {
+const searchClients = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -51,12 +51,12 @@ const searchClients = async (req, res) => {
         res.json({ clients });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 exports.searchClients = searchClients;

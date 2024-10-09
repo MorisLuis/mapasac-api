@@ -1,13 +1,9 @@
-import { Response } from 'express';
-import { dbConnectionInitial, getGlobalPool } from "../database/connection";
-import { querys } from '../querys/querys';
-import { generateJWT } from '../helpers/generate-jwt';
+import { NextFunction, Response } from 'express';
 import { Req } from '../helpers/validate-jwt';
-import { handleGetSession } from '../utils/Redis/getSession';
 import { handleDeleteRedisSession } from '../utils/Redis/deleteRedis';
 import { loginService, renewLoginService } from '../services/authService';
 
-const login = async (req: Req, res: Response) => {
+const login = async (req: Req, res: Response, next: NextFunction) => {
     try {
         const { usr, pas } = req.body;
 
@@ -40,11 +36,12 @@ const login = async (req: Req, res: Response) => {
 
     } catch (error: any) {
         console.error('Error:', error);
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 
-const renewLogin = async (req: Req, res: Response) => {
+const renewLogin = async (req: Req, res: Response, next: NextFunction) => {
     try {
         const sessionId = req.sessionID;
         const { user, token } = await renewLoginService(sessionId);
@@ -57,24 +54,19 @@ const renewLogin = async (req: Req, res: Response) => {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
 
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 
-const logout = async (req: Req, res: Response) => {
+const logout = async (req: Req, res: Response, next: NextFunction) => {
     const sessionId = req.sessionID;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
-    }
     try {
-        const { idusrmob, ...connection } = userFR;
-        // Eliminar la sesión de Redis
         await handleDeleteRedisSession({ sessionId });
         res.json({ ok: true });
     } catch (error: any) {
-        console.error('Error en logout:', error);
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 

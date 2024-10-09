@@ -2,19 +2,19 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.postSell = exports.postInventory = void 0;
 const inveartService_1 = require("../services/inveartService");
-const postInventory = async (req, res) => {
+const postInventory = async (req, res, next) => {
     try {
         const sessionId = req.sessionID;
         const result = await (0, inveartService_1.postInventoryService)(sessionId);
         return res.status(201).json(result);
     }
     catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
+        return next(error);
     }
 };
 exports.postInventory = postInventory;
-const postSell = async (req, res) => {
+const postSell = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -25,8 +25,8 @@ const postSell = async (req, res) => {
         res.status(201).json({ message: 'Datos insertados exitosamente' });
     }
     catch (error) {
-        console.error('Error:', error);
-        return res.status(500).json({ error: error.message });
+        res.status(500).json({ error: error.message });
+        return next(error);
     }
     ;
 };

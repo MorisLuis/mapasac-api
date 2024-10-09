@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getModules = exports.getAddressDirection = exports.getClients = exports.getPaymentType = void 0;
 const utilsService_1 = require("../services/utilsService");
-const getPaymentType = async (req, res) => {
+const getPaymentType = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -10,16 +10,16 @@ const getPaymentType = async (req, res) => {
         res.json({ typePayments });
     }
     catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
+        res.status(500).json({ error: 'Error al conectar a la base de datos' });
+        return next(error);
     }
 };
 exports.getPaymentType = getPaymentType;
-const getClients = async (req, res) => {
+const getClients = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -33,11 +33,12 @@ const getClients = async (req, res) => {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        return res.status(500).json({ error: 'Error al conectar a la base de datos' });
+        res.status(500).json({ error: 'Error al conectar a la base de datos' });
+        return next(error);
     }
 };
 exports.getClients = getClients;
-const getAddressDirection = async (req, res) => {
+const getAddressDirection = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -46,16 +47,16 @@ const getAddressDirection = async (req, res) => {
         res.json({ address });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getAddressDirection = getAddressDirection;
-const getModules = async (req, res) => {
+const getModules = async (req, res, next) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
         return res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
@@ -66,8 +67,8 @@ const getModules = async (req, res) => {
         return res.json({ modules });
     }
     catch (error) {
-        console.error({ error });
-        return res.status(500).send(error.message);
+        res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.getModules = getModules;

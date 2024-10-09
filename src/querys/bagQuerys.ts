@@ -1,7 +1,7 @@
 export const bagQuerys = {
 
     getBag: `
-        SELECT 
+        SELECT
             I.producto,
             I.clave,
             E.idenlacemob,

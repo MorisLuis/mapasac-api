@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTotalProductsSellsRestaurant = exports.getProductSellsRestaurantDetails = exports.getProductsSellsRestaurant = void 0;
 const productSellsRestaurantService_1 = require("../services/productSellsRestaurantService");
 // Module 3 - Sells Restaurants
-const getProductsSellsRestaurant = async (req, res) => {
+const getProductsSellsRestaurant = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -12,16 +12,16 @@ const getProductsSellsRestaurant = async (req, res) => {
         res.json({ products });
     }
     catch (error) {
-        console.log({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };
 exports.getProductsSellsRestaurant = getProductsSellsRestaurant;
-const getProductSellsRestaurantDetails = async (req, res) => {
+const getProductSellsRestaurantDetails = async (req, res, next) => {
     try {
         const sessionId = req.sessionID;
         const { cvefamilia } = req.query;
@@ -35,16 +35,16 @@ const getProductSellsRestaurantDetails = async (req, res) => {
         });
     }
     catch (error) {
-        console.error({ error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };
 exports.getProductSellsRestaurantDetails = getProductSellsRestaurantDetails;
-const getTotalProductsSellsRestaurant = async (req, res) => {
+const getTotalProductsSellsRestaurant = async (req, res, next) => {
     try {
         // Get session from REDIS.
         const sessionId = req.sessionID;
@@ -54,11 +54,11 @@ const getTotalProductsSellsRestaurant = async (req, res) => {
         });
     }
     catch (error) {
-        console.log({ "error-getTotalClassesSells": error });
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         res.status(500).send(error.message);
+        return next(error);
     }
     ;
 };

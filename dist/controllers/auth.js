@@ -1,10 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.logout = exports.renewLogin = exports.login = void 0;
-const getSession_1 = require("../utils/Redis/getSession");
 const deleteRedis_1 = require("../utils/Redis/deleteRedis");
 const authService_1 = require("../services/authService");
-const login = async (req, res) => {
+const login = async (req, res, next) => {
     try {
         const { usr, pas } = req.body;
         // Delegar la lógica de autenticación al servicio
@@ -34,11 +33,12 @@ const login = async (req, res) => {
     }
     catch (error) {
         console.error('Error:', error);
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 exports.login = login;
-const renewLogin = async (req, res) => {
+const renewLogin = async (req, res, next) => {
     try {
         const sessionId = req.sessionID;
         const { user, token } = await (0, authService_1.renewLoginService)(sessionId);
@@ -50,25 +50,20 @@ const renewLogin = async (req, res) => {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        return res.status(500).json({ error: error.message || 'Unexpected error' });
+        res.status(500).json({ error: error.message || 'Unexpected error' });
+        return next(error);
     }
 };
 exports.renewLogin = renewLogin;
-const logout = async (req, res) => {
+const logout = async (req, res, next) => {
     const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        return res.status(400).json({ error: 'Sesion terminada' });
-    }
     try {
-        const { idusrmob, ...connection } = userFR;
-        // Eliminar la sesión de Redis
         await (0, deleteRedis_1.handleDeleteRedisSession)({ sessionId });
         res.json({ ok: true });
     }
     catch (error) {
-        console.error('Error en logout:', error);
         res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.logout = logout;
