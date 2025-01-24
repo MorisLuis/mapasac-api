@@ -17,8 +17,12 @@ const getProducts = async (req, res, next) => {
     const pool = await (0, connection_1.getGlobalPool)(connection);
     try {
         const { limit, page } = req.query;
+        console.log({ userFR });
+        console.log({ pool });
+        console.log({ limit, page });
         const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
         const products = result.rows;
+        console.log({ result });
         res.json({
             total: products.length,
             products

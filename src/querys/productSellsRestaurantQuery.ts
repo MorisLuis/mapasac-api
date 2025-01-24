@@ -11,7 +11,7 @@ export const productSellsRestaurantQuerys = {
             F.descripcio
         FROM mapasoft.vw_invefami_mob V
         JOIN  mapasoft.invefami F ON V.cvefamilia = F.cvefamilia
-        ORDER BY F.idinvefami ASC
+        ORDER BY F.idinvefami DESC
         OFFSET ($1 - 1) * $2
         LIMIT $2;
     `,

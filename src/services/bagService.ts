@@ -22,9 +22,13 @@ const getTotalProductsInBagService = async (sessionId: string, option: string) =
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
+
     const { idusrmob, ...connection } = userFR;
+    console.log({option, idusrmob})
     const pool = await getGlobalPool(connection);
+    console.log({pool})
     const result = await pool.query(bagQuerys.getTotalProductsInBag, [option, idusrmob]);
+    console.log({result})
     const totalproducts = result.rows[0].count;
 
     return totalproducts;

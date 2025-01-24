@@ -31,6 +31,7 @@ const handleErrorsBackend = async (error: any) => {
         pool = await dbConnectionInitial();
         const { Message, Id_Usuario, Metodo, path, svr } = error ?? {};
 
+        console.log({error})
         // Formatear el mensaje de error
         const sendMessage = `${Metodo} / ${Message} / "${path}" / ${svr}`;
         console.log({sendMessage})
