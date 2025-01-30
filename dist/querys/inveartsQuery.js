@@ -4,19 +4,19 @@ exports.inveartsQuerys = void 0;
 exports.inveartsQuerys = {
     createInventory: `
         UPDATE mapasoft.enlacemob
-        SET opcion = 1, folcontado = $2
+        SET opcion = 1, folmobil = $2
         WHERE opcion = 0 AND idusrmob = $1
     `,
     createSale: `
         UPDATE mapasoft.enlacemob
-        SET  opcion = $4, folcontado = $2
+        SET  opcion = $4, folmobil = $2
         WHERE opcion = $3 AND idusrmob = $1
     `,
     createSaleTest: `
         UPDATE mapasoft.enlacemob
         SET 
             opcion = $1,
-            folcontado = $2,
+            folmobil = $2,
             comentario = COALESCE(NULLIF($3, ''), comentario),
             domicilio = COALESCE(NULLIF($4, ''), comentario),
             idviaenvio = COALESCE(NULLIF($5, 0), idviaenvio),
