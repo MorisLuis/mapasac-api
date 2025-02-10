@@ -54,6 +54,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
 
     try {
         const folioDate = moment().format('YYYY-MM-DD');
+
         const folioQuery = querys.getFolio;
         const folioValue = await pool.query(folioQuery, [folioDate])
         const folio = folioValue.rows[0].fn_pedidos_foliounico;

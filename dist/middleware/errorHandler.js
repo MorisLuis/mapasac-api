@@ -27,10 +27,8 @@ exports.CustomError = CustomError;
 const errorHandler = async (err, req, res, next) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    console.log({ userFR });
     if (!userFR)
         return;
-    console.log({ sessionId });
     const error = {
         Message: err.message,
         Metodo: req.method,

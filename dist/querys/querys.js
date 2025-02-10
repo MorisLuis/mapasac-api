@@ -47,7 +47,7 @@ exports.querys = {
         WHERE idusrmob = $1
     `,
     getFolio: `
-        SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 1);
+        SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 3);
     `
 };
 //# sourceMappingURL=querys.js.map

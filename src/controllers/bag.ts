@@ -61,8 +61,6 @@ const getTotalPriceBag = async (req: Req, res: Response, next: NextFunction) => 
         res.json({ total })
 
     } catch (error: any) {
-        console.log({ error });
-
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };

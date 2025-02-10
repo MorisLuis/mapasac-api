@@ -48,7 +48,7 @@ export const querys = {
     `,
 
     getFolio: `
-        SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 1);
+        SELECT * FROM mapasoft.fn_pedidos_foliounico(1, $1, 3);
     `
 
 }

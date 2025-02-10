@@ -19,7 +19,6 @@ const handleErrorsFrontend = async (req, res) => {
         return res.json({ ok: true });
     }
     catch (error) {
-        console.log({ error });
         return res.status(500).send(error.message);
     }
 };
@@ -29,10 +28,8 @@ const handleErrorsBackend = async (error) => {
     try {
         pool = await (0, connection_1.dbConnectionInitial)();
         const { Message, Id_Usuario, Metodo, path, svr } = error ?? {};
-        console.log({ error });
         // Formatear el mensaje de error
         const sendMessage = `${Metodo} / ${Message} / "${path}" / ${svr}`;
-        console.log({ sendMessage });
         await pool.query('BEGIN');
         await pool.query(utilsQuery_1.utilsQuery.insertErrorBackend, [Id_Usuario, sendMessage]);
         await pool.query('COMMIT');

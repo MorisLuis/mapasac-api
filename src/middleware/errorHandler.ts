@@ -29,10 +29,8 @@ const errorHandler = async (err: any, req: Request, res: Response, next: NextFun
   const sessionId = req.sessionID;
   const { user: userFR } = await handleGetSession({ sessionId });
 
-  console.log({userFR});
   if(!userFR) return;
 
-  console.log({sessionId})
   const error = {
     Message: err.message,
     Metodo: req.method,

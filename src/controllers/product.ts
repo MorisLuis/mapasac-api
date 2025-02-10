@@ -20,14 +20,8 @@ const getProducts = async (req: Req, res: Response, next: NextFunction) => {
     try {
         const { limit, page } = req.query;
 
-        console.log({userFR})
-        console.log({pool})
-        console.log({limit, page})
-
         const result = await pool.query(productQuerys.getProducts, [page, limit]);
         const products = result.rows;
-
-        console.log({result})
 
         res.json({
             total: products.length,
