@@ -62,7 +62,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
 
 
         await client.query('BEGIN');
-        await client.query(inveartsQuerys.createSaleTest, [
+        const result = await client.query(inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
             (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
@@ -74,8 +74,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
             idusrmob
         ]);
         await client.query('COMMIT');
-
-        return { message: 'Datos insertados exitosamente' };
+        return { message: 'Datos insertados exitosamente', folio: folio };
     } catch (error) {
         await client.query('ROLLBACK');
         throw error;

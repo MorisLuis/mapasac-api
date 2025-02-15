@@ -5,6 +5,7 @@ const connection_1 = require("../database/connection");
 const utilsQuery_1 = require("../querys/utilsQuery");
 const getSession_1 = require("../utils/Redis/getSession");
 const handleErrorsFrontend = async (req, res) => {
+    console.log("handleErrorsFrontend");
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR)

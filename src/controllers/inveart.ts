@@ -20,8 +20,8 @@ const postSell = async (req: Req, res: Response, next: NextFunction) => {
         const sessionId = req.sessionID;
         const { opcion } = req.query
         const body = req.body;
-        await postSellService(sessionId, body, opcion as string);
-        res.status(201).json({ message: 'Datos insertados exitosamente' });
+        const result = await postSellService(sessionId, body, opcion as string);
+        res.status(201).json(result);
     } catch (error: any) {
         res.status(500).json({ error: error.message });
         return next(error);

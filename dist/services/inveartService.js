@@ -58,7 +58,7 @@ const postSellService = async (sessionId, body, opcion) => {
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
         const optionDestination = Number(opcion) + 1;
         await client.query('BEGIN');
-        await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
+        const result = await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
             (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
@@ -70,7 +70,7 @@ const postSellService = async (sessionId, body, opcion) => {
             idusrmob
         ]);
         await client.query('COMMIT');
-        return { message: 'Datos insertados exitosamente' };
+        return { message: 'Datos insertados exitosamente', folio: folio };
     }
     catch (error) {
         await client.query('ROLLBACK');

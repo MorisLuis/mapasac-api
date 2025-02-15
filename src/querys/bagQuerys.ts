@@ -4,17 +4,19 @@ export const bagQuerys = {
         SELECT
             I.producto,
             I.clave,
+            U.descripcio AS unidad_nombre,
             E.idenlacemob,
             E.opcion,
             E.unidad,
             E.cantidad,
-            U.descripcio AS unidad_nombre,
             E.precio,
             E.codbarras,
-            E.comentario
+            E.comentario,
+            C.descripcio AS Clase
         FROM mapasoft.enlacemob E
             JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts
             JOIN mapasoft.inveunid U ON E.unidad = U.unidad
+            LEFT JOIN mapasoft.inveclas C ON E.idinveclas = C.idinveclas
         WHERE opcion = $1 AND E.idusrmob = $2
         ORDER BY idenlacemob ASC
         OFFSET ($3 - 1) * $4
