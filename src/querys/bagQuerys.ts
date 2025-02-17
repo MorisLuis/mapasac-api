@@ -12,6 +12,7 @@ export const bagQuerys = {
             E.precio,
             E.codbarras,
             E.comentario,
+            E.capa,
             C.descripcio AS Clase
         FROM mapasoft.enlacemob E
             JOIN mapasoft.invearts I ON E.idinvearts = I.idinvearts

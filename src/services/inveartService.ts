@@ -13,6 +13,7 @@ const postInventoryService = async (sessionId: string) => {
     const { idusrmob, ...connection } = userFR;
     const pool = await getGlobalPool(connection);
     const client = await pool.connect();
+
     if (!client) {
         throw new Error('No se pudo establecer la conexión con la base de datos');
     }
