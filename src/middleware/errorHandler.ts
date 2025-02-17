@@ -17,7 +17,6 @@ class DatabaseError extends Error {
 // Error personalizado
 class CustomError extends Error {
   status: number;
-
   constructor(message: string, status: number = 400) {
     super(message);
     this.status = status;
@@ -25,11 +24,14 @@ class CustomError extends Error {
 }
 
 // Middleware de manejo de errores
-const errorHandler = async (err: any, req: Request, res: Response, next: NextFunction) => {
+const errorHandler = async (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   const sessionId = req.sessionID;
   const { user: userFR } = await handleGetSession({ sessionId });
-
-  if(!userFR) return;
 
   const error = {
     Message: err.message,
@@ -40,6 +42,7 @@ const errorHandler = async (err: any, req: Request, res: Response, next: NextFun
   };
 
   await handleErrorsBackend(error);
+
   // Manejo de errores específicos
   if (err instanceof DatabaseError) {
     return res.status(500).json({
@@ -56,11 +59,13 @@ const errorHandler = async (err: any, req: Request, res: Response, next: NextFun
     });
   }
 
-  // Para otros tipos de errores no manejados
-  res.status(err.status || 500).json({
+
+  // Errores no controlados
+  res.status(500).json({
     success: false,
-    message: err.message || 'Error interno del servidor',
+    message: err.message || "Something went wrong",
   });
+
 };
 
 export { errorHandler, DatabaseError, CustomError };

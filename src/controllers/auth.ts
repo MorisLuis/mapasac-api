@@ -34,9 +34,7 @@ const login = async (req: Req, res: Response, next: NextFunction) => {
             token
         });
 
-    } catch (error: any) {
-        console.error('Error:', error);
-        res.status(500).json({ error: error.message || 'Unexpected error' });
+    } catch (error) {
         return next(error);
     }
 };
@@ -53,8 +51,6 @@ const renewLogin = async (req: Req, res: Response, next: NextFunction) => {
         if (error.message === 'Sesion terminada') {
             return res.status(401).json({ error: 'Sesion terminada' });
         };
-
-        res.status(500).json({ error: error.message || 'Unexpected error' });
         return next(error);
     }
 };
@@ -64,8 +60,7 @@ const logout = async (req: Req, res: Response, next: NextFunction) => {
     try {
         await handleDeleteRedisSession({ sessionId });
         res.json({ ok: true });
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 };

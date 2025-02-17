@@ -4,6 +4,7 @@ import { UserSessionInterface } from '../interface/user';
 import { closeGlobalPool, dbConnectionInitial } from '../database/connection';
 import { generateJWT } from '../helpers/generate-jwt';
 import { handleGetSession } from '../utils/Redis/getSession';
+import { CustomError } from '../middleware/errorHandler';
 
 const loginService = async (usr: string, pas: string) => {
     const pool: Pool = await dbConnectionInitial();
@@ -22,7 +23,7 @@ const loginService = async (usr: string, pas: string) => {
         const user = result.rows[0] as UserSessionInterface;
 
         if (!user) {
-            throw new Error('Usuario no encontrado');
+            throw new CustomError('Usuario no encontrado', 404);
         }
 
         // Validar contraseña

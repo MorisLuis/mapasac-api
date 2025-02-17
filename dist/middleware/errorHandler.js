@@ -27,8 +27,6 @@ exports.CustomError = CustomError;
 const errorHandler = async (err, req, res, next) => {
     const sessionId = req.sessionID;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR)
-        return;
     const error = {
         Message: err.message,
         Metodo: req.method,
@@ -51,10 +49,10 @@ const errorHandler = async (err, req, res, next) => {
             message: err.message,
         });
     }
-    // Para otros tipos de errores no manejados
-    res.status(err.status || 500).json({
+    // Errores no controlados
+    res.status(500).json({
         success: false,
-        message: err.message || 'Error interno del servidor',
+        message: err.message || "Something went wrong",
     });
 };
 exports.errorHandler = errorHandler;

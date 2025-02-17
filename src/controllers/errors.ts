@@ -5,7 +5,6 @@ import { Pool } from 'pg';
 import { handleGetSession } from '../utils/Redis/getSession';
 
 const handleErrorsFrontend = async (req: Request, res: Response) => {
-    console.log("handleErrorsFrontend")
     const sessionId = req.sessionID;
     const { user: userFR } = await handleGetSession({ sessionId });
     if(!userFR) return;

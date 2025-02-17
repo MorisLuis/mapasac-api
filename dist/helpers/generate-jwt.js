@@ -12,7 +12,6 @@ const generateJWT = ({ idusrmob }) => {
             expiresIn: process.env.JWT_EXPIRATION
         }, (error, token) => {
             if (error) {
-                console.log(error);
                 reject('No se pudo generar el token');
             }
             resolve(token);

@@ -5,6 +5,7 @@ const querys_1 = require("../querys/querys");
 const connection_1 = require("../database/connection");
 const generate_jwt_1 = require("../helpers/generate-jwt");
 const getSession_1 = require("../utils/Redis/getSession");
+const errorHandler_1 = require("../middleware/errorHandler");
 const loginService = async (usr, pas) => {
     const pool = await (0, connection_1.dbConnectionInitial)();
     if (!pool) {
@@ -19,7 +20,7 @@ const loginService = async (usr, pas) => {
         const result = await pool.query(querys_1.querys.auth, [userName]);
         const user = result.rows[0];
         if (!user) {
-            throw new Error('Usuario no encontrado');
+            throw new errorHandler_1.CustomError('Usuario no encontrado', 404);
         }
         // Validar contraseña
         if (user.pas.trim() !== pas) {

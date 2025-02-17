@@ -32,8 +32,6 @@ const login = async (req, res, next) => {
         });
     }
     catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ error: error.message || 'Unexpected error' });
         return next(error);
     }
 };
@@ -50,7 +48,6 @@ const renewLogin = async (req, res, next) => {
             return res.status(401).json({ error: 'Sesion terminada' });
         }
         ;
-        res.status(500).json({ error: error.message || 'Unexpected error' });
         return next(error);
     }
 };
@@ -62,7 +59,6 @@ const logout = async (req, res, next) => {
         res.json({ ok: true });
     }
     catch (error) {
-        res.status(500).send(error.message);
         return next(error);
     }
 };
