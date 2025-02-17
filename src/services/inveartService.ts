@@ -27,7 +27,7 @@ const postInventoryService = async (sessionId: string) => {
         await client.query(inveartsQuerys.createInventory, [idusrmob, folio]);
         await client.query('COMMIT');
 
-        return { message: 'Datos insertados exitosamente' };
+        return { message: 'Datos insertados exitosamente', folio: folio };
     } catch (error) {
         await client.query('ROLLBACK');
         throw error;
@@ -62,7 +62,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
 
 
         await client.query('BEGIN');
-        const result = await client.query(inveartsQuerys.createSaleTest, [
+        await client.query(inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
             (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
