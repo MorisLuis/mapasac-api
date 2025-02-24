@@ -125,6 +125,7 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
         await client.query('COMMIT');
     } catch (error: any) {
         await client.query('ROLLBACK');
+        console.log({error})
         throw new Error('No se pudo actualizar el producto en la bolsa: ' + error.message);
     } finally {
         client.release();

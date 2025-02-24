@@ -47,7 +47,7 @@ export const bagQuerys = {
     updateProductFromBag: `
         UPDATE mapasoft.enlacemob
         SET 
-            cantidad = COALESCE(NULLIF($1, 0), cantidad),
+            cantidad = COALESCE(NULLIF($1, 0.0), cantidad),
             comentario = COALESCE(NULLIF($2, ''), comentario)
         WHERE idenlacemob = $3;
     `,

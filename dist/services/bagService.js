@@ -104,6 +104,7 @@ const updateProductInBagService = async (sessionId, product) => {
     }
     catch (error) {
         await client.query('ROLLBACK');
+        console.log({ error });
         throw new Error('No se pudo actualizar el producto en la bolsa: ' + error.message);
     }
     finally {
