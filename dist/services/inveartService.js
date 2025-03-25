@@ -6,16 +6,23 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postSellService = exports.postInventoryService = void 0;
 const moment_1 = __importDefault(require("moment"));
 const querys_1 = require("../querys/querys");
-const connection_1 = require("../database/connection");
 const getSession_1 = require("../utils/Redis/getSession");
 const inveartsQuery_1 = require("../querys/inveartsQuery");
+const connection_1 = require("../database/connection");
 const postInventoryService = async (sessionId) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const client = await pool.connect();
     if (!client) {
         throw new Error('No se pudo establecer la conexión con la base de datos');
@@ -45,8 +52,15 @@ const postSellService = async (sessionId, body, opcion) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const client = await pool.connect();
     if (!client) {
         throw new Error('No se pudo establecer la conexión con la base de datos');

@@ -1,71 +1,31 @@
-// errorHandler.ts
-import { Request, Response, NextFunction } from 'express';
-import handleErrorsBackend from '../controllers/errors';
-import { handleGetSession } from '../utils/Redis/getSession';
+import { NextFunction, Request, Response } from "express";
 
-// Error de base de datos o conexión
-class DatabaseError extends Error {
-  status: number;
-
-  constructor(message: string) {
-    super(message);
-    this.status = 500;
-    this.name = 'DatabaseError';
-  }
+interface ErrorResponse extends Error {
+  statusCode?: number;
 }
+const errorHandler = async (err: ErrorResponse, req: Request, res: Response, _next: NextFunction): Promise<void> => {
+  console.log("errorHandler")
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+  //const Id_Usuario = req.Id_mobile ?? req.IdUsuarioOLEI ?? req.Id_web ?? "Sin Usuario";
+  //const Id_Usuario =  "Sin Usuario";
 
-// Error personalizado
-class CustomError extends Error {
-  status: number;
-  constructor(message: string, status: number = 400) {
-    super(message);
-    this.status = status;
-  }
-}
+  console.error(`[ERROR] ${req.method} ${req.path} - ${message}`);
 
-// Middleware de manejo de errores
-const errorHandler = async (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const sessionId = req.sessionID;
-  const { user: userFR } = await handleGetSession({ sessionId });
-
-  const error = {
-    Message: err.message,
-    Metodo: req.method,
-    path: req.originalUrl,
-    Id_Usuario: userFR?.idusrmob,
-    svr: userFR?.svr
-  };
-
-  await handleErrorsBackend(error);
-
-  // Manejo de errores específicos
-  if (err instanceof DatabaseError) {
-    return res.status(500).json({
-      success: false,
-      message: 'Error de base de datos: ' + err.message,
-    });
+  // Intentamos guardar el error en la base de datos
+  try {
+   /*  await handleErrorsEndpoint({
+      From: req.path,                    // O el nombre del módulo o componente donde ocurrió el error
+      Message: message,                  // Mensaje de error
+      Id_Usuario: Id_Usuario,  // O extraerlo de la sesión, si lo tienes
+      Metodo: req.method,                // Método HTTP
+      code: statusCode.toString()        // Código de error convertido a string
+    }); */
+  } catch (loggingError) {
+    console.error('Error guardando log en la DB:', loggingError);
   }
 
-  // Otros errores personalizados
-  if (err instanceof CustomError) {
-    return res.status(err.status).json({
-      success: false,
-      message: err.message,
-    });
-  }
-
-
-  // Errores no controlados
-  res.status(500).json({
-    success: false,
-    message: err.message || "Something went wrong",
-  });
-
+  res.status(statusCode).json({ error: message });
 };
 
-export { errorHandler, DatabaseError, CustomError };
+export { errorHandler };

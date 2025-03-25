@@ -4,12 +4,11 @@ exports.postSell = exports.postInventory = void 0;
 const inveartService_1 = require("../services/inveartService");
 const postInventory = async (req, res, next) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const result = await (0, inveartService_1.postInventoryService)(sessionId);
         return res.status(201).json(result);
     }
     catch (error) {
-        res.status(500).json({ error: error.message });
         return next(error);
     }
 };
@@ -17,14 +16,13 @@ exports.postInventory = postInventory;
 const postSell = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { opcion } = req.query;
         const body = req.body;
         const result = await (0, inveartService_1.postSellService)(sessionId, body, opcion);
         res.status(201).json(result);
     }
     catch (error) {
-        res.status(500).json({ error: error.message });
         return next(error);
     }
     ;

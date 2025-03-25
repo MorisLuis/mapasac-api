@@ -1,59 +1,27 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CustomError = exports.DatabaseError = exports.errorHandler = void 0;
-const errors_1 = __importDefault(require("../controllers/errors"));
-const getSession_1 = require("../utils/Redis/getSession");
-// Error de base de datos o conexión
-class DatabaseError extends Error {
-    constructor(message) {
-        super(message);
-        this.status = 500;
-        this.name = 'DatabaseError';
+exports.errorHandler = void 0;
+const errorHandler = async (err, req, res, _next) => {
+    console.log("errorHandler");
+    const statusCode = err.statusCode || 500;
+    const message = err.message || 'Internal Server Error';
+    //const Id_Usuario = req.Id_mobile ?? req.IdUsuarioOLEI ?? req.Id_web ?? "Sin Usuario";
+    //const Id_Usuario =  "Sin Usuario";
+    console.error(`[ERROR] ${req.method} ${req.path} - ${message}`);
+    // Intentamos guardar el error en la base de datos
+    try {
+        /*  await handleErrorsEndpoint({
+           From: req.path,                    // O el nombre del módulo o componente donde ocurrió el error
+           Message: message,                  // Mensaje de error
+           Id_Usuario: Id_Usuario,  // O extraerlo de la sesión, si lo tienes
+           Metodo: req.method,                // Método HTTP
+           code: statusCode.toString()        // Código de error convertido a string
+         }); */
     }
-}
-exports.DatabaseError = DatabaseError;
-// Error personalizado
-class CustomError extends Error {
-    constructor(message, status = 400) {
-        super(message);
-        this.status = status;
+    catch (loggingError) {
+        console.error('Error guardando log en la DB:', loggingError);
     }
-}
-exports.CustomError = CustomError;
-// Middleware de manejo de errores
-const errorHandler = async (err, req, res, next) => {
-    const sessionId = req.sessionID;
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    const error = {
-        Message: err.message,
-        Metodo: req.method,
-        path: req.originalUrl,
-        Id_Usuario: userFR?.idusrmob,
-        svr: userFR?.svr
-    };
-    await (0, errors_1.default)(error);
-    // Manejo de errores específicos
-    if (err instanceof DatabaseError) {
-        return res.status(500).json({
-            success: false,
-            message: 'Error de base de datos: ' + err.message,
-        });
-    }
-    // Otros errores personalizados
-    if (err instanceof CustomError) {
-        return res.status(err.status).json({
-            success: false,
-            message: err.message,
-        });
-    }
-    // Errores no controlados
-    res.status(500).json({
-        success: false,
-        message: err.message || "Something went wrong",
-    });
+    res.status(statusCode).json({ error: message });
 };
 exports.errorHandler = errorHandler;
 //# sourceMappingURL=errorHandler.js.map

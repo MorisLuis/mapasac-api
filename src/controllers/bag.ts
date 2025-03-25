@@ -1,13 +1,11 @@
-import { NextFunction, Response } from "express";
-import { Req } from "../helpers/validate-jwt";
+import { NextFunction, Request, Response } from "express";
 import { deleteAllProductsInBagService, deleteProductFromBagService, getBagService, getTotalPriceBagService, getTotalProductsInBagService, insertProductToBagService, updateProductInBagService } from "../services/bagService";
-import { handleErrorsBackend } from "./errors";
 
-const getBag = async (req: Req, res: Response, next: NextFunction) => {
+const getBag = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { limit, page, option } = req.query;
 
         const bag = await getBagService(
@@ -18,130 +16,88 @@ const getBag = async (req: Req, res: Response, next: NextFunction) => {
         )
         res.json({ bag })
 
-    } catch (error: any) {
-
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 
 };
 
-const getTotalProductsInBag = async (req: Req, res: Response, next: NextFunction) => {
+const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { opcion } = req.query;
         const total = await getTotalProductsInBagService(sessionId, opcion as string);
-        res.json({ total })
+        return res.json({ total })
 
-    } catch (error: any) {
-        handleErrorsBackend(error)
-
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
-        next(error);
+    } catch (error) {
+        return next(error);
     }
 
 };
 
-const getTotalPriceBag = async (req: Req, res: Response, next: NextFunction) => {
+const getTotalPriceBag = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { opcion } = req.query;
         const total = await getTotalPriceBagService(sessionId, opcion as string);
-        res.json({ total })
+        return res.json({ total })
 
-    } catch (error: any) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
-        next(error);
+    } catch (error) {
+        return next(error);
     }
 }
 
-const insertPoductToBag = async (req: Req, res: Response, next: NextFunction) => {
+const insertPoductToBag = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const productData = req.body;
         const result = await insertProductToBagService(sessionId, productData);
-        res.status(201).json(result);
-    } catch (error: any) {
-        console.error('Error:', error);
-
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).json({ error: error.message });
-        next(error);
+        return res.status(201).json(result);
+    } catch (error) {
+        return next(error);
     };
 };
 
-const updateProductFromBag = async (req: Req, res: Response, next: NextFunction) => {
+const updateProductFromBag = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const product = req.body;
         await updateProductInBagService(sessionId, product);
-        res.status(201).json({ message: 'Producto actualizado exitosamente' });
-    } catch (error: any) {
-        console.error('Error:', error);
-
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
-        next(error);
+        return res.status(201).json({ message: 'Producto actualizado exitosamente' });
+    } catch (error) {
+        return next(error);
     }
 };
 
-const deleteProductFromBag = async (req: Req, res: Response, next: NextFunction) => {
+const deleteProductFromBag = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
+        ;
         const { idenlacemob } = req.params;
         await deleteProductFromBagService(sessionId, idenlacemob);
-        res.status(200).json({ message: 'Producto eliminado exitosamente' });
-    } catch (error: any) {
+        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
         console.error('Error:', error);
 
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
-        next(error);
+        return next(error);
     };
 
 };
 
-const deleteAllProductsInBag = async (req: Req, res: Response, next: NextFunction) => {
-    const sessionId = req.sessionID;
-
+const deleteAllProductsInBag = async (req: Request, res: Response, next: NextFunction) => {
+    const sessionId = req.sessionId;
     try {
         const { opcion } = req.query;
         await deleteAllProductsInBagService(sessionId, opcion as string);
-        res.status(200).json({ message: 'Producto eliminado exitosamente' });
-    } catch (error: any) {
+        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+    } catch (error) {
         console.error('Error:', error);
 
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
-
-        res.status(500).send(error.message);
-        next(error);
+        return next(error);
     }
 };
 

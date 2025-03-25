@@ -1,6 +1,6 @@
 import { handleGetSession } from '../utils/Redis/getSession';
-import { getGlobalPool } from '../database/connection';
 import { productSellsRestaurantQuerys } from '../querys/productSellsRestaurantQuery';
+import { dbConnection } from '../database/connection';
 
 
 const getProductsSellsRestaurantService = async (sessionId: string, page: string, limit: string) => {
@@ -10,8 +10,17 @@ const getProductsSellsRestaurantService = async (sessionId: string, page: string
         throw new Error('Sesion terminada');
     }
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(productSellsRestaurantQuerys.getProductsSellsRestaurant, [page, limit]);
     const products = result.rows.map((product: any) => {
         if (product.imagen) {
@@ -31,8 +40,17 @@ const getProductSellsRestaurantDetailsService = async (sessionId: string, cvefam
         throw new Error('Sesion terminada');
     }
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(productSellsRestaurantQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
     const product = result.rows;
     return product;
@@ -47,8 +65,17 @@ const getTotalProductsSellsRestaurantService = async (sessionId: string) => {
         throw new Error('Sesion terminada');
     }
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(productSellsRestaurantQuerys.getTotalProductsSellsRestaurant);
     const total = result.rows[0].total;
 

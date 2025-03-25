@@ -1,9 +1,8 @@
-import { NextFunction, Response } from 'express';
-import { Req } from '../helpers/validate-jwt';
+import { NextFunction, Request, Response } from 'express';
 import { handleDeleteRedisSession } from '../utils/Redis/deleteRedis';
 import { loginService, renewLoginService } from '../services/authService';
 
-const login = async (req: Req, res: Response, next: NextFunction) => {
+const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { usr, pas } = req.body;
 
@@ -39,24 +38,19 @@ const login = async (req: Req, res: Response, next: NextFunction) => {
     }
 };
 
-const renewLogin = async (req: Req, res: Response, next: NextFunction) => {
+const renewLogin = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { user, token } = await renewLoginService(sessionId);
         return res.json({ user, token });
 
-    } catch (error: any) {
-        console.error('Error in renewLogin:', error);
-
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        };
+    } catch (error) {
         return next(error);
     }
 };
 
-const logout = async (req: Req, res: Response, next: NextFunction) => {
-    const sessionId = req.sessionID;
+const logout = async (req: Request, res: Response, next: NextFunction) => {
+    const sessionId = req.sessionId;
     try {
         await handleDeleteRedisSession({ sessionId });
         res.json({ ok: true });

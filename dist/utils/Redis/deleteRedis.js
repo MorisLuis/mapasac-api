@@ -1,9 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.handleDeleteRedisSession = void 0;
-const server_1 = require("../../models/server");
+const redisClient_1 = __importDefault(require("../../config/redisClient"));
 const handleDeleteRedisSession = async ({ sessionId }) => {
-    await server_1.redisClient?.del(`sess:${sessionId}`, (err, response) => {
+    await redisClient_1.default?.del(`sess:${sessionId}`, (err, response) => {
         if (err) {
             console.error('Error al eliminar la sesión:', err);
         }

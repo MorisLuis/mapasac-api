@@ -1,31 +1,25 @@
-import { NextFunction, Response } from "express";
-import { Req } from "../helpers/validate-jwt";
+import { NextFunction, Request, Response } from "express";
 import { getProductSellsRestaurantDetailsService, getProductsSellsRestaurantService, getTotalProductsSellsRestaurantService } from "../services/productSellsRestaurantService";
 
 // Module 3 - Sells Restaurants
-const getProductsSellsRestaurant = async (req: Req, res: Response, next: NextFunction) => {
+const getProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { limit, page } = req.query;
         const products = await getProductsSellsRestaurantService(sessionId, page as string, limit as string);
         res.json({ products });
 
-    } catch (error: any) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     };
 
 };
 
-const getProductSellsRestaurantDetails = async (req: Req, res: Response, next: NextFunction) => {
+const getProductSellsRestaurantDetails = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { cvefamilia } = req.query;
 
         if (!cvefamilia) {
@@ -38,31 +32,21 @@ const getProductSellsRestaurantDetails = async (req: Req, res: Response, next: N
         res.json({
             product
         });
-    } catch (error: any) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     };
 };
 
-const getTotalProductsSellsRestaurant = async (req: Req, res: Response, next: NextFunction) => {
+const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction) => {
 
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const total = await getTotalProductsSellsRestaurantService(sessionId)
         res.json({
             total
         });
-    } catch (error: any) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     };
 

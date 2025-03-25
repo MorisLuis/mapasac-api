@@ -9,8 +9,15 @@ const searchProductService = async (sessionId, searchTerm) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [searchTerm]);
     const products = result.rows;
     return products;
@@ -21,9 +28,16 @@ const searchProductInBagService = async (sessionId, searchTerm, opcion) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
-    const result = await pool.query(opcion === '2' ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, idusrmob, searchTerm]);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
+    const result = await pool.query(opcion === '2' ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, searchTerm]);
     const products = result.rows;
     return products;
 };
@@ -33,8 +47,15 @@ const searchClientsService = async (sessionId, searchTerm) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(searchQuery_1.searchQuerys.searchClients, [searchTerm]);
     const clients = result.rows;
     return clients;

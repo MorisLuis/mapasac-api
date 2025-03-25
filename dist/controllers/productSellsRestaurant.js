@@ -6,16 +6,12 @@ const productSellsRestaurantService_1 = require("../services/productSellsRestaur
 const getProductsSellsRestaurant = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { limit, page } = req.query;
         const products = await (0, productSellsRestaurantService_1.getProductsSellsRestaurantService)(sessionId, page, limit);
         res.json({ products });
     }
     catch (error) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        res.status(500).send(error.message);
         return next(error);
     }
     ;
@@ -23,7 +19,7 @@ const getProductsSellsRestaurant = async (req, res, next) => {
 exports.getProductsSellsRestaurant = getProductsSellsRestaurant;
 const getProductSellsRestaurantDetails = async (req, res, next) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { cvefamilia } = req.query;
         if (!cvefamilia) {
             return res.status(400).json({ error: 'La clave familia es requerida' });
@@ -35,10 +31,6 @@ const getProductSellsRestaurantDetails = async (req, res, next) => {
         });
     }
     catch (error) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        res.status(500).send(error.message);
         return next(error);
     }
     ;
@@ -47,17 +39,13 @@ exports.getProductSellsRestaurantDetails = getProductSellsRestaurantDetails;
 const getTotalProductsSellsRestaurant = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const total = await (0, productSellsRestaurantService_1.getTotalProductsSellsRestaurantService)(sessionId);
         res.json({
             total
         });
     }
     catch (error) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        res.status(500).send(error.message);
         return next(error);
     }
     ;

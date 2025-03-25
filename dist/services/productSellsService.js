@@ -2,15 +2,22 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIdinveartsProductService = exports.getTotalClassesSellsService = exports.getTotalProductsSellsService = exports.getUnitsService = exports.getProductByEnlacemobService = exports.getProductsSellsFromFamilyService = exports.getProductsSellsService = void 0;
 const getSession_1 = require("../utils/Redis/getSession");
-const connection_1 = require("../database/connection");
 const productSellsQuery_1 = require("../querys/productSellsQuery");
+const connection_1 = require("../database/connection");
 const getProductsSellsService = async (sessionId, page, limit) => {
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getProductsSells, [page, limit]);
     const products = result.rows.map((product) => {
         if (product.imagen) {
@@ -26,8 +33,15 @@ const getProductsSellsFromFamilyService = async (sessionId, cvefamilia) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getProductsSellsFromFamily, [cvefamilia]);
     return result.rows;
 };
@@ -37,8 +51,15 @@ const getProductByEnlacemobService = async (sessionId, idinvearts, idinveclas, c
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
     const product = result.rows[0];
     return product;
@@ -49,8 +70,15 @@ const getUnitsService = async (sessionId) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getUnits);
     const units = result.rows;
     return units;
@@ -61,8 +89,15 @@ const getTotalProductsSellsService = async (sessionId) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getTotalProductsSells);
     const total = result.rows[0].total;
     return total;
@@ -73,8 +108,15 @@ const getTotalClassesSellsService = async (sessionId, cvefamilia) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getTotalClassesSells, [cvefamilia]);
     const total = result.rows[0].count;
     return total;
@@ -85,8 +127,15 @@ const getIdinveartsProductService = async (sessionId, cvefamilia) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
     const product = result.rows[0];
     return product;

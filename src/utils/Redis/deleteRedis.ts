@@ -1,4 +1,4 @@
-import { redisClient } from "../../models/server";
+import redisClient from "../../config/redisClient";
 
 
 interface handleDeleteRedisSessionInterface {

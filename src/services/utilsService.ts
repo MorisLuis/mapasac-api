@@ -1,5 +1,5 @@
 import { Pool } from "pg";
-import { dbConnectionInitial, getGlobalPool } from "../database/connection";
+import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { utilsQuery } from "../querys/utilsQuery";
 import { handleGetSession } from "../utils/Redis/getSession";
 
@@ -9,8 +9,17 @@ const getPaymentTypeService = async (sessionId: string) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(utilsQuery.getPaymentType);
     const typePayments = result.rows;
 
@@ -23,8 +32,17 @@ const getClientsService = async (sessionId: string, page: string, limit: string)
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(utilsQuery.getClients, [page, limit]);
     const clients = result.rows;
 
@@ -38,8 +56,17 @@ const getAddressDirectionService = async (sessionId: string, idpvtadomi: string)
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(utilsQuery.getAddressDirection, [idpvtadomi]);
     const address = result.rows[0];
 

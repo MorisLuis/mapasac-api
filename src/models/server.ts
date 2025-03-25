@@ -2,9 +2,6 @@
 import express, { Application } from "express";
 import cors from 'cors';
 import { dbConnectionInitial } from "../database/connection";
-import Redis from 'ioredis';
-import RedisStore from 'connect-redis';
-import session, { Store } from 'express-session';
 
 // Rutas
 import inverRouter from '../routes/inverartRouter';
@@ -14,12 +11,12 @@ import searchRouter from '../routes/searchRouter';
 import utilsRouter from '../routes/utilsRouter';
 import bagRouter from '../routes/bagRouter';
 import errorRouter from '../routes/errorRouter';
-import { DatabaseError, errorHandler } from "../middleware/errorHandler";
+import { errorHandler } from "../middleware/errorHandler";
+import { AppError } from "../errors/CustomError";
 
 class Server {
     public app: Application;
     private port: string;
-    public redis: Redis | null;
 
     private paths: {
         invearts: string,
@@ -34,7 +31,6 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || "5001";
-        this.redis = null;
         this.paths = {
             auth: "/api/auth",
             invearts: "/api/invearts",
@@ -46,8 +42,6 @@ class Server {
         }
 
         this.connectDB();
-        this.configureRedis();
-        this.configureSessions();
         this.middlewares();
         this.routes();
         this.errorHandler();
@@ -58,68 +52,17 @@ class Server {
             await dbConnectionInitial();
         } catch (error) {
             console.error('Error al conectar a la base de datos:', error);
-            throw new DatabaseError('Error al conectar a la base de datos');
+            throw new AppError('Error al conectar a la base de datos');
         }
     }
 
-    configureRedis() {
-        try {
-            this.redis = new Redis({
-                host: process.env.REDIS_HOST || '127.0.0.1',
-                port: Number(process.env.REDIS_PORT as string) || 6379,
-                password: process.env.REDIS_PASSWORD
-            });
-
-            this.redis.on('connect', () => {
-                console.log('Conectado a Redis');
-            });
-
-            this.redis.on('error', (err) => {
-                console.error('Error de conexión a Redis:', err);
-                throw new DatabaseError('Error de conexión a Redis');
-            });
-        } catch (error) {
-            console.error('Error al configurar Redis:', error);
-            throw new DatabaseError('Error al configurar Redis');
-        }
-    }
-
-    configureSessions() {
-        if (this.redis) {
-            const oneYearInSeconds = 28800; // 8 horas
-            const oneYearInMilliseconds = oneYearInSeconds * 1000; // 8 horas en milisegundos
-        
-            const store = new RedisStore({
-                client: this.redis,
-                ttl: oneYearInSeconds,
-            }) as Store;
-    
-            this.app.use(session({
-                secret: process.env.REDIS_SECRET as string,
-                name: 'sid',
-                store: store,
-                resave: false,
-                saveUninitialized: false,
-                cookie: {
-                    secure:  'auto',
-                    httpOnly: true,
-                    maxAge: oneYearInMilliseconds, // MaxAge en milisegundos para la cookie
-                    sameSite: 'lax'
-                }
-            }));
-        } else {
-            console.error('Redis no está configurado, las sesiones no se almacenarán en Redis');
-        }
-    }
-    
-
-    middlewares() {
+    private middlewares(): void {
         this.app.use(cors());
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ extended: true, limit: '50mb' }));
     }
 
-    routes() {
+    private routes() {
         this.app.use(this.paths.invearts, inverRouter);
         this.app.use(this.paths.auth, authRouter);
         this.app.use(this.paths.product, productRouter);
@@ -129,20 +72,16 @@ class Server {
         this.app.use(this.paths.errors, errorRouter);
     }
 
-    errorHandler() {
-        // Usa el middleware de manejo de errores
-        this.app.use(errorHandler);
-    }
-
-    listen() {
+    public listen(): void {
         this.app.listen(this.port, () => {
             console.log("Servidor corriendo en puerto " + this.port);
         });
+    };
+
+    errorHandler(): void {
+        // Usa el middleware de manejo de errores
+        this.app.use(errorHandler);
     }
 }
 
 export default Server;
-
-// Exportar la instancia de Redis
-const server = new Server();
-export const redisClient = server.redis;

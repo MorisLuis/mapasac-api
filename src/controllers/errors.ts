@@ -1,11 +1,11 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { dbConnectionInitial } from '../database/connection';
 import { utilsQuery } from '../querys/utilsQuery';
 import { Pool } from 'pg';
 import { handleGetSession } from '../utils/Redis/getSession';
 
-const handleErrorsFrontend = async (req: Request, res: Response) => {
-    const sessionId = req.sessionID;
+const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction) => {
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if(!userFR) return;
 
@@ -18,8 +18,8 @@ const handleErrorsFrontend = async (req: Request, res: Response) => {
         await pool.query('COMMIT');
         return res.json({ ok: true })
 
-    } catch (error: any) {
-        return res.status(500).send(error.message);
+    } catch (error) {
+        return next(error)
     }
 
 };

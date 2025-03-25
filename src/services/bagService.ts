@@ -1,4 +1,5 @@
-import { getGlobalPool } from "../database/connection";
+import { dbConnection } from "../database/connection";
+import { EnlacemobInterface } from "../interface/enlacemob";
 import { bagQuerys } from "../querys/bagQuerys";
 import { handleGetSession } from "../utils/Redis/getSession";
 
@@ -6,11 +7,20 @@ import { handleGetSession } from "../utils/Redis/getSession";
 const getBagService = async (sessionId: string, option: string, page: string, limit: string) => {
 
     const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    if (!userFR) throw new Error('Sesión terminada');
+
+
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
     const bag = result.rows;
     return bag;
@@ -23,8 +33,17 @@ const getTotalProductsInBagService = async (sessionId: string, option: string) =
         throw new Error('Sesion terminada');
     }
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(bagQuerys.getTotalProductsInBag, [option, idusrmob]);
     const totalproducts = result.rows[0].count;
 
@@ -37,15 +56,25 @@ const getTotalPriceBagService = async (sessionId: string, option: string) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const result = await pool.query(bagQuerys.getTotalPriceBag, [option, idusrmob]);
     const totalproducts = result.rows[0].total;
 
     return totalproducts;
 };
 
-const insertProductToBagService = async (sessionId: string, productData: any) => {
+const insertProductToBagService = async (sessionId: string, productData: EnlacemobInterface ) => {
     // Obtener sesión desde Redis
     const { user: userFR } = await handleGetSession({ sessionId });
 
@@ -53,8 +82,17 @@ const insertProductToBagService = async (sessionId: string, productData: any) =>
         throw new Error('Sesion terminada');
     }
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
 
     if (!client) {
@@ -62,15 +100,14 @@ const insertProductToBagService = async (sessionId: string, productData: any) =>
     }
 
     try {
-        const { idinvearts, codbarras, unidad, cantidad, precio1, precio, opcion, capa, idinveclas, comentario } = productData;
-        const precioFinal = precio1 !== undefined ? precio1 : precio;
+        const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
 
         // Definir cuerpo del producto según la opción
-        const productBodySell: any[] = [
+        const productBodySell = [
             idinvearts,
             unidad,
             cantidad,
-            precioFinal,
+            precio,
             idusrmob,
             opcion,
             codbarras !== undefined ? codbarras : '',
@@ -112,9 +149,17 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
 
     // Convertir 'cantidad' a número si no es undefined o vacío
     const cantidadNumerica = cantidad ? Number(cantidad) : undefined;
+    const { svr, dba, pasdba, usrdba, port } = userFR;
 
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
 
     try {
@@ -123,10 +168,9 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
         await client.query(bagQuerys.updateProductFromBag, [cantidadNumerica, (comentarios ?? '').toUpperCase(), idenlacemob]);
 
         await client.query('COMMIT');
-    } catch (error: any) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        console.log({error})
-        throw new Error('No se pudo actualizar el producto en la bolsa: ' + error.message);
+        throw new Error('No se pudo actualizar el producto en la bolsa: ' + error);
     } finally {
         client.release();
     }
@@ -139,17 +183,26 @@ const deleteProductFromBagService = async (sessionId: string, idenlacemob: strin
     if (!userFR) {
         throw new Error('Sesion terminada');
     };
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
         await client.query(bagQuerys.deleteProductFromBag, [idenlacemob]);
         await client.query('COMMIT');
-    } catch (error: any) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        throw new Error('Error eliminando producto de la bolsa: ' + error.message);
+        throw new Error('Error eliminando producto de la bolsa: ' + error);
     } finally {
         client.release();
     };
@@ -163,17 +216,26 @@ const deleteAllProductsInBagService = async (sessionId: string, opcion: string) 
     if (!userFR) {
         throw new Error('Sesion terminada');
     };
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
         await client.query(bagQuerys.deleteAllProductsInBag, [idusrmob, opcion]);
         await client.query('COMMIT');
-    } catch (error: any) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        throw new Error('Error eliminando todos los productos de la bolsa: ' + error.message);
+        throw new Error('Error eliminando todos los productos de la bolsa: ' + error);
     } finally {
         client.release();
     }

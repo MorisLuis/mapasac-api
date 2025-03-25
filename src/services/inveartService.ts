@@ -1,8 +1,8 @@
 import moment from 'moment';
 import { querys } from '../querys/querys';
-import { getGlobalPool } from '../database/connection';
 import { handleGetSession } from '../utils/Redis/getSession';
 import { inveartsQuerys } from '../querys/inveartsQuery';
+import { dbConnection } from '../database/connection';
 
 const postInventoryService = async (sessionId: string) => {
 
@@ -10,8 +10,18 @@ const postInventoryService = async (sessionId: string) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
 
     if (!client) {
@@ -46,8 +56,17 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
     const client = await pool.connect();
     if (!client) {
         throw new Error('No se pudo establecer la conexión con la base de datos');

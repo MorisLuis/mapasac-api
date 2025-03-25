@@ -38,22 +38,17 @@ const login = async (req, res, next) => {
 exports.login = login;
 const renewLogin = async (req, res, next) => {
     try {
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { user, token } = await (0, authService_1.renewLoginService)(sessionId);
         return res.json({ user, token });
     }
     catch (error) {
-        console.error('Error in renewLogin:', error);
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        ;
         return next(error);
     }
 };
 exports.renewLogin = renewLogin;
 const logout = async (req, res, next) => {
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     try {
         await (0, deleteRedis_1.handleDeleteRedisSession)({ sessionId });
         res.json({ ok: true });

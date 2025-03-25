@@ -5,16 +5,11 @@ const utilsService_1 = require("../services/utilsService");
 const getPaymentType = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const typePayments = await (0, utilsService_1.getPaymentTypeService)(sessionId);
         res.json({ typePayments });
     }
     catch (error) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        ;
-        res.status(500).json({ error: 'Error al conectar a la base de datos' });
         return next(error);
     }
 };
@@ -22,18 +17,12 @@ exports.getPaymentType = getPaymentType;
 const getClients = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { limit, page } = req.query;
         const clients = await (0, utilsService_1.getClientsService)(sessionId, page, limit);
         res.json({ clients });
     }
     catch (error) {
-        console.error('Error al conectar a la base de datos:', error);
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        ;
-        res.status(500).json({ error: 'Error al conectar a la base de datos' });
         return next(error);
     }
 };
@@ -41,17 +30,12 @@ exports.getClients = getClients;
 const getAddressDirection = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionID;
+        const sessionId = req.sessionId;
         const { idpvtadomi } = req.query;
         const address = await (0, utilsService_1.getAddressDirectionService)(sessionId, idpvtadomi);
         res.json({ address });
     }
     catch (error) {
-        if (error.message === 'Sesion terminada') {
-            return res.status(401).json({ error: 'Sesion terminada' });
-        }
-        ;
-        res.status(500).send(error.message);
         return next(error);
     }
 };
@@ -67,7 +51,6 @@ const getModules = async (req, res, next) => {
         return res.json({ modules });
     }
     catch (error) {
-        res.status(500).send(error.message);
         return next(error);
     }
 };

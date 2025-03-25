@@ -4,8 +4,8 @@ exports.handleErrorsBackend = exports.handleErrorsFrontend = void 0;
 const connection_1 = require("../database/connection");
 const utilsQuery_1 = require("../querys/utilsQuery");
 const getSession_1 = require("../utils/Redis/getSession");
-const handleErrorsFrontend = async (req, res) => {
-    const sessionId = req.sessionID;
+const handleErrorsFrontend = async (req, res, next) => {
+    const sessionId = req.sessionId;
     const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
     if (!userFR)
         return;
@@ -19,7 +19,7 @@ const handleErrorsFrontend = async (req, res) => {
         return res.json({ ok: true });
     }
     catch (error) {
-        return res.status(500).send(error.message);
+        return next(error);
     }
 };
 exports.handleErrorsFrontend = handleErrorsFrontend;

@@ -1,26 +1,44 @@
 // helpers/validate-jwt.ts
 import { NextFunction, Request, Response } from 'express';
-import jwt from 'jsonwebtoken';
-
-export interface Req extends Request {
-    idusrmob?: number;
-}
+import jwt, { JwtPayload } from 'jsonwebtoken';
+import { AppError, UnauthorizedError } from '../errors/CustomError';
+import redisClient from '../config/redisClient';
+import { UserSessionInterface } from '../interface/user';
 
 // Middleware to validate JWT from first login. (App)
-const validateJWT = async (req: Req, res: Response, next: NextFunction) => {
-    const token = req.headers['authorization']?.split(' ')[1];
+const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
+
+    const authHeader = req.headers['authorization'];
+    const token = authHeader?.split(' ')[1];
 
     if (!token) {
-        return res.status(401).json({
-            ok: false,
-            message: 'Access denied. Token missing or invalid.',
-        });
+        return next(new UnauthorizedError('Acceso denegado. Falta token o es invalido'));
     }
 
+
     try {
-        const decoded = jwt.verify(token, process.env.SECRETORPRIVATEKEY || '') as { idusrmob: number };
-        req.idusrmob = decoded.idusrmob;
-        next();
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload;
+        const sessionId = decoded.sessionId;
+        req.sessionId = sessionId;
+
+        const sessionDataRaw = await redisClient.get(`session:${sessionId}`);
+        const sessionData = sessionDataRaw ?? null;
+
+        if (!sessionData) {
+            return next(new UnauthorizedError('Sesión no válida'));
+        };
+
+        try {
+            const session: UserSessionInterface = JSON.parse(sessionData);
+
+            req.session = session;
+
+            return next();
+        } catch (error) {
+            return next(new AppError(`Error parsing session data ${error}`));
+        }
+
+
     } catch (err) {
         return res.status(500).json({ success: false, message: 'Failed to authenticate token' });
     }

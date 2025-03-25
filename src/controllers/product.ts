@@ -1,21 +1,29 @@
-import { NextFunction, Response } from "express";
-import { getGlobalPool } from "../database/connection";
+import { NextFunction, Request, Response } from "express";
 import { productQuerys } from "../querys/productQuery";
 import { identifyBarcodeType } from "../utils/identifyBarcodeType";
-import { Req } from "../helpers/validate-jwt";
 import { handleGetSession } from "../utils/Redis/getSession";
+import { dbConnection } from "../database/connection";
 
 // Module 1 - Inventory
-const getProducts = async (req: Req, res: Response, next: NextFunction) => {
+const getProducts = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
         const { limit, page } = req.query;
@@ -28,22 +36,30 @@ const getProducts = async (req: Req, res: Response, next: NextFunction) => {
             products
         })
 
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 }
 
-const getTotalProducts = async (req: Req, res: Response, next: NextFunction) => {
+const getTotalProducts = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
 
@@ -53,22 +69,30 @@ const getTotalProducts = async (req: Req, res: Response, next: NextFunction) => 
         res.json({
             total
         });
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 };
 
-const getProductByClave = async (req: Req, res: Response, next: NextFunction) => {
+const getProductByClave = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
         const { clave } = req.query;
@@ -78,22 +102,30 @@ const getProductByClave = async (req: Req, res: Response, next: NextFunction) =>
 
         res.json({ product })
 
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 }
 
-const getProductById = async (req: Req, res: Response, next: NextFunction) => {
+const getProductById = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
         const { idinvearts } = req.query;
@@ -101,22 +133,30 @@ const getProductById = async (req: Req, res: Response, next: NextFunction) => {
         const product = result.rows[0]
         res.json({ product })
 
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 }
 
-const getProducByCodebar = async (req: Req, res: Response, next: NextFunction) => {
+const getProducByCodebar = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
         const { codbarras } = req.query;
@@ -132,22 +172,30 @@ const getProducByCodebar = async (req: Req, res: Response, next: NextFunction) =
         const product = result.rows
         res.json({ product });
 
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 }
 
-const getProductByNoArticulo = async (req: Req, res: Response, next: NextFunction) => {
+const getProductByNoArticulo = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     try {
         const { noarticulo } = req.query;
@@ -157,22 +205,30 @@ const getProductByNoArticulo = async (req: Req, res: Response, next: NextFunctio
 
         res.json({ product })
 
-    } catch (error: any) {
-        res.status(500).send(error.message);
+    } catch (error) {
         return next(error);
     }
 }
 
-const updateProduct = async (req: Req, res: Response, next: NextFunction) => {
+const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     const client = await pool.connect();
     if (!client) {
@@ -203,26 +259,34 @@ const updateProduct = async (req: Req, res: Response, next: NextFunction) => {
 
         res.json({ success: true, message: 'Producto actualizado correctamente' });
 
-    } catch (error: any) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        res.status(500).send(error.message);
         return next(error);
     } finally {
         client.release();
     }
 };
 
-const updateProductCodebar = async (req: Req, res: Response, next: NextFunction) => {
+const updateProductCodebar = async (req: Request, res: Response, next: NextFunction) => {
 
 
     // Get session from REDIS.
-    const sessionId = req.sessionID;
+    const sessionId = req.sessionId;
     const { user: userFR } = await handleGetSession({ sessionId });
     if (!userFR) {
         return res.status(401).json({ error: 'Sesion terminada' });
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await getGlobalPool(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+
+    const pool = await dbConnection(config);
 
     const client = await pool.connect();
     if (!client) {
@@ -253,9 +317,8 @@ const updateProductCodebar = async (req: Req, res: Response, next: NextFunction)
 
         res.json({ success: true, message: 'Producto actualizado correctamente' });
 
-    } catch (error: any) {
+    } catch (error) {
         await client.query('ROLLBACK');
-        res.status(500).send(error.message);
         return next(error);
     } finally {
         client.release();

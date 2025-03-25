@@ -9,8 +9,15 @@ const getPaymentTypeService = async (sessionId) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(utilsQuery_1.utilsQuery.getPaymentType);
     const typePayments = result.rows;
     return typePayments;
@@ -21,8 +28,15 @@ const getClientsService = async (sessionId, page, limit) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(utilsQuery_1.utilsQuery.getClients, [page, limit]);
     const clients = result.rows;
     return clients;
@@ -33,8 +47,15 @@ const getAddressDirectionService = async (sessionId, idpvtadomi) => {
     if (!userFR) {
         throw new Error('Sesion terminada');
     }
-    const { idusrmob, ...connection } = userFR;
-    const pool = await (0, connection_1.getGlobalPool)(connection);
+    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const config = {
+        user: usrdba,
+        database: dba,
+        password: pasdba,
+        port: port,
+        host: svr
+    };
+    const pool = await (0, connection_1.dbConnection)(config);
     const result = await pool.query(utilsQuery_1.utilsQuery.getAddressDirection, [idpvtadomi]);
     const address = result.rows[0];
     return address;
