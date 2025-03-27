@@ -4,11 +4,10 @@ exports.searchClients = exports.searchProductInBag = exports.searchProduct = voi
 const searchService_1 = require("../services/searchService");
 const searchProduct = async (req, res, next) => {
     try {
-        // Get session from REDIS.
         const { term } = req.query;
-        const sessionId = req.sessionId;
+        const session = req.session;
         const searchTerm = term ? term.toString() : 'a';
-        const products = await (0, searchService_1.searchProductService)(sessionId, searchTerm);
+        const products = await (0, searchService_1.searchProductService)(session, searchTerm);
         res.json({ products });
     }
     catch (error) {
@@ -18,11 +17,10 @@ const searchProduct = async (req, res, next) => {
 exports.searchProduct = searchProduct;
 const searchProductInBag = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { term, opcion } = req.query;
         const searchTerm = term ? term.toString() : 'a';
-        const products = await (0, searchService_1.searchProductInBagService)(sessionId, searchTerm, opcion);
+        const products = await (0, searchService_1.searchProductInBagService)(session, searchTerm, opcion);
         res.json({ products });
     }
     catch (error) {
@@ -33,11 +31,10 @@ const searchProductInBag = async (req, res, next) => {
 exports.searchProductInBag = searchProductInBag;
 const searchClients = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { term } = req.query;
         const searchTerm = term ? term.toString() : 'a';
-        const clients = await (0, searchService_1.searchClientsService)(sessionId, searchTerm);
+        const clients = await (0, searchService_1.searchClientsService)(session, searchTerm);
         res.json({ clients });
     }
     catch (error) {

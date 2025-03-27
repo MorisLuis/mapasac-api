@@ -1,62 +1,59 @@
 import { NextFunction, Request, Response } from 'express';
-import { handleDeleteRedisSession } from '../utils/Redis/deleteRedis';
-import { loginService, renewLoginService } from '../services/authService';
+import { loginService } from '../services/authService';
+import { generateRedisSession, handleDeleteRedisSession } from '../helpers/generate-redis';
+import { generateAccessToken, generateRefreshToken } from '../helpers/generate-jwt';
+import { UnauthorizedError } from '../errors/CustomError';
+import { UserSessionInterface } from '../interface/user';
 
-const login = async (req: Request, res: Response, next: NextFunction) => {
+const login = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const { usr, pas } = req.body;
-
-        // Delegar la lógica de autenticación al servicio
-        const { user, token } = await loginService(usr, pas);
-
-        // Iniciar sesión
-        if (!req.session) {
-            return res.status(500).json({ error: 'Sesión no inicializada' });
-        };
-
-        // Guardar el usuario en la sesión
-        (req.session as any).user = {
-            idusrmob: user.idusrmob,
-            usr: user.usr,
-            pas: user.pas,
-            svr: user.svr,
-            dba: user.dba,
-            port: user.port,
-            usrdba: user.usrdba,
-            pasdba: user.pasdba,
-            empresa: user.empresa,
-            razonsocial: user.razonsocial
-        };
-
+        const { user, token, refreshToken } = await loginService(usr, pas);
         return res.json({
             user,
-            token
-        });
+            token,
+            refreshToken
+        })
 
     } catch (error) {
         return next(error);
     }
 };
 
-const renewLogin = async (req: Request, res: Response, next: NextFunction) => {
+const renewLogin = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+        const session = req.session;
+        const sessionId = req.sessionId;
+
+        const refreshToken = req.body.refreshToken;
+        if (!refreshToken) {
+            throw new UnauthorizedError("No hay refresh token")
+        }
+
+        // Guardar la sesión en Redis con expiración (1 hora)
+        await generateRedisSession(sessionId, session)
+
+        // Generar el token JWT que incluye el sessionId
+        const newToken = generateAccessToken(sessionId)
+        const newRefreshToken = generateRefreshToken(sessionId);
+
+        const response: { user: UserSessionInterface, token: string, refreshToken: string } = { user: session, token: newToken, refreshToken: newRefreshToken };
+        res.json(response);
+
+    } catch (error) {
+        return next(error);
+    }
+};
+
+const logout = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
         const sessionId = req.sessionId;
-        const { user, token } = await renewLoginService(sessionId);
-        return res.json({ user, token });
-
+        if (!sessionId) throw new UnauthorizedError('Sesion terminada')
+        await handleDeleteRedisSession(sessionId)
+        res.json({ ok: true })
     } catch (error) {
-        return next(error);
-    }
-};
-
-const logout = async (req: Request, res: Response, next: NextFunction) => {
-    const sessionId = req.sessionId;
-    try {
-        await handleDeleteRedisSession({ sessionId });
-        res.json({ ok: true });
-    } catch (error) {
-        return next(error);
-    }
+        next(error);
+    };
 };
 
 export {

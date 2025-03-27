@@ -47,7 +47,7 @@ class Server {
         this.errorHandler();
     }
 
-    async connectDB() {
+    async connectDB(): Promise<void> {
         try {
             await dbConnectionInitial();
         } catch (error) {

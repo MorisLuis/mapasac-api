@@ -14,22 +14,13 @@ export interface EnlacemobInterface {
     capa?: string;
     idinveclas?: number;
     comentario?: string;
-    fecalta?: Date; 
-}
+    fecalta?: Date;
+};
 
-
-export interface EnlacemobInterfaceTemp {
-    idinvearts: number;
-    unidad: number;
-    cantidad: number;
-    precio: number;
-    idusrmob: number;
-    opcion: number;
-
-    idenlacemob: number;
-    codbarras: string;
-    folcontado: number;
-    capa: string;
-    idinveclas: number;
-    comentario: string;
+export interface EnlacemobInterfaceSales {
+    clavepago: string,
+    idclientes: string,
+    comments: string,
+    domicilio: string,
+    idviaenvio: string
 }

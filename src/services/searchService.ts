@@ -1,15 +1,17 @@
 import { dbConnection } from "../database/connection";
+import { ValidationError } from "../errors/CustomError";
+import { ProductInterface } from "../interface/invearts";
+import { ClientInterface } from "../interface/other";
+import { UserSessionInterface } from "../interface/user";
 import { searchQuerys } from "../querys/searchQuery";
-import { handleGetSession } from "../utils/Redis/getSession";
 
 
-const searchProductService = async (sessionId: string, searchTerm: string) => {
+const searchProductService = async (
+    session: UserSessionInterface,
+    searchTerm: string
+): Promise<{ products: ProductInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -20,19 +22,25 @@ const searchProductService = async (sessionId: string, searchTerm: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    }
+
     const result = await pool.query(searchQuerys.searchProduct, [searchTerm]);
     const products = result.rows;
 
-    return products;
+    const response: { products: ProductInterface[] } = { products }
+    return response;
 };
 
-const searchProductInBagService = async (sessionId: string, searchTerm: string, opcion: string) => {
+const searchProductInBagService = async (
+    session: UserSessionInterface,
+    searchTerm: string,
+    opcion: string
+): Promise<{ products: ProductInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -43,22 +51,26 @@ const searchProductInBagService = async (sessionId: string, searchTerm: string, 
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(
         opcion === '2' ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
         [opcion, searchTerm]
     );
     const products = result.rows;
+    const response: { products: ProductInterface[] } = { products }
 
-    return products;
+    return response;
 };
 
-const searchClientsService = async (sessionId: string, searchTerm: string) => {
+const searchClientsService = async (
+    session: UserSessionInterface,
+    searchTerm: string
+): Promise<{ clients: ClientInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -69,11 +81,14 @@ const searchClientsService = async (sessionId: string, searchTerm: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
 
     const result = await pool.query(searchQuerys.searchClients, [searchTerm]);
     const clients = result.rows;
-
-    return clients;
+    const response: { clients: ClientInterface[] } = { clients }
+    return response;
 
 }
 

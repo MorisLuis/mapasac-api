@@ -2,19 +2,16 @@ import { NextFunction, Request, Response } from 'express';
 import { dbConnectionInitial } from '../database/connection';
 import { utilsQuery } from '../querys/utilsQuery';
 import { Pool } from 'pg';
-import { handleGetSession } from '../utils/Redis/getSession';
 
-const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction) => {
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if(!userFR) return;
+const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    const session = req.session;
 
     try {
         const pool = await dbConnectionInitial();
         const { Message, Metodo } = req.body;
-        const sendMessage = `${Metodo} / ${Message} / "${req.originalUrl}" / ${userFR.svr}`;
+        const sendMessage = `${Metodo} / ${Message} / "${req.originalUrl}" / ${session.svr}`;
         await pool.query('BEGIN');
-        await pool.query(utilsQuery.insertErrorFrontend, [userFR.idusrmob, sendMessage]);
+        await pool.query(utilsQuery.insertErrorFrontend, [session.idusrmob, sendMessage]);
         await pool.query('COMMIT');
         return res.json({ ok: true })
 
@@ -24,33 +21,35 @@ const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunct
 
 };
 
-const handleErrorsBackend = async (error: any) => {
+interface ErrorsBackendInterface {
+    Message: string;
+    Id_Usuario: string;
+    Metodo: string;
+    path: string;
+    svr: string;
+    code: string;
+}
+
+const handleErrorsBackend = async (error: ErrorsBackendInterface): Promise<Response | void> => {
 
     let pool: Pool | null = null;
     try {
         pool = await dbConnectionInitial();
-        const { Message, Id_Usuario, Metodo, path, svr } = error ?? {};
+        const { Message, Id_Usuario, Metodo, path, svr, code } = error ?? {};
 
         // Formatear el mensaje de error
-        const sendMessage = `${Metodo} / ${Message} / "${path}" / ${svr}`;
+        const sendMessage = `${code}-${Metodo} / ${Message} / "${path}" / ${svr}`;
         await pool.query('BEGIN');
         await pool.query(utilsQuery.insertErrorBackend, [Id_Usuario, sendMessage]);
         await pool.query('COMMIT');
-
-    } catch (err: any) {
-        if (pool) {
-            await pool.query('ROLLBACK');
-        }
+        return;
+    } catch (err) {
+        if (pool) await pool.query('ROLLBACK');
         console.error('Error al guardar el error en la base de datos:', err);
-
     } finally {
-        if (pool) {
-            pool.end(); // Cerrar la conexión a la base de datos
-        }
+        if (pool) pool.end(); // Cerrar la conexión a la base de datos
     }
 };
-
-export default handleErrorsBackend;
 
 export {
     handleErrorsFrontend,

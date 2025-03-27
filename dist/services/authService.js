@@ -1,71 +1,36 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.renewLoginService = exports.loginService = void 0;
+exports.loginService = void 0;
 const querys_1 = require("../querys/querys");
 const connection_1 = require("../database/connection");
-const generate_jwt_1 = require("../helpers/generate-jwt");
-const getSession_1 = require("../utils/Redis/getSession");
 const CustomError_1 = require("../errors/CustomError");
+const uuid_1 = require("uuid");
+const generate_jwt_1 = require("../helpers/generate-jwt");
 const loginService = async (usr, pas) => {
     const pool = await (0, connection_1.dbConnectionInitial)();
     if (!pool) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
-    try {
-        // Validar que el usuario no esté vacío
-        if (usr.trim() === "" || pas.trim() === "") {
-            throw new Error('Necesario escribir usuario y contraseña');
-        }
-        const userName = usr.toUpperCase();
-        const result = await pool.query(querys_1.querys.auth, [userName]);
-        const user = result.rows[0];
-        if (!user) {
-            throw new CustomError_1.NotFoundError('Usuario no encontrado');
-        }
-        // Validar contraseña
-        if (user.pas.trim() !== pas) {
-            throw new Error('Contraseña incorrecta');
-        }
-        // Generar JWT
-        const token = await (0, generate_jwt_1.generateJWT)({
-            idusrmob: user.idusrmob,
-        });
-        return { user, token };
+    // Validar que el usuario no esté vacío
+    if (usr.trim() === "" || pas.trim() === "") {
+        throw new CustomError_1.ValidationError('Necesario escribir usuario y contraseña');
     }
-    catch (error) {
-        throw error;
+    const userName = usr.toUpperCase();
+    const result = await pool.query(querys_1.querys.auth, [userName]);
+    const user = result.rows[0];
+    if (!user) {
+        throw new CustomError_1.NotFoundError('Usuario no encontrado');
     }
-    finally {
-        await pool.end();
-        await (0, connection_1.closeGlobalPool)();
+    // Validar contraseña
+    if (user.pas.trim() !== pas) {
+        throw new CustomError_1.NotFoundError('Contraseña incorrecta');
     }
+    const sessionId = (0, uuid_1.v4)();
+    // Generar JWT
+    const token = (0, generate_jwt_1.generateAccessToken)(sessionId);
+    const refreshToken = (0, generate_jwt_1.generateRefreshToken)(sessionId);
+    const response = { user, token, refreshToken };
+    return response;
 };
 exports.loginService = loginService;
-const renewLoginService = async (sessionId) => {
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { idusrmob } = userFR;
-    // Establecer la conexión con la base de datos
-    const pool = await (0, connection_1.dbConnectionInitial)();
-    if (!idusrmob) {
-        throw new Error('No se pudo establecer la conexión con el usuario');
-    }
-    try {
-        // Consultar el usuario en la base de datos por ID
-        const result = await pool.query(querys_1.querys.getUserById, [idusrmob]);
-        const user = result.rows[0];
-        // Generar un nuevo token JWT
-        const token = await (0, generate_jwt_1.generateJWT)({ idusrmob });
-        return { user, token };
-    }
-    catch (error) {
-        throw error;
-    }
-    finally {
-        await pool.end();
-    }
-};
-exports.renewLoginService = renewLoginService;
 //# sourceMappingURL=authService.js.map

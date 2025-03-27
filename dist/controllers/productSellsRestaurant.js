@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTotalProductsSellsRestaurant = exports.getProductSellsRestaurantDetails = exports.getProductsSellsRestaurant = void 0;
 const productSellsRestaurantService_1 = require("../services/productSellsRestaurantService");
+const sellsRestaurant_1 = require("../validations/sellsRestaurant");
 // Module 3 - Sells Restaurants
 const getProductsSellsRestaurant = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { limit, page } = req.query;
-        const products = await (0, productSellsRestaurantService_1.getProductsSellsRestaurantService)(sessionId, page, limit);
+        const session = req.session;
+        const { limit, page } = sellsRestaurant_1.getProductsSellsRestaurantQuerySchema.parse(req.query);
+        const products = await (0, productSellsRestaurantService_1.getProductsSellsRestaurantService)(session, page, limit);
         res.json({ products });
     }
     catch (error) {
@@ -19,16 +19,10 @@ const getProductsSellsRestaurant = async (req, res, next) => {
 exports.getProductsSellsRestaurant = getProductsSellsRestaurant;
 const getProductSellsRestaurantDetails = async (req, res, next) => {
     try {
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        if (!cvefamilia) {
-            return res.status(400).json({ error: 'La clave familia es requerida' });
-        }
-        // Usar el servicio para obtener los detalles de ventas de productos
-        const product = await (0, productSellsRestaurantService_1.getProductSellsRestaurantDetailsService)(sessionId, cvefamilia);
-        res.json({
-            product
-        });
+        const session = req.session;
+        const { cvefamilia } = sellsRestaurant_1.getProductSellsRestaurantDetailsQuerySchema.parse(req.query);
+        const product = await (0, productSellsRestaurantService_1.getProductSellsRestaurantDetailsService)(session, cvefamilia);
+        res.json({ product });
     }
     catch (error) {
         return next(error);
@@ -38,12 +32,9 @@ const getProductSellsRestaurantDetails = async (req, res, next) => {
 exports.getProductSellsRestaurantDetails = getProductSellsRestaurantDetails;
 const getTotalProductsSellsRestaurant = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const total = await (0, productSellsRestaurantService_1.getTotalProductsSellsRestaurantService)(sessionId);
-        res.json({
-            total
-        });
+        const session = req.session;
+        const total = await (0, productSellsRestaurantService_1.getTotalProductsSellsRestaurantService)(session);
+        res.json({ total });
     }
     catch (error) {
         return next(error);

@@ -1,16 +1,19 @@
-import { handleGetSession } from '../utils/Redis/getSession';
 import { productSellsQuerys } from '../querys/productSellsQuery';
 import { dbConnection } from '../database/connection';
+import { UserSessionInterface } from '../interface/user';
+import { ValidationError } from '../errors/CustomError';
+import { UnitsInterface } from '../interface/other';
+import { InveArtsInterface, ProductSellsFamilyInterface, ProductSellsInterface } from '../interface/invearts';
+import { Buffer } from 'buffer';
 
 
-const getProductsSellsService = async (sessionId: string, page: string, limit: string) => {
+const getProductsSellsService = async (
+    session: UserSessionInterface,
+    page: string,
+    limit: string
+): Promise<{ products: ProductSellsInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -21,25 +24,28 @@ const getProductsSellsService = async (sessionId: string, page: string, limit: s
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(productSellsQuerys.getProductsSells, [page, limit]);
-    const products = result.rows.map((product: any) => {
+    const products = result.rows.map((product: ProductSellsInterface) => {
         if (product.imagen) {
             product.imagen = Buffer.from(product.imagen, 'base64').toString();
         }
         return product;
     });
 
-    return products;
-
+    const response: { products: ProductSellsInterface[] } = { products }
+    return response;
 };
 
-const getProductsSellsFromFamilyService = async (sessionId: string, cvefamilia: string) => {
+const getProductsSellsFromFamilyService = async (
+    session: UserSessionInterface,
+    cvefamilia: string
+): Promise<{ products: ProductSellsFamilyInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -50,19 +56,25 @@ const getProductsSellsFromFamilyService = async (sessionId: string, cvefamilia: 
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(productSellsQuerys.getProductsSellsFromFamily, [cvefamilia]);
-
-    return result.rows;
+    const products = result.rows;
+    const response: { products: ProductSellsFamilyInterface[] } = { products }
+    return response;
 
 };
 
-const getProductByEnlacemobService = async (sessionId: string, idinvearts: string, idinveclas: string, capa: string) => {
+const getProductByEnlacemobService = async (
+    session: UserSessionInterface,
+    idinvearts: string,
+    idinveclas: string,
+    capa: string
+): Promise<{ products: ProductSellsInterface }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -73,20 +85,23 @@ const getProductByEnlacemobService = async (sessionId: string, idinvearts: strin
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(productSellsQuerys.getProductByEnlacemob, [idinvearts, idinveclas, capa]);
-    const product = result.rows[0];
+    const products = result.rows[0];
 
-    return product;
+    const response: { products: ProductSellsInterface } = { products }
+    return response;
 
 };
 
-const getUnitsService = async (sessionId: string) => {
+const getUnitsService = async (
+    session: UserSessionInterface
+): Promise<{ units: UnitsInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -97,19 +112,21 @@ const getUnitsService = async (sessionId: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(productSellsQuerys.getUnits);
     const units = result.rows;
 
-    return units;
+    const response: { units: UnitsInterface[] } = { units }
+    return response;
 };
 
-const getTotalProductsSellsService = async (sessionId: string) => {
+const getTotalProductsSellsService = async (
+    session: UserSessionInterface
+): Promise<{ total: number }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -120,19 +137,21 @@ const getTotalProductsSellsService = async (sessionId: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(productSellsQuerys.getTotalProductsSells);
     const total = result.rows[0].total;
-
-    return total;
+    const response: { total: number } = { total };
+    return response;
 };
 
-const getTotalClassesSellsService = async (sessionId: string, cvefamilia: string) => {
+const getTotalClassesSellsService = async (
+    session: UserSessionInterface,
+    cvefamilia: string
+): Promise<{ total: number }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -143,19 +162,21 @@ const getTotalClassesSellsService = async (sessionId: string, cvefamilia: string
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(productSellsQuerys.getTotalClassesSells, [cvefamilia]);
     const total = result.rows[0].count;
-
-    return total;
+    const response: { total: number } = { total };
+    return response;
 };
 
-const getIdinveartsProductService = async (sessionId: string, cvefamilia: string) => {
+const getIdinveartsProductService = async (
+    session: UserSessionInterface,
+    cvefamilia: string
+): Promise<{ product: InveArtsInterface }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -166,10 +187,14 @@ const getIdinveartsProductService = async (sessionId: string, cvefamilia: string
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
     const product = result.rows[0];
 
-    return product;
+    const response: { product: InveArtsInterface } = { product };
+    return response;
 }
 
 

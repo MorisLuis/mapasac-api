@@ -1,15 +1,16 @@
 import { Pool } from "pg";
 import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { utilsQuery } from "../querys/utilsQuery";
-import { handleGetSession } from "../utils/Redis/getSession";
+import { UserSessionInterface } from "../interface/user";
+import { AddressInterface, ClientInterface, ModuleInterface, TypePaymentsInterface } from "../interface/other";
+import { AppError, ValidationError } from "../errors/CustomError";
 
-const getPaymentTypeService = async (sessionId: string) => {
+const getPaymentTypeService = async (
+    session: UserSessionInterface
+): Promise<{ typePayments: TypePaymentsInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -20,19 +21,23 @@ const getPaymentTypeService = async (sessionId: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(utilsQuery.getPaymentType);
     const typePayments = result.rows;
-
-    return typePayments;
+    const response: { typePayments: TypePaymentsInterface[] } = { typePayments }
+    return response;
 }
 
-const getClientsService = async (sessionId: string, page: string, limit: string) => {
+const getClientsService = async (
+    session: UserSessionInterface,
+    page: string,
+    limit: string
+): Promise<{ clients: ClientInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -43,20 +48,22 @@ const getClientsService = async (sessionId: string, page: string, limit: string)
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(utilsQuery.getClients, [page, limit]);
     const clients = result.rows;
 
-    return clients;
-
+    const response: { clients: ClientInterface[] } = { clients }
+    return response;
 };
 
-const getAddressDirectionService = async (sessionId: string, idpvtadomi: string) => {
+const getAddressDirectionService = async (
+    session: UserSessionInterface,
+    idpvtadomi: string
+): Promise<{ address: AddressInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -67,19 +74,32 @@ const getAddressDirectionService = async (sessionId: string, idpvtadomi: string)
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
     const result = await pool.query(utilsQuery.getAddressDirection, [idpvtadomi]);
     const address = result.rows[0];
 
-    return address;
+    const response: { address: AddressInterface[] } = { address }
+    return response;
 };
 
-const getModulesService = async (idusrmob: number) => {
+const getModulesService = async (
+    idusrmob: number
+): Promise<{ modules: ModuleInterface[] }> => {
+
     const pool: Pool = await dbConnectionInitial();
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     try {
         const result = await pool.query(utilsQuery.getModules, [idusrmob]);
-        return result.rows;
+        const modules = result.rows;
+        const response: { modules: ModuleInterface[] } = { modules }
+        return response;
     } catch (error) {
-        throw error;
+        throw new AppError(`${error}`);
     } finally {
         await pool.end();
     }

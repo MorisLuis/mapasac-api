@@ -6,15 +6,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.postSellService = exports.postInventoryService = void 0;
 const moment_1 = __importDefault(require("moment"));
 const querys_1 = require("../querys/querys");
-const getSession_1 = require("../utils/Redis/getSession");
 const inveartsQuery_1 = require("../querys/inveartsQuery");
 const connection_1 = require("../database/connection");
-const postInventoryService = async (sessionId) => {
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+const CustomError_1 = require("../errors/CustomError");
+const postInventoryService = async (session) => {
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
     const config = {
         user: usrdba,
         database: dba,
@@ -25,7 +21,7 @@ const postInventoryService = async (sessionId) => {
     const pool = await (0, connection_1.dbConnection)(config);
     const client = await pool.connect();
     if (!client) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     try {
         const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
@@ -39,20 +35,16 @@ const postInventoryService = async (sessionId) => {
     }
     catch (error) {
         await client.query('ROLLBACK');
-        throw error;
+        throw new CustomError_1.AppError(`Error al publicar inventario: ${error}`);
     }
     finally {
         client.release();
     }
 };
 exports.postInventoryService = postInventoryService;
-const postSellService = async (sessionId, body, opcion) => {
-    const { user: userFR } = await (0, getSession_1.handleGetSession)({ sessionId });
+const postSellService = async (session, body, opcion) => {
     const { clavepago, idclientes, comments, domicilio, idviaenvio } = body;
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
     const config = {
         user: usrdba,
         database: dba,
@@ -63,23 +55,23 @@ const postSellService = async (sessionId, body, opcion) => {
     const pool = await (0, connection_1.dbConnection)(config);
     const client = await pool.connect();
     if (!client) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     try {
         const folioDate = (0, moment_1.default)().format('YYYY-MM-DD');
         const folioQuery = querys_1.querys.getFolio;
         const folioValue = await pool.query(folioQuery, [folioDate]);
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
-        const optionDestination = Number(opcion) + 1;
+        const optionDestination = opcion + 1;
         await client.query('BEGIN');
         await client.query(inveartsQuery_1.inveartsQuerys.createSaleTest, [
             optionDestination,
             folio,
             (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
             (domicilio ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
-            idviaenvio ?? 0,
-            clavepago ?? 0,
-            idclientes ?? 0,
+            idviaenvio,
+            clavepago,
+            idclientes,
             opcion,
             idusrmob
         ]);
@@ -88,7 +80,7 @@ const postSellService = async (sessionId, body, opcion) => {
     }
     catch (error) {
         await client.query('ROLLBACK');
-        throw error;
+        throw new CustomError_1.AppError(`Error al publicar venta: ${error}`);
     }
     finally {
         client.release();

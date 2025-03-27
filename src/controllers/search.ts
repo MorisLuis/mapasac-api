@@ -1,14 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
 import { searchClientsService, searchProductInBagService, searchProductService } from '../services/searchService';
 
-const searchProduct = async (req: Request, res: Response, next: NextFunction) => {
+const searchProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
         const { term } = req.query;
-        const sessionId = req.sessionId;
+        const session = req.session;
         const searchTerm = term ? term.toString() : 'a';
-        const products = await searchProductService(sessionId, searchTerm);
+        const products = await searchProductService(session, searchTerm);
         res.json({ products })
     } catch (error) {
 
@@ -17,33 +16,29 @@ const searchProduct = async (req: Request, res: Response, next: NextFunction) =>
 
 };
 
-const searchProductInBag = async (req: Request, res: Response, next: NextFunction) => {
+const searchProductInBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { term, opcion } = req.query;
         const searchTerm = term ? term.toString() : 'a';
-        const products = await searchProductInBagService(sessionId, searchTerm, opcion as string);
+        const products = await searchProductInBagService(session, searchTerm, opcion as string);
         res.json({ products })
 
     } catch (error) {
-
         return next(error);
     };
 };
 
-const searchClients = async (req: Request, res: Response, next: NextFunction) => {
+const searchClients = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { term } = req.query;
         const searchTerm = term ? term.toString() : 'a';
-        const clients = await searchClientsService(sessionId, searchTerm);
+        const clients = await searchClientsService(session, searchTerm);
         res.json({ clients })
 
     } catch (error) {
-
         return next(error);
     }
 

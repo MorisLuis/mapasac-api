@@ -1,15 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { getIdinveartsProductService, getProductByEnlacemobService, getProductsSellsFromFamilyService, getProductsSellsService, getTotalClassesSellsService, getTotalProductsSellsService, getUnitsService } from "../services/productSellsService";
-import { ProductSellsRestaurantFamilyInterface } from "../interface/productSell";
+import { getProductByEnlacemobQuerySchema, getProductsSellsFromFamilyQuerySchema, getProductsSellsQuerySchema } from "../validations/sellValidations";
 
 // Module 2 - Sells
-const getProductsSells = async (req: Request, res: Response, next: NextFunction) => {
+const getProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { limit, page } = req.query;
-        const products = await getProductsSellsService(sessionId, page as string, limit as string)
+        const session = req.session;
+        const { limit, page } = getProductsSellsQuerySchema.parse(req.query);
+        const products = await getProductsSellsService(session, page, limit)
         res.json({ products });
 
     } catch (error) {
@@ -18,32 +17,29 @@ const getProductsSells = async (req: Request, res: Response, next: NextFunction)
 
 };
 
-const getProductsSellsFromFamily = async (req: Request, res: Response, next: NextFunction) => {
+const getProductsSellsFromFamily = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
-    //This controller show just the clases and capas.
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const products: ProductSellsRestaurantFamilyInterface[] = await getProductsSellsFromFamilyService(sessionId, cvefamilia as string);
+        const session = req.session;
+        const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const products = await getProductsSellsFromFamilyService(session, cvefamilia);
         res.json({ products })
     } catch (error) {
         return next(error);
     }
 };
 
-const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunction) => {
+const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { idinvearts, idinveclas, capa } = req.query;
-
+        const session = req.session;
+        const { idinvearts, idinveclas, capa } = getProductByEnlacemobQuerySchema.parse(req.query);
         const product = await getProductByEnlacemobService(
-            sessionId,
-            idinvearts as string,
-            idinveclas as string,
-            capa as string
+            session,
+            idinvearts,
+            idinveclas,
+            capa
         );
         res.json({ product });
 
@@ -53,12 +49,11 @@ const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunc
 
 };
 
-const getUnits = async (req: Request, res: Response, next: NextFunction) => {
+const getUnits = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const units = await getUnitsService(sessionId);
+        const session = req.session;
+        const units = await getUnitsService(session);
         res.json({ units })
 
     } catch (error) {
@@ -66,38 +61,35 @@ const getUnits = async (req: Request, res: Response, next: NextFunction) => {
     }
 };
 
-const getTotalProductsSells = async (req: Request, res: Response, next: NextFunction) => {
+const getTotalProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const total = await getTotalProductsSellsService(sessionId);
+        const session = req.session;
+        const total = await getTotalProductsSellsService(session);
         res.json({ total });
     } catch (error) {
         return next(error);
     }
 };
 
-const getTotalClassesSells = async (req: Request, res: Response, next: NextFunction) => {
+const getTotalClassesSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const total = await getTotalClassesSellsService(sessionId, cvefamilia as string);
+        const session = req.session;
+        const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const total = await getTotalClassesSellsService(session, cvefamilia);
         res.json({ total });
     } catch (error) {
         return next(error);
     }
 };
 
-const getIdinveartsProduct = async (req: Request, res: Response, next: NextFunction) => {
+const getIdinveartsProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const product = await getIdinveartsProductService(sessionId, cvefamilia as string);
+        const session = req.session;
+        const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const product = await getIdinveartsProductService(session, cvefamilia);
         res.json({ product });
     } catch (error) {
         return next(error);

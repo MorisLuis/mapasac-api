@@ -1,25 +1,26 @@
 import { NextFunction, Request, Response } from "express";
 import { postInventoryService, postSellService } from "../services/inveartService";
+import { postSellQuery, postSellBodySchema } from "../validations/sellValidations";
 
-const postInventory = async (req: Request, res: Response, next: NextFunction) => {
+const postInventory = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-        const sessionId = req.sessionId;
-        const result = await postInventoryService(sessionId);
+        const session = req.session;
+        const result = await postInventoryService(session);
         return res.status(201).json(result);
     } catch (error) {
         return next(error);
     }
 };
 
-const postSell = async (req: Request, res: Response, next: NextFunction) => {
+const postSell = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { opcion } = req.query
-        const body = req.body;
-        const result = await postSellService(sessionId, body, opcion as string);
+        const session = req.session;
+        const { opcion } = postSellQuery.parse(req.query)
+        const body = postSellBodySchema.parse(req.body);
+        const result = await postSellService(session, body, opcion);
         res.status(201).json(result);
+
     } catch (error) {
         return next(error);
     };

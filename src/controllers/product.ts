@@ -1,35 +1,14 @@
 import { NextFunction, Request, Response } from "express";
-import { productQuerys } from "../querys/productQuery";
-import { identifyBarcodeType } from "../utils/identifyBarcodeType";
-import { handleGetSession } from "../utils/Redis/getSession";
-import { dbConnection } from "../database/connection";
+import { getProducByCodebarService, getProductByClaveService, getProductByIdService, getProductByNoArticuloService, getProductsService, getTotalProductsService, updateProductCodebarService, updateProductService } from "../services/productService";
+import { getProducByCodebarQuerySchema, getProductByClaveQuerySchema, getProductByIdQuerySchema, getProductByNoArticuloQuerySchema, getProductsQuerySchema, inveArtsBodySchema, inveArtsParamsSchema, updateProductCodebarBodySchema } from "../validations/productValidations";
 
 // Module 1 - Inventory
-const getProducts = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
+const getProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { limit, page } = req.query;
-
-        const result = await pool.query(productQuerys.getProducts, [page, limit]);
-        const products = result.rows;
+        const session = req.session;
+        const { limit, page } = getProductsQuerySchema.parse(req.query);
+        const { products } = await getProductsService({ session, page, limit })
 
         res.json({
             total: products.length,
@@ -41,31 +20,12 @@ const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     }
 }
 
-const getTotalProducts = async (req: Request, res: Response, next: NextFunction) => {
+const getTotalProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
 
     try {
-
-        const result = await pool.query(productQuerys.getTotalProducts);
-        const total = result.rows[0].count;
-
+        const session = req.session;
+        const { total } = await getTotalProductsService({ session })
         res.json({
             total
         });
@@ -74,32 +34,23 @@ const getTotalProducts = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-const getProductByClave = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
+const getProductByClave = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+    try {
+        const session = req.session;
+        const { clave } = getProductByClaveQuerySchema.parse(req.query);
+        const { product } = await getProductByClaveService({ session, clave })
+        res.json({ product })
+    } catch (error) {
+        return next(error);
     }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+}
 
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
+const getProductById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { clave } = req.query;
-
-        const result = await pool.query(productQuerys.getProductByClave, [clave]);
-        const product = result.rows
-
+        const session = req.session;
+        const { idinvearts } = getProductByIdQuerySchema.parse(req.query);
+        const { product } = await getProductByIdService({ session, idinvearts })
         res.json({ product })
 
     } catch (error) {
@@ -107,221 +58,55 @@ const getProductByClave = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-const getProductById = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
+const getProducByCodebar = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { idinvearts } = req.query;
-        const result = await pool.query(productQuerys.getProductById, [idinvearts]);
-        const product = result.rows[0]
-        res.json({ product })
-
-    } catch (error) {
-        return next(error);
-    }
-}
-
-const getProducByCodebar = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
-
-    try {
-        const { codbarras } = req.query;
-        let codbar: string = codbarras as string;
-
-        const identifycodebarType = identifyBarcodeType(codbar)
-
-        if (identifycodebarType === "UPC-A convertido a EAN-13") {
-            codbar = codbar?.substring(1)
-        }
-
-        const result = await pool.query(productQuerys.getProductByCodebar, [codbar]);
-        const product = result.rows
+        const session = req.session;
+        const { codbarras } = getProducByCodebarQuerySchema.parse(req.query);
+        const { product } = await getProducByCodebarService({ session, codbarras })
         res.json({ product });
-
     } catch (error) {
         return next(error);
     }
 }
 
-const getProductByNoArticulo = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
+const getProductByNoArticulo = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { noarticulo } = req.query;
-
-        const result = await pool.query(productQuerys.getProductByNoarticulo, [noarticulo]);
-        const product = result.rows
-
+        const session = req.session;
+        const { noarticulo } = getProductByNoArticuloQuerySchema.parse(req.query);
+        const { product } = await getProductByNoArticuloService({ session, noarticulo })
         res.json({ product })
-
     } catch (error) {
         return next(error);
     }
 }
 
-const updateProduct = async (req: Request, res: Response, next: NextFunction) => {
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
-
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
+const updateProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { ...updateFields } = req.body;
-        const { idinvearts } = req.params;
-
-        if (!idinvearts) {
-            return res.status(400).json({ error: 'El campo idinvearts es requerido' });
-        }
-
-        const setClauses = Object.keys(updateFields)
-            .map((key, index) => `${key} = $${index + 2}`)
-            .join(', ');
-        const values = [idinvearts, ...Object.values(updateFields)];
-
-        const query = productQuerys.updateProduct.replace('$SET_CLAUSES', setClauses);
-
-        await client.query('BEGIN');
-
-        await client.query(query, values);
-
-        await client.query('COMMIT');
-
-        res.json({ success: true, message: 'Producto actualizado correctamente' });
+        const session = req.session;
+        const updateFields = inveArtsBodySchema.parse(req.body);
+        const { idinvearts } = inveArtsParamsSchema.parse(req.params);
+        const { message } = await updateProductService({ session, idinvearts, updateFields })
+        res.json({ success: true, message });
 
     } catch (error) {
-        await client.query('ROLLBACK');
-        return next(error);
-    } finally {
-        client.release();
+        next(error)
     }
 };
 
-const updateProductCodebar = async (req: Request, res: Response, next: NextFunction) => {
-
-
-    // Get session from REDIS.
-    const sessionId = req.sessionId;
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        return res.status(401).json({ error: 'Sesion terminada' });
-    }
-    const { svr, dba, pasdba, usrdba, port } = userFR;
-
-    const config = {
-        user: usrdba,
-        database: dba,
-        password: pasdba,
-        port: port,
-        host: svr
-    };
-
-    const pool = await dbConnection(config);
-
-    const client = await pool.connect();
-    if (!client) {
-        res.status(500).json({ error: 'No se pudo establecer la conexión con la base de datos' });
-        return;
-    }
+const updateProductCodebar = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        const { codbarras } = req.body;
-        const { idinvearts } = req.params;
-        let codbar = codbarras
-
-        if (!idinvearts) {
-            return res.status(400).json({ error: 'El campo idinvearts es requerido' });
-        }
-
-        const identifycodebarType = identifyBarcodeType(codbar)
-
-        if (identifycodebarType === "UPC-A convertido a EAN-13") {
-            codbar = codbar?.substring(1)
-        }
-
-        await client.query('BEGIN');
-
-        await client.query(productQuerys.updateCodebarProduct, [codbar, idinvearts]);
-
-        await client.query('COMMIT');
-
-        res.json({ success: true, message: 'Producto actualizado correctamente' });
+        const session = req.session;
+        const { codbarras } = updateProductCodebarBodySchema.parse(req.body);
+        const { idinvearts } = inveArtsParamsSchema.parse(req.params);
+        const { message } = await updateProductCodebarService({ session, idinvearts, codbarras })
+        res.json({ success: true, message });
 
     } catch (error) {
-        await client.query('ROLLBACK');
         return next(error);
-    } finally {
-        client.release();
     }
 }
 

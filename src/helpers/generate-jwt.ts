@@ -1,25 +1,14 @@
 import jwt from 'jsonwebtoken';
 
+const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
+const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh_secret';
 
-interface generateJWTProps {
-    idusrmob: number;
-}
+/** Genera un Access Token con expiración corta (ej. 15min) */
+export const generateAccessToken = (sessionId: string): string => {
+    return jwt.sign({ sessionId }, ACCESS_TOKEN_SECRET, { expiresIn: '30s' });
+};
 
-const generateJWT = ({ idusrmob }: generateJWTProps) => {
-    return new Promise((resolve, reject) => {
-        const payload = { idusrmob }
-        jwt.sign(payload, process.env.SECRETORPRIVATEKEY || '', {
-            expiresIn: process.env.JWT_EXPIRATION
-        }, (error, token) => {
-            if (error) {
-                reject('No se pudo generar el token')
-            }
-
-            resolve(token)
-        })
-    })
-}
-
-export {
-    generateJWT
-}
+/** Genera un Refresh Token con expiración larga (ej. 30 días) */
+export const generateRefreshToken = (sessionId: string): string => {
+    return jwt.sign({ sessionId }, REFRESH_TOKEN_SECRET, { expiresIn: '30d' });
+};

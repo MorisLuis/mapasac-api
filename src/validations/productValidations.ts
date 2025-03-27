@@ -1,0 +1,58 @@
+import { z } from "zod";
+
+export const getProductsQuerySchema = z.object({
+    page: z.union([z.string(), z.number()])
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val), { message: "page debe ser un número válido" }),
+
+    limit: z.union([z.string(), z.number()])
+        .transform((val) => Number(val))
+        .refine((val) => !isNaN(val), { message: "limit debe ser un número válido" })
+});
+
+
+export const getProductByClaveQuerySchema = z.object({
+    clave: z.string().min(1, "clave es requerido")
+});
+
+export const getProductByIdQuerySchema = z.object({
+    idinvearts: z.string().min(1, "idinvearts es requerido")
+});
+
+export const getProducByCodebarQuerySchema = z.object({
+    codbarras: z.string().min(1, "codbarras es requerido")
+});
+
+export const getProductByNoArticuloQuerySchema = z.object({
+    noarticulo: z.string().min(1, "noarticulo es requerido")
+})
+
+export const inveArtsBodySchema = z.object({
+    idinvearts: z.number().optional(),
+    noarticulo: z.number().optional(),
+    cvefamilia: z.number().optional(),
+    codbarras: z.string().optional(),
+    producto: z.string().optional(),
+    clave: z.string().optional(),
+    precio1: z.number().optional(),
+    unidad: z.number().optional(),
+
+    // Campos adicionales de ProductInterface
+    familia: z.string().optional(),
+    precio: z.number(), // ❗ Requerido en la interfaz
+    cantidad: z.number().optional(),
+    idenlacemob: z.number(), // ❗ Requerido en la interfaz
+    unidad_nombre: z.string().optional(),
+});
+
+
+export const inveArtsParamsSchema = z.object({
+    idinvearts: z.string().min(1, "idinvearts es requerido")
+})
+
+
+export const updateProductCodebarBodySchema = z.object({
+    codbarras: z.string()
+})
+
+

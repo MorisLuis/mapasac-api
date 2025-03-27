@@ -1,17 +1,17 @@
 import moment from 'moment';
 import { querys } from '../querys/querys';
-import { handleGetSession } from '../utils/Redis/getSession';
 import { inveartsQuerys } from '../querys/inveartsQuery';
 import { dbConnection } from '../database/connection';
+import { UserSessionInterface } from '../interface/user';
+import { opcionBag } from '../interface/bag';
+import { AppError, ValidationError } from '../errors/CustomError';
+import { EnlacemobInterfaceSales } from '../interface/enlacemob';
 
-const postInventoryService = async (sessionId: string) => {
+const postInventoryService = async (
+    session: UserSessionInterface
+): Promise<{ message: string, folio: string }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -25,7 +25,7 @@ const postInventoryService = async (sessionId: string) => {
     const client = await pool.connect();
 
     if (!client) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
     try {
@@ -41,22 +41,21 @@ const postInventoryService = async (sessionId: string) => {
         return { message: 'Datos insertados exitosamente', folio: folio };
     } catch (error) {
         await client.query('ROLLBACK');
-        throw error;
+        throw new AppError(`Error al publicar inventario: ${error}`);
     } finally {
         client.release();
     }
 };
 
 
-const postSellService = async (sessionId: string, body: any, opcion: string) => {
+const postSellService = async (
+    session: UserSessionInterface,
+    body: EnlacemobInterfaceSales,
+    opcion: opcionBag
+): Promise<{ message: string, folio: string }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
     const { clavepago, idclientes, comments, domicilio, idviaenvio } = body;
-
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -68,8 +67,9 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
 
     const pool = await dbConnection(config);
     const client = await pool.connect();
+
     if (!client) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
     try {
@@ -78,7 +78,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
         const folioQuery = querys.getFolio;
         const folioValue = await pool.query(folioQuery, [folioDate])
         const folio = folioValue.rows[0].fn_pedidos_foliounico;
-        const optionDestination = Number(opcion) + 1;
+        const optionDestination = opcion + 1;
 
 
         await client.query('BEGIN');
@@ -87,9 +87,9 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
             folio,
             (comments ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
             (domicilio ?? "").toUpperCase(), // Convierte domicilio a mayúsculas
-            idviaenvio ?? 0,
-            clavepago ?? 0,
-            idclientes ?? 0,
+            idviaenvio,
+            clavepago,
+            idclientes,
             opcion,
             idusrmob
         ]);
@@ -97,7 +97,7 @@ const postSellService = async (sessionId: string, body: any, opcion: string) => 
         return { message: 'Datos insertados exitosamente', folio: folio };
     } catch (error) {
         await client.query('ROLLBACK');
-        throw error;
+        throw new AppError(`Error al publicar venta: ${error}`);
     } finally {
         client.release();
     }

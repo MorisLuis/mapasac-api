@@ -4,9 +4,8 @@ exports.getModules = exports.getAddressDirection = exports.getClients = exports.
 const utilsService_1 = require("../services/utilsService");
 const getPaymentType = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const typePayments = await (0, utilsService_1.getPaymentTypeService)(sessionId);
+        const session = req.session;
+        const typePayments = await (0, utilsService_1.getPaymentTypeService)(session);
         res.json({ typePayments });
     }
     catch (error) {
@@ -16,10 +15,9 @@ const getPaymentType = async (req, res, next) => {
 exports.getPaymentType = getPaymentType;
 const getClients = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { limit, page } = req.query;
-        const clients = await (0, utilsService_1.getClientsService)(sessionId, page, limit);
+        const clients = await (0, utilsService_1.getClientsService)(session, page, limit);
         res.json({ clients });
     }
     catch (error) {
@@ -30,9 +28,9 @@ exports.getClients = getClients;
 const getAddressDirection = async (req, res, next) => {
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionId;
+        const session = req.session;
         const { idpvtadomi } = req.query;
-        const address = await (0, utilsService_1.getAddressDirectionService)(sessionId, idpvtadomi);
+        const address = await (0, utilsService_1.getAddressDirectionService)(session, idpvtadomi);
         res.json({ address });
     }
     catch (error) {

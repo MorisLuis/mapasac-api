@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { getProductSellsRestaurantDetailsService, getProductsSellsRestaurantService, getTotalProductsSellsRestaurantService } from "../services/productSellsRestaurantService";
+import { getProductSellsRestaurantDetailsQuerySchema, getProductsSellsRestaurantQuerySchema } from "../validations/sellsRestaurant";
 
 // Module 3 - Sells Restaurants
-const getProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction) => {
+const getProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { limit, page } = req.query;
-        const products = await getProductsSellsRestaurantService(sessionId, page as string, limit as string);
+        const session = req.session;
+        const { limit, page } = getProductsSellsRestaurantQuerySchema.parse(req.query);
+        const products = await getProductsSellsRestaurantService(session, page, limit);
         res.json({ products });
 
     } catch (error) {
@@ -17,35 +17,23 @@ const getProductsSellsRestaurant = async (req: Request, res: Response, next: Nex
 
 };
 
-const getProductSellsRestaurantDetails = async (req: Request, res: Response, next: NextFunction) => {
+const getProductSellsRestaurantDetails = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
     try {
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-
-        if (!cvefamilia) {
-            return res.status(400).json({ error: 'La clave familia es requerida' });
-        }
-
-        // Usar el servicio para obtener los detalles de ventas de productos
-        const product = await getProductSellsRestaurantDetailsService(sessionId, cvefamilia as string);
-
-        res.json({
-            product
-        });
+        const session = req.session;
+        const { cvefamilia } = getProductSellsRestaurantDetailsQuerySchema.parse(req.query);
+        const product = await getProductSellsRestaurantDetailsService(session, cvefamilia);
+        res.json({ product });
     } catch (error) {
         return next(error);
     };
 };
 
-const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction) => {
+const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
 
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const total = await getTotalProductsSellsRestaurantService(sessionId)
-        res.json({
-            total
-        });
+        const session = req.session;
+        const total = await getTotalProductsSellsRestaurantService(session)
+        res.json({ total });
     } catch (error) {
         return next(error);
     };

@@ -1,12 +1,10 @@
-// helpers/validate-jwt.ts
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { AppError, UnauthorizedError } from '../errors/CustomError';
+import { AppError, ForbiddenError, UnauthorizedError } from '../errors/CustomError';
 import redisClient from '../config/redisClient';
 import { UserSessionInterface } from '../interface/user';
 
-// Middleware to validate JWT from first login. (App)
-const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
+const validateJWT = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
 
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
@@ -14,7 +12,6 @@ const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
     if (!token) {
         return next(new UnauthorizedError('Acceso denegado. Falta token o es invalido'));
     }
-
 
     try {
         const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET as string) as JwtPayload;
@@ -30,7 +27,6 @@ const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
 
         try {
             const session: UserSessionInterface = JSON.parse(sessionData);
-
             req.session = session;
 
             return next();
@@ -39,11 +35,55 @@ const validateJWT = async (req: Request, res: Response, next: NextFunction) => {
         }
 
 
-    } catch (err) {
-        return res.status(500).json({ success: false, message: 'Failed to authenticate token' });
+    } catch (error) {
+        next(new AppError(`Fallo al autenticar el token: ${error}`))
+    }
+};
+
+
+const validateRefreshJWT = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
+
+    // Obtener el refreshToken del body
+    const refreshToken = req.body.refreshToken;
+
+    if (!refreshToken) {
+        return next(new ForbiddenError('Token inválido o expirado'));
+    }
+
+    try {
+        // Verificar el refreshToken usando la clave secreta específica para el refreshToken
+        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET as string) as JwtPayload;
+        const sessionId = decoded.sessionId;
+
+        req.sessionId = sessionId;
+
+        // Buscar la sesión en Redis usando el sessionId
+        const sessionDataRaw = await redisClient.get(`session:${sessionId}`);
+        const sessionData = sessionDataRaw ?? null;
+
+        if (!sessionData) {
+            return next(new ForbiddenError('Sesion terminada'));
+        }
+
+        try {
+            // Parsear los datos de la sesión obtenida de Redis
+            const session: UserSessionInterface = JSON.parse(sessionData);
+
+            // Guardar la sesión en la solicitud para el uso posterior
+            req.session = session;
+
+            // Pasar al siguiente middleware
+            return next();
+        } catch (error) {
+            return next(new AppError(`Error parsing session data: ${error}`));
+        }
+
+    } catch (error) {
+        next(new ForbiddenError(`Token expirado o inválido: ${error}`));
     }
 };
 
 export {
-    validateJWT
+    validateJWT,
+    validateRefreshJWT
 }

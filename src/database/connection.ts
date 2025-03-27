@@ -9,7 +9,7 @@ let globalPool: Pool | null = null;
 
 const pools: Record<string, Pool> = {}; // Cache de pools
 
-export const dbConnection = (config: { user: string; host: string; database: string; password: string; port: number }) => {
+export const dbConnection = (config: { user: string; host: string; database: string; password: string; port: number }): Pool => {
     const key = `${config.host}_${config.database}_${config.user}`;
 
     if (!pools[key]) {

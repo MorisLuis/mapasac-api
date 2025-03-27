@@ -1,85 +1,46 @@
 import { Pool } from 'pg';
 import { querys } from '../querys/querys';
 import { UserSessionInterface } from '../interface/user';
-import { closeGlobalPool, dbConnectionInitial } from '../database/connection';
-import { generateJWT } from '../helpers/generate-jwt';
-import { handleGetSession } from '../utils/Redis/getSession';
-import { NotFoundError } from '../errors/CustomError';
+import { dbConnectionInitial } from '../database/connection';
+import { NotFoundError, ValidationError } from '../errors/CustomError';
+import { v4 } from 'uuid';
+import { generateAccessToken, generateRefreshToken } from '../helpers/generate-jwt';
 
-const loginService = async (usr: string, pas: string) => {
+const loginService = async (usr: string, pas: string): Promise<{ user: UserSessionInterface, token: string, refreshToken: string }> => {
+
     const pool: Pool = await dbConnectionInitial();
     if (!pool) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
-    try {
-        // Validar que el usuario no esté vacío
-        if (usr.trim() === "" || pas.trim() === "") {
-            throw new Error('Necesario escribir usuario y contraseña');
-        }
-
-        const userName = usr.toUpperCase();
-        const result = await pool.query(querys.auth, [userName]);
-        const user = result.rows[0] as UserSessionInterface;
-
-        if (!user) {
-            throw new NotFoundError('Usuario no encontrado');
-        }
-
-        // Validar contraseña
-        if (user.pas.trim() !== pas) {
-            throw new Error('Contraseña incorrecta');
-        }
-
-        // Generar JWT
-        const token = await generateJWT({
-            idusrmob: user.idusrmob,
-        });
-
-        return { user, token };
-    } catch (error) {
-        throw error;
-    } finally {
-        await pool.end();
-        await closeGlobalPool();
+    // Validar que el usuario no esté vacío
+    if (usr.trim() === "" || pas.trim() === "") {
+        throw new ValidationError('Necesario escribir usuario y contraseña');
     }
+
+    const userName = usr.toUpperCase();
+    const result = await pool.query(querys.auth, [userName]);
+    const user = result.rows[0];
+
+    if (!user) {
+        throw new NotFoundError('Usuario no encontrado');
+    }
+
+    // Validar contraseña
+    if (user.pas.trim() !== pas) {
+        throw new NotFoundError('Contraseña incorrecta');
+    }
+
+    const sessionId = v4();
+
+    // Generar JWT
+    const token = generateAccessToken(sessionId);
+    const refreshToken = generateRefreshToken(sessionId);
+
+    const response: { user: UserSessionInterface, token: string, refreshToken: string } = { user, token, refreshToken };
+    return response;
 };
-
-
-const renewLoginService = async (sessionId: string) => {
-
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { idusrmob } = userFR;
-
-    // Establecer la conexión con la base de datos
-    const pool: Pool = await dbConnectionInitial();
-
-    if (!idusrmob) {
-        throw new Error('No se pudo establecer la conexión con el usuario');
-    }
-
-    try {
-        // Consultar el usuario en la base de datos por ID
-        const result = await pool.query(querys.getUserById, [idusrmob]);
-        const user = result.rows[0];
-
-        // Generar un nuevo token JWT
-        const token = await generateJWT({ idusrmob });
-
-        return { user, token };
-    } catch (error) {
-        throw error;
-    } finally {
-        await pool.end();
-    }
-};
-
 
 export {
-    loginService,
-    renewLoginService
+    loginService
 }

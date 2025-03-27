@@ -2,13 +2,13 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.getIdinveartsProduct = exports.getTotalClassesSells = exports.getTotalProductsSells = exports.getUnits = exports.getProductByEnlacemob = exports.getProductsSellsFromFamily = exports.getProductsSells = void 0;
 const productSellsService_1 = require("../services/productSellsService");
+const sellValidations_1 = require("../validations/sellValidations");
 // Module 2 - Sells
 const getProductsSells = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { limit, page } = req.query;
-        const products = await (0, productSellsService_1.getProductsSellsService)(sessionId, page, limit);
+        const session = req.session;
+        const { limit, page } = sellValidations_1.getProductsSellsQuerySchema.parse(req.query);
+        const products = await (0, productSellsService_1.getProductsSellsService)(session, page, limit);
         res.json({ products });
     }
     catch (error) {
@@ -18,12 +18,11 @@ const getProductsSells = async (req, res, next) => {
 };
 exports.getProductsSells = getProductsSells;
 const getProductsSellsFromFamily = async (req, res, next) => {
-    //This controller show just the clases and capas.
     try {
         // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const products = await (0, productSellsService_1.getProductsSellsFromFamilyService)(sessionId, cvefamilia);
+        const session = req.session;
+        const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const products = await (0, productSellsService_1.getProductsSellsFromFamilyService)(session, cvefamilia);
         res.json({ products });
     }
     catch (error) {
@@ -33,10 +32,9 @@ const getProductsSellsFromFamily = async (req, res, next) => {
 exports.getProductsSellsFromFamily = getProductsSellsFromFamily;
 const getProductByEnlacemob = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { idinvearts, idinveclas, capa } = req.query;
-        const product = await (0, productSellsService_1.getProductByEnlacemobService)(sessionId, idinvearts, idinveclas, capa);
+        const session = req.session;
+        const { idinvearts, idinveclas, capa } = sellValidations_1.getProductByEnlacemobQuerySchema.parse(req.query);
+        const product = await (0, productSellsService_1.getProductByEnlacemobService)(session, idinvearts, idinveclas, capa);
         res.json({ product });
     }
     catch (error) {
@@ -47,9 +45,8 @@ const getProductByEnlacemob = async (req, res, next) => {
 exports.getProductByEnlacemob = getProductByEnlacemob;
 const getUnits = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const units = await (0, productSellsService_1.getUnitsService)(sessionId);
+        const session = req.session;
+        const units = await (0, productSellsService_1.getUnitsService)(session);
         res.json({ units });
     }
     catch (error) {
@@ -59,9 +56,8 @@ const getUnits = async (req, res, next) => {
 exports.getUnits = getUnits;
 const getTotalProductsSells = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const total = await (0, productSellsService_1.getTotalProductsSellsService)(sessionId);
+        const session = req.session;
+        const total = await (0, productSellsService_1.getTotalProductsSellsService)(session);
         res.json({ total });
     }
     catch (error) {
@@ -71,10 +67,9 @@ const getTotalProductsSells = async (req, res, next) => {
 exports.getTotalProductsSells = getTotalProductsSells;
 const getTotalClassesSells = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const total = await (0, productSellsService_1.getTotalClassesSellsService)(sessionId, cvefamilia);
+        const session = req.session;
+        const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const total = await (0, productSellsService_1.getTotalClassesSellsService)(session, cvefamilia);
         res.json({ total });
     }
     catch (error) {
@@ -84,10 +79,9 @@ const getTotalClassesSells = async (req, res, next) => {
 exports.getTotalClassesSells = getTotalClassesSells;
 const getIdinveartsProduct = async (req, res, next) => {
     try {
-        // Get session from REDIS.
-        const sessionId = req.sessionId;
-        const { cvefamilia } = req.query;
-        const product = await (0, productSellsService_1.getIdinveartsProductService)(sessionId, cvefamilia);
+        const session = req.session;
+        const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
+        const product = await (0, productSellsService_1.getIdinveartsProductService)(session, cvefamilia);
         res.json({ product });
     }
     catch (error) {

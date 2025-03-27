@@ -1,16 +1,19 @@
 import { dbConnection } from "../database/connection";
+import { AppError, ValidationError } from "../errors/CustomError";
+import { BagInterface } from "../interface/bag";
 import { EnlacemobInterface } from "../interface/enlacemob";
+import { UserSessionInterface } from "../interface/user";
 import { bagQuerys } from "../querys/bagQuerys";
-import { handleGetSession } from "../utils/Redis/getSession";
 
 
-const getBagService = async (sessionId: string, option: string, page: string, limit: string) => {
+const getBagService = async (
+    session: UserSessionInterface,
+    option: string,
+    page: string,
+    limit: string
+): Promise<{ bag: BagInterface[] }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) throw new Error('Sesión terminada');
-
-
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -21,19 +24,24 @@ const getBagService = async (sessionId: string, option: string, page: string, li
     };
 
     const pool = await dbConnection(config);
-    const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
-    const bag = result.rows;
-    return bag;
-};
 
-const getTotalProductsInBagService = async (sessionId: string, option: string) => {
-
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
+    const bag = result.rows;
+
+    const response: { bag: BagInterface[] } = { bag };
+    return response;
+};
+
+const getTotalProductsInBagService = async (
+    session: UserSessionInterface,
+    option: string
+): Promise<{ totalproducts: number }> => {
+
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -44,20 +52,23 @@ const getTotalProductsInBagService = async (sessionId: string, option: string) =
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(bagQuerys.getTotalProductsInBag, [option, idusrmob]);
     const totalproducts = result.rows[0].count;
 
-    return totalproducts;
+    const response: { totalproducts: number } = { totalproducts };
+    return response;
 };
 
-const getTotalPriceBagService = async (sessionId: string, option: string) => {
+const getTotalPriceBagService = async (
+    session: UserSessionInterface,
+    option: string
+): Promise<{ totalproducts: number }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -68,21 +79,23 @@ const getTotalPriceBagService = async (sessionId: string, option: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(bagQuerys.getTotalPriceBag, [option, idusrmob]);
     const totalproducts = result.rows[0].total;
 
-    return totalproducts;
+    const response: { totalproducts: number } = { totalproducts };
+    return response;
 };
 
-const insertProductToBagService = async (sessionId: string, productData: EnlacemobInterface ) => {
-    // Obtener sesión desde Redis
-    const { user: userFR } = await handleGetSession({ sessionId });
+const insertProductToBagService = async (
+    session: UserSessionInterface,
+    productData: EnlacemobInterface
+): Promise<{ message: string }> => {
 
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -96,13 +109,12 @@ const insertProductToBagService = async (sessionId: string, productData: Enlacem
     const client = await pool.connect();
 
     if (!client) {
-        throw new Error('No se pudo establecer la conexión con la base de datos');
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
     try {
         const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
 
-        // Definir cuerpo del producto según la opción
         const productBodySell = [
             idinvearts,
             unidad,
@@ -110,12 +122,18 @@ const insertProductToBagService = async (sessionId: string, productData: Enlacem
             precio,
             idusrmob,
             opcion,
-            codbarras !== undefined ? codbarras : '',
-            idinveclas !== undefined ? idinveclas : 0,
-            capa !== undefined ? capa : '',
-            comentario !== undefined ? (comentario ?? "").toUpperCase() : ''
+            codbarras ?? '',
+            idinveclas ?? 0,
+            capa ?? '',
+            comentario ? comentario.toUpperCase() : ''
         ];
-
+        
+        // Iniciar transacción
+        await client.query('BEGIN');
+        await client.query(bagQuerys.addProductSellToBag, productBodySell);
+        await client.query('COMMIT');
+        
+        
         // Iniciar transacción
         await client.query('BEGIN');
         await client.query(bagQuerys.addProductSellToBag, productBodySell);
@@ -127,7 +145,7 @@ const insertProductToBagService = async (sessionId: string, productData: Enlacem
     } catch (error) {
         // Si algo falla, revertir los cambios
         await client.query('ROLLBACK');
-        throw error;
+        throw new AppError('No se pudo agregar el producto: ' + error);
     } finally {
         client.release();
     }
@@ -139,17 +157,16 @@ type producToEdit = {
     comentarios?: string
 }
 
-const updateProductInBagService = async (sessionId: string, product: producToEdit) => {
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
+const updateProductInBagService = async (
+    session: UserSessionInterface,
+    product: producToEdit
+): Promise<{ message: string }> => {
 
     const { cantidad, idenlacemob, comentarios } = product;
 
     // Convertir 'cantidad' a número si no es undefined o vacío
     const cantidadNumerica = cantidad ? Number(cantidad) : undefined;
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -162,28 +179,31 @@ const updateProductInBagService = async (sessionId: string, product: producToEdi
     const pool = await dbConnection(config);
     const client = await pool.connect();
 
+    if (!client) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    }
+
     try {
         await client.query('BEGIN');
         // Ejecutar la actualización en la base de datos
         await client.query(bagQuerys.updateProductFromBag, [cantidadNumerica, (comentarios ?? '').toUpperCase(), idenlacemob]);
-
         await client.query('COMMIT');
+        return { message: 'Datos actualizados exitosamente' };
     } catch (error) {
         await client.query('ROLLBACK');
-        throw new Error('No se pudo actualizar el producto en la bolsa: ' + error);
+        throw new AppError('No se pudo actualizar el producto en la bolsa: ' + error);
     } finally {
         client.release();
     }
 };
 
 
-const deleteProductFromBagService = async (sessionId: string, idenlacemob: string) => {
+const deleteProductFromBagService = async (
+    session: UserSessionInterface,
+    idenlacemob: string
+): Promise<{ message: string }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    };
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -196,27 +216,30 @@ const deleteProductFromBagService = async (sessionId: string, idenlacemob: strin
     const pool = await dbConnection(config);
     const client = await pool.connect();
 
+    if (!client) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    }
+
     try {
         await client.query('BEGIN');
         await client.query(bagQuerys.deleteProductFromBag, [idenlacemob]);
         await client.query('COMMIT');
+        return { message: 'Datos eliminado exitosamente' };
     } catch (error) {
         await client.query('ROLLBACK');
-        throw new Error('Error eliminando producto de la bolsa: ' + error);
+        throw new AppError('Error eliminando producto de la bolsa: ' + error);
     } finally {
         client.release();
     };
 
 };
 
-const deleteAllProductsInBagService = async (sessionId: string, opcion: string) => {
+const deleteAllProductsInBagService = async (
+    session: UserSessionInterface,
+    opcion: string
+): Promise<{ message: string }> => {
 
-    // Obtener sesión desde Redis
-    const { user: userFR } = await handleGetSession({ sessionId });
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    };
-    const { idusrmob, svr, dba, pasdba, usrdba, port } = userFR;
+    const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -233,9 +256,11 @@ const deleteAllProductsInBagService = async (sessionId: string, opcion: string) 
         await client.query('BEGIN');
         await client.query(bagQuerys.deleteAllProductsInBag, [idusrmob, opcion]);
         await client.query('COMMIT');
+        return { message: 'Datoss eliminados exitosamente' };
+
     } catch (error) {
         await client.query('ROLLBACK');
-        throw new Error('Error eliminando todos los productos de la bolsa: ' + error);
+        throw new AppError('Error eliminando todos los productos de la bolsa: ' + error);
     } finally {
         client.release();
     }

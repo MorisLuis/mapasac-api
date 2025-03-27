@@ -1,16 +1,17 @@
-import { handleGetSession } from '../utils/Redis/getSession';
 import { productSellsRestaurantQuerys } from '../querys/productSellsRestaurantQuery';
 import { dbConnection } from '../database/connection';
+import { UserSessionInterface } from '../interface/user';
+import { ValidationError } from '../errors/CustomError';
+import { ProductSellsRestaurantInterface } from '../interface/invearts';
+import { Buffer } from 'buffer';
 
+const getProductsSellsRestaurantService = async (
+    session: UserSessionInterface,
+    page: string,
+    limit: string
+): Promise<{ products: ProductSellsRestaurantInterface[] }> => {
 
-const getProductsSellsRestaurantService = async (sessionId: string, page: string, limit: string) => {
-    const { user: userFR } = await handleGetSession({ sessionId });
-
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -21,26 +22,31 @@ const getProductsSellsRestaurantService = async (sessionId: string, page: string
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    }
+
     const result = await pool.query(productSellsRestaurantQuerys.getProductsSellsRestaurant, [page, limit]);
-    const products = result.rows.map((product: any) => {
+    const products = result.rows.map((product: ProductSellsRestaurantInterface) => {
         if (product.imagen) {
             product.imagen = Buffer.from(product.imagen, 'base64').toString();
         }
         return product;
     });
 
-    return products;
+    const response: { products: ProductSellsRestaurantInterface[] } = { products }
+    return response;
 }
 
 
-const getProductSellsRestaurantDetailsService = async (sessionId: string, cvefamilia: string) => {
-    const { user: userFR } = await handleGetSession({ sessionId });
+// PENDING
+// we modify const product = result.rows to const product = result.rows[0].
+const getProductSellsRestaurantDetailsService = async (
+    session: UserSessionInterface,
+    cvefamilia: string
+): Promise<ProductSellsRestaurantInterface> => {
 
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -51,21 +57,22 @@ const getProductSellsRestaurantDetailsService = async (sessionId: string, cvefam
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    }
+
     const result = await pool.query(productSellsRestaurantQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
-    const product = result.rows;
+    const product = result.rows[0];
     return product;
 };
 
 
-const getTotalProductsSellsRestaurantService = async (sessionId: string) => {
+const getTotalProductsSellsRestaurantService = async (
+    session: UserSessionInterface
+): Promise<{ total: number }> => {
 
-    const { user: userFR } = await handleGetSession({ sessionId });
 
-    if (!userFR) {
-        throw new Error('Sesion terminada');
-    }
-
-    const { svr, dba, pasdba, usrdba, port } = userFR;
+    const { svr, dba, pasdba, usrdba, port } = session;
 
     const config = {
         user: usrdba,
@@ -76,10 +83,14 @@ const getTotalProductsSellsRestaurantService = async (sessionId: string) => {
     };
 
     const pool = await dbConnection(config);
+    if (!pool) {
+        throw new ValidationError('No se pudo establecer la conexión con la base de datos');
+    };
+
     const result = await pool.query(productSellsRestaurantQuerys.getTotalProductsSellsRestaurant);
     const total = result.rows[0].total;
-
-    return total;
+    const response: { total: number } = { total };
+    return response;
 }
 
 export {
