@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { searchClientsService, searchProductInBagService, searchProductService } from '../services/searchService';
 
-const searchProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const searchProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const { term } = req.query;
@@ -16,7 +16,7 @@ const searchProduct = async (req: Request, res: Response, next: NextFunction): P
 
 };
 
-const searchProductInBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const searchProductInBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const { term, opcion } = req.query;
@@ -29,7 +29,7 @@ const searchProductInBag = async (req: Request, res: Response, next: NextFunctio
     };
 };
 
-const searchClients = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const searchClients = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;

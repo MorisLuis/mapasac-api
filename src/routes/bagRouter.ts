@@ -5,11 +5,12 @@ import { deleteAllProductsInBag, deleteProductFromBag, getBag, getTotalPriceBag,
 const router = Router();
 
 router.get('/', validateJWT, getBag);
+router.get('/total', validateJWT, getTotalProductsInBag);
+router.get('/price', validateJWT, getTotalPriceBag);
+
 router.post('/', validateJWT, insertPoductToBag);
 router.put('/', validateJWT, updateProductFromBag);
 router.delete('/all', validateJWT, deleteAllProductsInBag);
 router.delete('/:idenlacemob', validateJWT, deleteProductFromBag);
-router.get('/total', validateJWT, getTotalProductsInBag);
-router.get('/price', validateJWT, getTotalPriceBag);
 
 export default router;

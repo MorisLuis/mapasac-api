@@ -3,7 +3,7 @@ import { getProductSellsRestaurantDetailsService, getProductsSellsRestaurantServ
 import { getProductSellsRestaurantDetailsQuerySchema, getProductsSellsRestaurantQuerySchema } from "../validations/sellsRestaurant";
 
 // Module 3 - Sells Restaurants
-const getProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -17,7 +17,7 @@ const getProductsSellsRestaurant = async (req: Request, res: Response, next: Nex
 
 };
 
-const getProductSellsRestaurantDetails = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductSellsRestaurantDetails = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const { cvefamilia } = getProductSellsRestaurantDetailsQuerySchema.parse(req.query);
@@ -28,7 +28,7 @@ const getProductSellsRestaurantDetails = async (req: Request, res: Response, nex
     };
 };
 
-const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;

@@ -1,14 +1,14 @@
 import { NextFunction, Request, Response } from "express";
 import { deleteAllProductsInBagService, deleteProductFromBagService, getBagService, getTotalPriceBagService, getTotalProductsInBagService, insertProductToBagService, updateProductInBagService } from "../services/bagService";
-import { getBagQuerySchema } from "../validations/bagValidations";
+import { getBagQuerySchema, getTotalProductsInBagQuerySchema, insertProductToBagBodySchema } from "../validations/bagValidations";
 
-const getBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
         const { limit, page, option } = getBagQuerySchema.parse(req.query);
 
-        const bag = await getBagService(
+        const { bag } = await getBagService(
             session,
             option,
             page,
@@ -22,14 +22,13 @@ const getBag = async (req: Request, res: Response, next: NextFunction): Promise<
 
 };
 
-const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
-        // Get session from REDIS.
         const session = req.session;
-        const { opcion } = req.query;
-        const total = await getTotalProductsInBagService(session, opcion as string);
-        return res.status(200).json({ total })
+        const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);
+        const total = await getTotalProductsInBagService(session, opcion);
+        res.status(200).json({ total })
 
     } catch (error) {
         return next(error);
@@ -37,60 +36,60 @@ const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunc
 
 };
 
-const getTotalPriceBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalPriceBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
-        const { opcion } = req.query;
-        const total = await getTotalPriceBagService(session, opcion as string);
-        return res.status(200).json({ total })
+        const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);
+        const total = await getTotalPriceBagService(session, opcion);
+        res.status(200).json({ total })
 
     } catch (error) {
         return next(error);
     }
 }
 
-const insertPoductToBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const insertPoductToBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
-        const productData = req.body;
+        const productData = insertProductToBagBodySchema.parse(req.body);
         const result = await insertProductToBagService(session, productData);
-        return res.status(201).json(result);
+        res.status(201).json(result);
     } catch (error) {
         return next(error);
     };
 };
 
-const updateProductFromBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const updateProductFromBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const product = req.body;
         await updateProductInBagService(session, product);
-        return res.status(200).json({ message: 'Producto actualizado exitosamente' });
+        res.status(200).json({ message: 'Producto actualizado exitosamente' });
     } catch (error) {
         return next(error);
     }
 };
 
-const deleteProductFromBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const deleteProductFromBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
         const { idenlacemob } = req.params;
         await deleteProductFromBagService(session, idenlacemob);
-        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        res.status(200).json({ message: 'Producto eliminado exitosamente' });
     } catch (error) {
         return next(error);
     };
 
 };
 
-const deleteAllProductsInBag = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const deleteAllProductsInBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
-        const { opcion } = req.query;
-        await deleteAllProductsInBagService(session, opcion as string);
-        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);
+        await deleteAllProductsInBagService(session, opcion);
+        res.status(200).json({ message: 'Producto eliminado exitosamente' });
     } catch (error) {
         return next(error);
     }

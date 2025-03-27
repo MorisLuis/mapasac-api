@@ -5,6 +5,7 @@ import { dbConnectionInitial } from '../database/connection';
 import { NotFoundError, ValidationError } from '../errors/CustomError';
 import { v4 } from 'uuid';
 import { generateAccessToken, generateRefreshToken } from '../helpers/generate-jwt';
+import { generateRedisSession } from '../helpers/generate-redis';
 
 const loginService = async (usr: string, pas: string): Promise<{ user: UserSessionInterface, token: string, refreshToken: string }> => {
 
@@ -32,6 +33,8 @@ const loginService = async (usr: string, pas: string): Promise<{ user: UserSessi
     }
 
     const sessionId = v4();
+
+    await generateRedisSession(sessionId, user)
 
     // Generar JWT
     const token = generateAccessToken(sessionId);

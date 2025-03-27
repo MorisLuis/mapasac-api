@@ -5,7 +5,7 @@ export interface EnlacemobInterface {
     unidad: number;
     cantidad: number;
     precio: number;
-    idusrmob: number;
+    idusrmob?: number;
     opcion?: number;
 
     idenlacemob?: number;

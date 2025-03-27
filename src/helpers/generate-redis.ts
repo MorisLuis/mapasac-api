@@ -3,7 +3,6 @@ import { UserSessionInterface } from "../interface/user";
 import { AppError, NotFoundError } from "../errors/CustomError";
 
 
-
 // Generar sesion de redis.
 export const generateRedisSession = async (sessionId: string, datosDelUsuario: UserSessionInterface): Promise<string | null> => {
     try {
@@ -30,7 +29,6 @@ export const getRedisSession = async (sessionId: string): Promise<UserSessionInt
         throw new AppError(`Error en generateRedisSession: ${error}`, 500);
     }
 };
-
 
 
 // Actualizar la sesión en Redis

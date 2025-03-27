@@ -3,7 +3,7 @@ import { getProducByCodebarService, getProductByClaveService, getProductByIdServ
 import { getProducByCodebarQuerySchema, getProductByClaveQuerySchema, getProductByIdQuerySchema, getProductByNoArticuloQuerySchema, getProductsQuerySchema, inveArtsBodySchema, inveArtsParamsSchema, updateProductCodebarBodySchema } from "../validations/productValidations";
 
 // Module 1 - Inventory
-const getProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -20,7 +20,7 @@ const getProducts = async (req: Request, res: Response, next: NextFunction): Pro
     }
 }
 
-const getTotalProducts = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
 
     try {
@@ -34,7 +34,7 @@ const getTotalProducts = async (req: Request, res: Response, next: NextFunction)
     }
 };
 
-const getProductByClave = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductByClave = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const { clave } = getProductByClaveQuerySchema.parse(req.query);
@@ -45,7 +45,7 @@ const getProductByClave = async (req: Request, res: Response, next: NextFunction
     }
 }
 
-const getProductById = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductById = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -58,7 +58,7 @@ const getProductById = async (req: Request, res: Response, next: NextFunction): 
     }
 }
 
-const getProducByCodebar = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProducByCodebar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -70,7 +70,7 @@ const getProducByCodebar = async (req: Request, res: Response, next: NextFunctio
     }
 }
 
-const getProductByNoArticulo = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductByNoArticulo = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -82,7 +82,7 @@ const getProductByNoArticulo = async (req: Request, res: Response, next: NextFun
     }
 }
 
-const updateProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const updateProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -96,7 +96,7 @@ const updateProduct = async (req: Request, res: Response, next: NextFunction): P
     }
 };
 
-const updateProductCodebar = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const updateProductCodebar = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;

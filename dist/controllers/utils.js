@@ -41,12 +41,12 @@ exports.getAddressDirection = getAddressDirection;
 const getModules = async (req, res, next) => {
     const idusrmob = req.idusrmob;
     if (!idusrmob) {
-        return res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
     try {
         // Delegamos la obtención de los módulos al servicio
         const modules = await (0, utilsService_1.getModulesService)(idusrmob);
-        return res.json({ modules });
+        res.json({ modules });
     }
     catch (error) {
         return next(error);

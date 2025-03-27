@@ -3,7 +3,7 @@ import { getIdinveartsProductService, getProductByEnlacemobService, getProductsS
 import { getProductByEnlacemobQuerySchema, getProductsSellsFromFamilyQuerySchema, getProductsSellsQuerySchema } from "../validations/sellValidations";
 
 // Module 2 - Sells
-const getProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -17,7 +17,7 @@ const getProductsSells = async (req: Request, res: Response, next: NextFunction)
 
 };
 
-const getProductsSellsFromFamily = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductsSellsFromFamily = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         // Get session from REDIS.
@@ -30,7 +30,7 @@ const getProductsSellsFromFamily = async (req: Request, res: Response, next: Nex
     }
 };
 
-const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -49,7 +49,7 @@ const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunc
 
 };
 
-const getUnits = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getUnits = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -61,7 +61,7 @@ const getUnits = async (req: Request, res: Response, next: NextFunction): Promis
     }
 };
 
-const getTotalProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalProductsSells = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -72,7 +72,7 @@ const getTotalProductsSells = async (req: Request, res: Response, next: NextFunc
     }
 };
 
-const getTotalClassesSells = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getTotalClassesSells = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -84,7 +84,7 @@ const getTotalClassesSells = async (req: Request, res: Response, next: NextFunct
     }
 };
 
-const getIdinveartsProduct = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const getIdinveartsProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;

@@ -7,7 +7,7 @@ const postInventory = async (req, res, next) => {
     try {
         const session = req.session;
         const result = await (0, inveartService_1.postInventoryService)(session);
-        return res.status(201).json(result);
+        res.status(201).json(result);
     }
     catch (error) {
         return next(error);

@@ -2,17 +2,17 @@ import { NextFunction, Request, Response } from "express";
 import { postInventoryService, postSellService } from "../services/inveartService";
 import { postSellQuery, postSellBodySchema } from "../validations/sellValidations";
 
-const postInventory = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const postInventory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const result = await postInventoryService(session);
-        return res.status(201).json(result);
+        res.status(201).json(result);
     } catch (error) {
         return next(error);
     }
 };
 
-const postSell = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const postSell = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;

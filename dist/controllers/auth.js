@@ -9,7 +9,7 @@ const login = async (req, res, next) => {
     try {
         const { usr, pas } = req.body;
         const { user, token, refreshToken } = await (0, authService_1.loginService)(usr, pas);
-        return res.json({
+        res.json({
             user,
             token,
             refreshToken

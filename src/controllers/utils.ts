@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { getAddressDirectionService, getClientsService, getModulesService, getPaymentTypeService } from "../services/utilsService";
 
-const getPaymentType = async (req: Request, res: Response, next: NextFunction) : Promise<Response | void> => {
+const getPaymentType = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
 
     try {
         const session = req.session;
@@ -13,7 +13,7 @@ const getPaymentType = async (req: Request, res: Response, next: NextFunction) :
 
 };
 
-const getClients = async (req: Request, res: Response, next: NextFunction) : Promise<Response | void> => {
+const getClients = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
 
     try {
         const session = req.session;
@@ -26,7 +26,7 @@ const getClients = async (req: Request, res: Response, next: NextFunction) : Pro
 
 };
 
-const getAddressDirection = async (req: Request, res: Response, next: NextFunction) : Promise<Response | void> => {
+const getAddressDirection = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     try {
         // Get session from REDIS.
         const session = req.session;
@@ -38,17 +38,17 @@ const getAddressDirection = async (req: Request, res: Response, next: NextFuncti
     }
 };
 
-const getModules = async (req: Request, res: Response, next: NextFunction) : Promise<Response | void> => {
+const getModules = async (req: Request, res: Response, next: NextFunction) : Promise<void> => {
     const idusrmob = req.idusrmob;
 
     if (!idusrmob) {
-        return res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
+        res.status(500).json({ error: 'No se pudo establecer la conexión con el usuario' });
     }
 
     try {
         // Delegamos la obtención de los módulos al servicio
         const modules = await getModulesService(idusrmob);
-        return res.json({ modules });
+        res.json({ modules });
     } catch (error) {
         return next(error);
     }

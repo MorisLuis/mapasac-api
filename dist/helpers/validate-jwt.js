@@ -16,11 +16,15 @@ const validateJWT = async (req, _res, next) => {
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const sessionId = decoded.sessionId;
-        req.sessionId = sessionId;
+        if (!sessionId) {
+            next(new CustomError_1.UnauthorizedError('Acceso denegado. Falta token o es invalido'));
+            return;
+        }
         const sessionDataRaw = await redisClient_1.default.get(`session:${sessionId}`);
         const sessionData = sessionDataRaw ?? null;
         if (!sessionData) {
-            return next(new CustomError_1.UnauthorizedError('Sesión no válida'));
+            next(new CustomError_1.UnauthorizedError('Sesión no válida'));
+            return;
         }
         ;
         try {
@@ -47,7 +51,6 @@ const validateRefreshJWT = async (req, _res, next) => {
         // Verificar el refreshToken usando la clave secreta específica para el refreshToken
         const decoded = jsonwebtoken_1.default.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
         const sessionId = decoded.sessionId;
-        req.sessionId = sessionId;
         // Buscar la sesión en Redis usando el sessionId
         const sessionDataRaw = await redisClient_1.default.get(`session:${sessionId}`);
         const sessionData = sessionDataRaw ?? null;

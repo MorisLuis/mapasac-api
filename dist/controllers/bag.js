@@ -21,7 +21,7 @@ const getTotalProductsInBag = async (req, res, next) => {
         const session = req.session;
         const { opcion } = req.query;
         const total = await (0, bagService_1.getTotalProductsInBagService)(session, opcion);
-        return res.status(200).json({ total });
+        res.status(200).json({ total });
     }
     catch (error) {
         return next(error);
@@ -33,7 +33,7 @@ const getTotalPriceBag = async (req, res, next) => {
         const session = req.session;
         const { opcion } = req.query;
         const total = await (0, bagService_1.getTotalPriceBagService)(session, opcion);
-        return res.status(200).json({ total });
+        res.status(200).json({ total });
     }
     catch (error) {
         return next(error);
@@ -45,7 +45,7 @@ const insertPoductToBag = async (req, res, next) => {
         const session = req.session;
         const productData = req.body;
         const result = await (0, bagService_1.insertProductToBagService)(session, productData);
-        return res.status(201).json(result);
+        res.status(201).json(result);
     }
     catch (error) {
         return next(error);
@@ -58,7 +58,7 @@ const updateProductFromBag = async (req, res, next) => {
         const session = req.session;
         const product = req.body;
         await (0, bagService_1.updateProductInBagService)(session, product);
-        return res.status(200).json({ message: 'Producto actualizado exitosamente' });
+        res.status(200).json({ message: 'Producto actualizado exitosamente' });
     }
     catch (error) {
         return next(error);
@@ -70,7 +70,7 @@ const deleteProductFromBag = async (req, res, next) => {
         const session = req.session;
         const { idenlacemob } = req.params;
         await (0, bagService_1.deleteProductFromBagService)(session, idenlacemob);
-        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        res.status(200).json({ message: 'Producto eliminado exitosamente' });
     }
     catch (error) {
         return next(error);
@@ -83,7 +83,7 @@ const deleteAllProductsInBag = async (req, res, next) => {
         const session = req.session;
         const { opcion } = req.query;
         await (0, bagService_1.deleteAllProductsInBagService)(session, opcion);
-        return res.status(200).json({ message: 'Producto eliminado exitosamente' });
+        res.status(200).json({ message: 'Producto eliminado exitosamente' });
     }
     catch (error) {
         return next(error);

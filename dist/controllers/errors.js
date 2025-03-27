@@ -12,7 +12,7 @@ const handleErrorsFrontend = async (req, res, next) => {
         await pool.query('BEGIN');
         await pool.query(utilsQuery_1.utilsQuery.insertErrorFrontend, [session.idusrmob, sendMessage]);
         await pool.query('COMMIT');
-        return res.json({ ok: true });
+        res.json({ ok: true });
     }
     catch (error) {
         return next(error);

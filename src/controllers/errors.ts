@@ -3,7 +3,7 @@ import { dbConnectionInitial } from '../database/connection';
 import { utilsQuery } from '../querys/utilsQuery';
 import { Pool } from 'pg';
 
-const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const session = req.session;
 
     try {
@@ -13,7 +13,7 @@ const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunct
         await pool.query('BEGIN');
         await pool.query(utilsQuery.insertErrorFrontend, [session.idusrmob, sendMessage]);
         await pool.query('COMMIT');
-        return res.json({ ok: true })
+        res.json({ ok: true })
 
     } catch (error) {
         return next(error)
@@ -30,7 +30,7 @@ interface ErrorsBackendInterface {
     code: string;
 }
 
-const handleErrorsBackend = async (error: ErrorsBackendInterface): Promise<Response | void> => {
+const handleErrorsBackend = async (error: ErrorsBackendInterface): Promise<void> => {
 
     let pool: Pool | null = null;
     try {

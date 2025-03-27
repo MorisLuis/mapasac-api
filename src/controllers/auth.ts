@@ -5,11 +5,11 @@ import { generateAccessToken, generateRefreshToken } from '../helpers/generate-j
 import { UnauthorizedError } from '../errors/CustomError';
 import { UserSessionInterface } from '../interface/user';
 
-const login = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const { usr, pas } = req.body;
         const { user, token, refreshToken } = await loginService(usr, pas);
-        return res.json({
+        res.json({
             user,
             token,
             refreshToken
@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<R
     }
 };
 
-const renewLogin = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const renewLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
         const sessionId = req.sessionId;
@@ -45,7 +45,7 @@ const renewLogin = async (req: Request, res: Response, next: NextFunction): Prom
     }
 };
 
-const logout = async (req: Request, res: Response, next: NextFunction): Promise<Response | void> => {
+const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const sessionId = req.sessionId;
         if (!sessionId) throw new UnauthorizedError('Sesion terminada')
