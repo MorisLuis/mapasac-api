@@ -95,9 +95,6 @@ const insertProductToBagService = async (session, productData) => {
         await client.query('BEGIN');
         await client.query(bagQuerys_1.bagQuerys.addProductSellToBag, productBodySell);
         await client.query('COMMIT');
-        // Iniciar transacción
-        await client.query('BEGIN');
-        await client.query(bagQuerys_1.bagQuerys.addProductSellToBag, productBodySell);
         // Confirmar transacción
         await client.query('COMMIT');
         return { message: 'Datos insertados exitosamente' };

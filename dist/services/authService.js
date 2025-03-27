@@ -6,6 +6,7 @@ const connection_1 = require("../database/connection");
 const CustomError_1 = require("../errors/CustomError");
 const uuid_1 = require("uuid");
 const generate_jwt_1 = require("../helpers/generate-jwt");
+const generate_redis_1 = require("../helpers/generate-redis");
 const loginService = async (usr, pas) => {
     const pool = await (0, connection_1.dbConnectionInitial)();
     if (!pool) {
@@ -26,6 +27,7 @@ const loginService = async (usr, pas) => {
         throw new CustomError_1.NotFoundError('Contraseña incorrecta');
     }
     const sessionId = (0, uuid_1.v4)();
+    await (0, generate_redis_1.generateRedisSession)(sessionId, user);
     // Generar JWT
     const token = (0, generate_jwt_1.generateAccessToken)(sessionId);
     const refreshToken = (0, generate_jwt_1.generateRefreshToken)(sessionId);

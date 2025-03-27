@@ -7,7 +7,7 @@ const getBag = async (req, res, next) => {
     try {
         const session = req.session;
         const { limit, page, option } = bagValidations_1.getBagQuerySchema.parse(req.query);
-        const bag = await (0, bagService_1.getBagService)(session, option, page, limit);
+        const { bag } = await (0, bagService_1.getBagService)(session, option, page, limit);
         res.status(200).json({ bag });
     }
     catch (error) {
@@ -17,9 +17,8 @@ const getBag = async (req, res, next) => {
 exports.getBag = getBag;
 const getTotalProductsInBag = async (req, res, next) => {
     try {
-        // Get session from REDIS.
         const session = req.session;
-        const { opcion } = req.query;
+        const { opcion } = bagValidations_1.getTotalProductsInBagQuerySchema.parse(req.query);
         const total = await (0, bagService_1.getTotalProductsInBagService)(session, opcion);
         res.status(200).json({ total });
     }
@@ -31,7 +30,7 @@ exports.getTotalProductsInBag = getTotalProductsInBag;
 const getTotalPriceBag = async (req, res, next) => {
     try {
         const session = req.session;
-        const { opcion } = req.query;
+        const { opcion } = bagValidations_1.getTotalProductsInBagQuerySchema.parse(req.query);
         const total = await (0, bagService_1.getTotalPriceBagService)(session, opcion);
         res.status(200).json({ total });
     }
@@ -43,7 +42,7 @@ exports.getTotalPriceBag = getTotalPriceBag;
 const insertPoductToBag = async (req, res, next) => {
     try {
         const session = req.session;
-        const productData = req.body;
+        const productData = bagValidations_1.insertProductToBagBodySchema.parse(req.body);
         const result = await (0, bagService_1.insertProductToBagService)(session, productData);
         res.status(201).json(result);
     }
@@ -81,7 +80,7 @@ exports.deleteProductFromBag = deleteProductFromBag;
 const deleteAllProductsInBag = async (req, res, next) => {
     try {
         const session = req.session;
-        const { opcion } = req.query;
+        const { opcion } = bagValidations_1.getTotalProductsInBagQuerySchema.parse(req.query);
         await (0, bagService_1.deleteAllProductsInBagService)(session, opcion);
         res.status(200).json({ message: 'Producto eliminado exitosamente' });
     }
