@@ -8,7 +8,6 @@ const router = Router();
 router.post('/login', login);
 router.get('/renew', validateRefreshJWT, renewLogin);
 router.get('/logout', validateJWT, logout);
-
 router.get('/modules', validateJWT, getModules);
 
 export default router;

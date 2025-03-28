@@ -13,14 +13,17 @@ export const getTotalProductsInBagQuerySchema = z.object({
 
 
 export const insertProductToBagBodySchema = z.object({
-    idinvearts: z.coerce.number(), // Convierte string a number si es necesario
+    idinvearts: z.coerce.number(),
     codbarras: z.string().optional(),
     unidad: z.coerce.number(),
     cantidad: z.coerce.number(),
     precio: z.coerce.number(),
-    opcion: z.coerce.number().optional(),
+    opcion: z.coerce
+        .number()
+        .refine((val) => [0, 2, 4].includes(val), {
+            message: "Opción debe ser 0, 2 o 4",
+        }),
     capa: z.string().optional(),
     idinveclas: z.coerce.number().optional(),
-    comentario: z.string().optional()
+    comentario: z.string().optional(),
 });
-

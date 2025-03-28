@@ -11,14 +11,18 @@ exports.getTotalProductsInBagQuerySchema = zod_1.z.object({
     opcion: zod_1.z.string().min(1, "option es requerido"),
 });
 exports.insertProductToBagBodySchema = zod_1.z.object({
-    idinvearts: zod_1.z.coerce.number(), // Convierte string a number si es necesario
+    idinvearts: zod_1.z.coerce.number(),
     codbarras: zod_1.z.string().optional(),
     unidad: zod_1.z.coerce.number(),
     cantidad: zod_1.z.coerce.number(),
     precio: zod_1.z.coerce.number(),
-    opcion: zod_1.z.coerce.number().optional(),
+    opcion: zod_1.z.coerce
+        .number()
+        .refine((val) => [0, 2, 4].includes(val), {
+        message: "Opción debe ser 0, 2 o 4",
+    }),
     capa: zod_1.z.string().optional(),
     idinveclas: zod_1.z.coerce.number().optional(),
-    comentario: zod_1.z.string().optional()
+    comentario: zod_1.z.string().optional(),
 });
 //# sourceMappingURL=bagValidations.js.map

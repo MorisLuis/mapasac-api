@@ -8,7 +8,7 @@ const getProductsSellsRestaurant = async (req, res, next) => {
     try {
         const session = req.session;
         const { limit, page } = sellsRestaurant_1.getProductsSellsRestaurantQuerySchema.parse(req.query);
-        const products = await (0, productSellsRestaurantService_1.getProductsSellsRestaurantService)(session, page, limit);
+        const { products } = await (0, productSellsRestaurantService_1.getProductsSellsRestaurantService)(session, page, limit);
         res.json({ products });
     }
     catch (error) {
@@ -21,7 +21,7 @@ const getProductSellsRestaurantDetails = async (req, res, next) => {
     try {
         const session = req.session;
         const { cvefamilia } = sellsRestaurant_1.getProductSellsRestaurantDetailsQuerySchema.parse(req.query);
-        const product = await (0, productSellsRestaurantService_1.getProductSellsRestaurantDetailsService)(session, cvefamilia);
+        const { product } = await (0, productSellsRestaurantService_1.getProductSellsRestaurantDetailsService)(session, cvefamilia);
         res.json({ product });
     }
     catch (error) {
@@ -33,7 +33,7 @@ exports.getProductSellsRestaurantDetails = getProductSellsRestaurantDetails;
 const getTotalProductsSellsRestaurant = async (req, res, next) => {
     try {
         const session = req.session;
-        const total = await (0, productSellsRestaurantService_1.getTotalProductsSellsRestaurantService)(session);
+        const { total } = await (0, productSellsRestaurantService_1.getTotalProductsSellsRestaurantService)(session);
         res.json({ total });
     }
     catch (error) {

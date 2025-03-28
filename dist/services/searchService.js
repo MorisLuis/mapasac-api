@@ -24,7 +24,7 @@ const searchProductService = async (session, searchTerm) => {
 };
 exports.searchProductService = searchProductService;
 const searchProductInBagService = async (session, searchTerm, opcion) => {
-    const { svr, dba, pasdba, usrdba, port } = session;
+    const { svr, dba, pasdba, usrdba, port, idusrmob } = session;
     const config = {
         user: usrdba,
         database: dba,
@@ -37,7 +37,7 @@ const searchProductInBagService = async (session, searchTerm, opcion) => {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     ;
-    const result = await pool.query(opcion === '2' ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, searchTerm]);
+    const result = await pool.query(opcion === 2 ? searchQuery_1.searchQuerys.searchProductInBagSells : searchQuery_1.searchQuerys.searchProductInBag, [opcion, idusrmob, searchTerm]);
     const products = result.rows;
     const response = { products };
     return response;

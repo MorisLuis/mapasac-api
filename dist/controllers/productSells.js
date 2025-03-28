@@ -8,7 +8,7 @@ const getProductsSells = async (req, res, next) => {
     try {
         const session = req.session;
         const { limit, page } = sellValidations_1.getProductsSellsQuerySchema.parse(req.query);
-        const products = await (0, productSellsService_1.getProductsSellsService)(session, page, limit);
+        const { products } = await (0, productSellsService_1.getProductsSellsService)(session, page, limit);
         res.json({ products });
     }
     catch (error) {
@@ -22,7 +22,7 @@ const getProductsSellsFromFamily = async (req, res, next) => {
         // Get session from REDIS.
         const session = req.session;
         const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const products = await (0, productSellsService_1.getProductsSellsFromFamilyService)(session, cvefamilia);
+        const { products } = await (0, productSellsService_1.getProductsSellsFromFamilyService)(session, cvefamilia);
         res.json({ products });
     }
     catch (error) {
@@ -34,8 +34,8 @@ const getProductByEnlacemob = async (req, res, next) => {
     try {
         const session = req.session;
         const { idinvearts, idinveclas, capa } = sellValidations_1.getProductByEnlacemobQuerySchema.parse(req.query);
-        const product = await (0, productSellsService_1.getProductByEnlacemobService)(session, idinvearts, idinveclas, capa);
-        res.json({ product });
+        const { products } = await (0, productSellsService_1.getProductByEnlacemobService)(session, idinvearts, idinveclas, capa);
+        res.json({ products });
     }
     catch (error) {
         return next(error);
@@ -46,7 +46,7 @@ exports.getProductByEnlacemob = getProductByEnlacemob;
 const getUnits = async (req, res, next) => {
     try {
         const session = req.session;
-        const units = await (0, productSellsService_1.getUnitsService)(session);
+        const { units } = await (0, productSellsService_1.getUnitsService)(session);
         res.json({ units });
     }
     catch (error) {
@@ -57,7 +57,7 @@ exports.getUnits = getUnits;
 const getTotalProductsSells = async (req, res, next) => {
     try {
         const session = req.session;
-        const total = await (0, productSellsService_1.getTotalProductsSellsService)(session);
+        const { total } = await (0, productSellsService_1.getTotalProductsSellsService)(session);
         res.json({ total });
     }
     catch (error) {
@@ -69,7 +69,7 @@ const getTotalClassesSells = async (req, res, next) => {
     try {
         const session = req.session;
         const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const total = await (0, productSellsService_1.getTotalClassesSellsService)(session, cvefamilia);
+        const { total } = await (0, productSellsService_1.getTotalClassesSellsService)(session, cvefamilia);
         res.json({ total });
     }
     catch (error) {
@@ -77,12 +77,13 @@ const getTotalClassesSells = async (req, res, next) => {
     }
 };
 exports.getTotalClassesSells = getTotalClassesSells;
+// Pending
 const getIdinveartsProduct = async (req, res, next) => {
     try {
         const session = req.session;
         const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const product = await (0, productSellsService_1.getIdinveartsProductService)(session, cvefamilia);
-        res.json({ product });
+        const { idinvearts } = await (0, productSellsService_1.getIdinveartsProductService)(session, cvefamilia);
+        res.json({ idinvearts });
     }
     catch (error) {
         return next(error);

@@ -36,11 +36,11 @@ const searchProductService = async (
 const searchProductInBagService = async (
     session: UserSessionInterface,
     searchTerm: string,
-    opcion: string
+    opcion: 0 | 2 | 4
 ): Promise<{ products: ProductInterface[] }> => {
 
 
-    const { svr, dba, pasdba, usrdba, port } = session;
+    const { svr, dba, pasdba, usrdba, port, idusrmob } = session;
 
     const config = {
         user: usrdba,
@@ -55,9 +55,10 @@ const searchProductInBagService = async (
         throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     };
     const result = await pool.query(
-        opcion === '2' ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
-        [opcion, searchTerm]
+        opcion === 2 ? searchQuerys.searchProductInBagSells : searchQuerys.searchProductInBag,
+        [opcion, idusrmob, searchTerm]
     );
+
     const products = result.rows;
     const response: { products: ProductInterface[] } = { products }
 

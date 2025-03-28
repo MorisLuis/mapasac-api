@@ -1,5 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import { searchClientsService, searchProductInBagService, searchProductService } from '../services/searchService';
+import { searchProductInBagQuerySchema } from '../validations/searchValidations';
 
 const searchProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
@@ -7,7 +8,7 @@ const searchProduct = async (req: Request, res: Response, next: NextFunction): P
         const { term } = req.query;
         const session = req.session;
         const searchTerm = term ? term.toString() : 'a';
-        const products = await searchProductService(session, searchTerm);
+        const { products } = await searchProductService(session, searchTerm);
         res.json({ products })
     } catch (error) {
 
@@ -19,9 +20,9 @@ const searchProduct = async (req: Request, res: Response, next: NextFunction): P
 const searchProductInBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const session = req.session;
-        const { term, opcion } = req.query;
+        const { term, opcion } = searchProductInBagQuerySchema.parse(req.query);
         const searchTerm = term ? term.toString() : 'a';
-        const products = await searchProductInBagService(session, searchTerm, opcion as string);
+        const { products } = await searchProductInBagService(session, searchTerm, opcion);
         res.json({ products })
 
     } catch (error) {
@@ -35,7 +36,7 @@ const searchClients = async (req: Request, res: Response, next: NextFunction): P
         const session = req.session;
         const { term } = req.query;
         const searchTerm = term ? term.toString() : 'a';
-        const clients = await searchClientsService(session, searchTerm);
+        const { clients } = await searchClientsService(session, searchTerm);
         res.json({ clients })
 
     } catch (error) {

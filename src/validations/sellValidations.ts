@@ -21,13 +21,14 @@ export const postSellBodySchema = z.object({
     idclientes: z.string().min(1, "idclientes es requerido"),
     comments: z.string().min(1, "comments es requerido"),
     domicilio: z.string().min(1, "domicilio es requerido"),
-    idviaenvio: z.string().min(1, "idviaenvio es requerido"),
+    idviaenvio: z.string().min(1, "idviaenvio es requerido")
 });
 
 
 export const postSellQuery = z.object({
     opcion: z.preprocess(
         (val) => Number(val),
-        z.union([z.literal(0), z.literal(2), z.literal(4)])
+        z.union([z.literal(2), z.literal(4)])
     ),
 });
+

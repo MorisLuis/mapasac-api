@@ -46,7 +46,8 @@ const getProductSellsRestaurantDetailsService = async (session, cvefamilia) => {
     }
     const result = await pool.query(productSellsRestaurantQuery_1.productSellsRestaurantQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
     const product = result.rows[0];
-    return product;
+    const response = { product };
+    return response;
 };
 exports.getProductSellsRestaurantDetailsService = getProductSellsRestaurantDetailsService;
 const getTotalProductsSellsRestaurantService = async (session) => {

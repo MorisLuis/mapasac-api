@@ -85,9 +85,10 @@ const getAddressDirectionService = async (
 };
 
 const getModulesService = async (
-    idusrmob: number
+    session: UserSessionInterface
 ): Promise<{ modules: ModuleInterface[] }> => {
 
+    const { idusrmob } = session;
     const pool: Pool = await dbConnectionInitial();
     if (!pool) {
         throw new ValidationError('No se pudo establecer la conexión con la base de datos');

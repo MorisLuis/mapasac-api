@@ -3,7 +3,7 @@ import { dbConnection } from '../database/connection';
 import { UserSessionInterface } from '../interface/user';
 import { ValidationError } from '../errors/CustomError';
 import { UnitsInterface } from '../interface/other';
-import { InveArtsInterface, ProductSellsFamilyInterface, ProductSellsInterface } from '../interface/invearts';
+import { ProductSellsFamilyInterface, ProductSellsInterface } from '../interface/invearts';
 import { Buffer } from 'buffer';
 
 
@@ -174,7 +174,7 @@ const getTotalClassesSellsService = async (
 const getIdinveartsProductService = async (
     session: UserSessionInterface,
     cvefamilia: string
-): Promise<{ product: InveArtsInterface }> => {
+): Promise<{ idinvearts: number }> => {
 
     const { svr, dba, pasdba, usrdba, port } = session;
 
@@ -191,9 +191,9 @@ const getIdinveartsProductService = async (
         throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     };
     const result = await pool.query(productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
-    const product = result.rows[0];
+    const idinvearts = result.rows[0];
 
-    const response: { product: InveArtsInterface } = { product };
+    const response: { idinvearts: number } = { idinvearts };
     return response;
 }
 

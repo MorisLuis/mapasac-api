@@ -8,7 +8,7 @@ const getProductsSells = async (req: Request, res: Response, next: NextFunction)
     try {
         const session = req.session;
         const { limit, page } = getProductsSellsQuerySchema.parse(req.query);
-        const products = await getProductsSellsService(session, page, limit)
+        const { products } = await getProductsSellsService(session, page, limit)
         res.json({ products });
 
     } catch (error) {
@@ -23,7 +23,7 @@ const getProductsSellsFromFamily = async (req: Request, res: Response, next: Nex
         // Get session from REDIS.
         const session = req.session;
         const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const products = await getProductsSellsFromFamilyService(session, cvefamilia);
+        const { products } = await getProductsSellsFromFamilyService(session, cvefamilia);
         res.json({ products })
     } catch (error) {
         return next(error);
@@ -35,13 +35,13 @@ const getProductByEnlacemob = async (req: Request, res: Response, next: NextFunc
     try {
         const session = req.session;
         const { idinvearts, idinveclas, capa } = getProductByEnlacemobQuerySchema.parse(req.query);
-        const product = await getProductByEnlacemobService(
+        const { products } = await getProductByEnlacemobService(
             session,
             idinvearts,
             idinveclas,
             capa
         );
-        res.json({ product });
+        res.json({ products });
 
     } catch (error) {
         return next(error);
@@ -53,7 +53,7 @@ const getUnits = async (req: Request, res: Response, next: NextFunction): Promis
 
     try {
         const session = req.session;
-        const units = await getUnitsService(session);
+        const { units } = await getUnitsService(session);
         res.json({ units })
 
     } catch (error) {
@@ -65,7 +65,7 @@ const getTotalProductsSells = async (req: Request, res: Response, next: NextFunc
 
     try {
         const session = req.session;
-        const total = await getTotalProductsSellsService(session);
+        const { total } = await getTotalProductsSellsService(session);
         res.json({ total });
     } catch (error) {
         return next(error);
@@ -77,20 +77,21 @@ const getTotalClassesSells = async (req: Request, res: Response, next: NextFunct
     try {
         const session = req.session;
         const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const total = await getTotalClassesSellsService(session, cvefamilia);
+        const { total } = await getTotalClassesSellsService(session, cvefamilia);
         res.json({ total });
     } catch (error) {
         return next(error);
     }
 };
 
+// Pending
 const getIdinveartsProduct = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
         const { cvefamilia } = getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const product = await getIdinveartsProductService(session, cvefamilia);
-        res.json({ product });
+        const { idinvearts } = await getIdinveartsProductService(session, cvefamilia);
+        res.json({ idinvearts });
     } catch (error) {
         return next(error);
     }

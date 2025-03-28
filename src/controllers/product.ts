@@ -108,8 +108,7 @@ const updateProductCodebar = async (req: Request, res: Response, next: NextFunct
     } catch (error) {
         return next(error);
     }
-}
-
+};
 
 export {
     // Module 1 - Inventory
