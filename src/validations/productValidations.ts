@@ -39,9 +39,9 @@ export const inveArtsBodySchema = z.object({
 
     // Campos adicionales de ProductInterface
     familia: z.string().optional(),
-    precio: z.number(), // ❗ Requerido en la interfaz
+    precio: z.number().optional(), // ❗ Requerido en la interfaz
     cantidad: z.number().optional(),
-    idenlacemob: z.number(), // ❗ Requerido en la interfaz
+    idenlacemob: z.number().optional(), // ❗ Requerido en la interfaz
     unidad_nombre: z.string().optional(),
 });
 

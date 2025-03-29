@@ -22,7 +22,6 @@ const getProducts = async (req: Request, res: Response, next: NextFunction): Pro
 
 const getTotalProducts = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
-
     try {
         const session = req.session;
         const { total } = await getTotalProductsService({ session })

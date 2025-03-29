@@ -5,6 +5,7 @@ import { ValidationError } from '../errors/CustomError';
 import { UnitsInterface } from '../interface/other';
 import { ProductSellsFamilyInterface, ProductSellsInterface } from '../interface/invearts';
 import { Buffer } from 'buffer';
+import ClassInterface from '../interface/class';
 
 
 const getProductsSellsService = async (
@@ -43,7 +44,7 @@ const getProductsSellsService = async (
 const getProductsSellsFromFamilyService = async (
     session: UserSessionInterface,
     cvefamilia: string
-): Promise<{ products: ProductSellsFamilyInterface[] }> => {
+): Promise<{ classes: ClassInterface[] }> => {
 
     const { svr, dba, pasdba, usrdba, port } = session;
 
@@ -61,8 +62,8 @@ const getProductsSellsFromFamilyService = async (
     };
 
     const result = await pool.query(productSellsQuerys.getProductsSellsFromFamily, [cvefamilia]);
-    const products = result.rows;
-    const response: { products: ProductSellsFamilyInterface[] } = { products }
+    const classes = result.rows;
+    const response: { classes: ClassInterface[] } = { classes }
     return response;
 
 };

@@ -17,7 +17,7 @@ export const insertProductToBagBodySchema = z.object({
     codbarras: z.string().optional(),
     unidad: z.coerce.number(),
     cantidad: z.coerce.number(),
-    precio: z.coerce.number(),
+    precio1: z.coerce.number(),
     opcion: z.coerce
         .number()
         .refine((val) => [0, 2, 4].includes(val), {

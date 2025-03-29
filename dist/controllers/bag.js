@@ -19,8 +19,8 @@ const getTotalProductsInBag = async (req, res, next) => {
     try {
         const session = req.session;
         const { opcion } = bagValidations_1.getTotalProductsInBagQuerySchema.parse(req.query);
-        const total = await (0, bagService_1.getTotalProductsInBagService)(session, opcion);
-        res.status(200).json({ total });
+        const { totalproducts } = await (0, bagService_1.getTotalProductsInBagService)(session, opcion);
+        res.status(200).json({ total: totalproducts });
     }
     catch (error) {
         return next(error);
@@ -31,8 +31,8 @@ const getTotalPriceBag = async (req, res, next) => {
     try {
         const session = req.session;
         const { opcion } = bagValidations_1.getTotalProductsInBagQuerySchema.parse(req.query);
-        const total = await (0, bagService_1.getTotalPriceBagService)(session, opcion);
-        res.status(200).json({ total });
+        const { totalPrice } = await (0, bagService_1.getTotalPriceBagService)(session, opcion);
+        res.status(200).json({ total: totalPrice });
     }
     catch (error) {
         return next(error);

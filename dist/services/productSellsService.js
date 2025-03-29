@@ -45,8 +45,8 @@ const getProductsSellsFromFamilyService = async (session, cvefamilia) => {
     }
     ;
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getProductsSellsFromFamily, [cvefamilia]);
-    const products = result.rows;
-    const response = { products };
+    const classes = result.rows;
+    const response = { classes };
     return response;
 };
 exports.getProductsSellsFromFamilyService = getProductsSellsFromFamilyService;

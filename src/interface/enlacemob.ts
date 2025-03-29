@@ -4,7 +4,7 @@ export interface EnlacemobInterface {
     idinvearts: number;
     unidad: number;
     cantidad: number;
-    precio: number;
+    precio1: number;
     idusrmob?: number;
     opcion?: number;
 
@@ -18,9 +18,9 @@ export interface EnlacemobInterface {
 };
 
 export interface EnlacemobInterfaceSales {
-    clavepago: string,
-    idclientes: string,
-    comments: string,
-    domicilio: string,
-    idviaenvio: string
+    clavepago: number,
+    idclientes: number,
+    comments?: string,
+    domicilio?: string,
+    idviaenvio?: string
 }

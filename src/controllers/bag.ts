@@ -27,8 +27,8 @@ const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunc
     try {
         const session = req.session;
         const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);
-        const total = await getTotalProductsInBagService(session, opcion);
-        res.status(200).json({ total })
+        const { totalproducts } = await getTotalProductsInBagService(session, opcion);
+        res.status(200).json({ total: totalproducts })
 
     } catch (error) {
         return next(error);
@@ -41,8 +41,8 @@ const getTotalPriceBag = async (req: Request, res: Response, next: NextFunction)
     try {
         const session = req.session;
         const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);
-        const total = await getTotalPriceBagService(session, opcion);
-        res.status(200).json({ total })
+        const { totalPrice } = await getTotalPriceBagService(session, opcion);
+        res.status(200).json({ total: totalPrice })
 
     } catch (error) {
         return next(error);

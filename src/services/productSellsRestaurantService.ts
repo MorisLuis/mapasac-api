@@ -44,7 +44,7 @@ const getProductsSellsRestaurantService = async (
 const getProductSellsRestaurantDetailsService = async (
     session: UserSessionInterface,
     cvefamilia: string
-): Promise<{ product: ProductSellsRestaurantInterface }> => {
+): Promise<{ product: ProductSellsRestaurantInterface[] }> => {
 
     const { svr, dba, pasdba, usrdba, port } = session;
 
@@ -62,8 +62,8 @@ const getProductSellsRestaurantDetailsService = async (
     }
 
     const result = await pool.query(productSellsRestaurantQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
-    const product = result.rows[0];
-    const response: { product: ProductSellsRestaurantInterface } = { product }
+    const product = result.rows;
+    const response: { product: ProductSellsRestaurantInterface[] } = { product }
 
     return response
 };

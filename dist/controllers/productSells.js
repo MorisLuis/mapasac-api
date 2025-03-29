@@ -22,8 +22,8 @@ const getProductsSellsFromFamily = async (req, res, next) => {
         // Get session from REDIS.
         const session = req.session;
         const { cvefamilia } = sellValidations_1.getProductsSellsFromFamilyQuerySchema.parse(req.query);
-        const { products } = await (0, productSellsService_1.getProductsSellsFromFamilyService)(session, cvefamilia);
-        res.json({ products });
+        const { classes } = await (0, productSellsService_1.getProductsSellsFromFamilyService)(session, cvefamilia);
+        res.json({ classes });
     }
     catch (error) {
         return next(error);

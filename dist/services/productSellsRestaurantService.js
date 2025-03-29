@@ -45,7 +45,7 @@ const getProductSellsRestaurantDetailsService = async (session, cvefamilia) => {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     const result = await pool.query(productSellsRestaurantQuery_1.productSellsRestaurantQuerys.getProductSellsRestaurantDetails, [cvefamilia]);
-    const product = result.rows[0];
+    const product = result.rows;
     const response = { product };
     return response;
 };

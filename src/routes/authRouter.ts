@@ -6,7 +6,7 @@ import { getModules } from "../controllers/utils";
 const router = Router();
 
 router.post('/login', login);
-router.get('/renew', validateRefreshJWT, renewLogin);
+router.post('/renew', validateRefreshJWT, renewLogin);
 router.get('/logout', validateJWT, logout);
 router.get('/modules', validateJWT, getModules);
 

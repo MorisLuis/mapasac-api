@@ -64,7 +64,8 @@ const getAddressDirectionService = async (session, idpvtadomi) => {
     return response;
 };
 exports.getAddressDirectionService = getAddressDirectionService;
-const getModulesService = async (idusrmob) => {
+const getModulesService = async (session) => {
+    const { idusrmob } = session;
     const pool = await (0, connection_1.dbConnectionInitial)();
     if (!pool) {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');

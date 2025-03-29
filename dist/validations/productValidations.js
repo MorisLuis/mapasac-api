@@ -33,9 +33,9 @@ exports.inveArtsBodySchema = zod_1.z.object({
     unidad: zod_1.z.number().optional(),
     // Campos adicionales de ProductInterface
     familia: zod_1.z.string().optional(),
-    precio: zod_1.z.number(), // ❗ Requerido en la interfaz
+    precio: zod_1.z.number().optional(), // ❗ Requerido en la interfaz
     cantidad: zod_1.z.number().optional(),
-    idenlacemob: zod_1.z.number(), // ❗ Requerido en la interfaz
+    idenlacemob: zod_1.z.number().optional(), // ❗ Requerido en la interfaz
     unidad_nombre: zod_1.z.string().optional(),
 });
 exports.inveArtsParamsSchema = zod_1.z.object({

@@ -58,7 +58,6 @@ const getTotalProductsInBagService = async (
 
     const result = await pool.query(bagQuerys.getTotalProductsInBag, [option, idusrmob]);
     const totalproducts = result.rows[0].count;
-
     const response: { totalproducts: number } = { totalproducts };
     return response;
 };
@@ -66,7 +65,7 @@ const getTotalProductsInBagService = async (
 const getTotalPriceBagService = async (
     session: UserSessionInterface,
     option: string
-): Promise<{ totalproducts: number }> => {
+): Promise<{ totalPrice: number }> => {
 
     const { idusrmob, svr, dba, pasdba, usrdba, port } = session;
 
@@ -84,9 +83,9 @@ const getTotalPriceBagService = async (
     };
 
     const result = await pool.query(bagQuerys.getTotalPriceBag, [option, idusrmob]);
-    const totalproducts = result.rows[0].total;
+    const totalPrice = result.rows[0].total;
 
-    const response: { totalproducts: number } = { totalproducts };
+    const response: { totalPrice: number } = { totalPrice };
     return response;
 };
 
@@ -113,13 +112,13 @@ const insertProductToBagService = async (
     }
 
     try {
-        const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
+        const { idinvearts, codbarras, unidad, cantidad, precio1, opcion, capa, idinveclas, comentario } = productData;
 
         const productBodySell = [
             idinvearts,
             unidad,
             cantidad,
-            precio,
+            precio1,
             idusrmob,
             opcion,
             codbarras ?? '',

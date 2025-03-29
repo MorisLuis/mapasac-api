@@ -17,11 +17,11 @@ export const getProductsSellsFromFamilyQuerySchema = z.object({
 
 
 export const postSellBodySchema = z.object({
-    clavepago: z.string().min(1, "clavepago es requerido"),
-    idclientes: z.string().min(1, "idclientes es requerido"),
-    comments: z.string().min(1, "comments es requerido"),
-    domicilio: z.string().min(1, "domicilio es requerido"),
-    idviaenvio: z.string().min(1, "idviaenvio es requerido")
+    clavepago: z.number().min(1, "clavepago es requerido"),
+    idclientes: z.number().min(1, "idclientes es requerido"),
+    comments: z.string().optional(),
+    domicilio: z.string().optional(),
+    idviaenvio: z.string().optional()
 });
 
 

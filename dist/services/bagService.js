@@ -58,8 +58,8 @@ const getTotalPriceBagService = async (session, option) => {
     }
     ;
     const result = await pool.query(bagQuerys_1.bagQuerys.getTotalPriceBag, [option, idusrmob]);
-    const totalproducts = result.rows[0].total;
-    const response = { totalproducts };
+    const totalPrice = result.rows[0].total;
+    const response = { totalPrice };
     return response;
 };
 exports.getTotalPriceBagService = getTotalPriceBagService;
@@ -78,12 +78,12 @@ const insertProductToBagService = async (session, productData) => {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     try {
-        const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
+        const { idinvearts, codbarras, unidad, cantidad, precio1, opcion, capa, idinveclas, comentario } = productData;
         const productBodySell = [
             idinvearts,
             unidad,
             cantidad,
-            precio,
+            precio1,
             idusrmob,
             opcion,
             codbarras ?? '',

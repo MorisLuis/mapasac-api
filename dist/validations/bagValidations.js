@@ -15,7 +15,7 @@ exports.insertProductToBagBodySchema = zod_1.z.object({
     codbarras: zod_1.z.string().optional(),
     unidad: zod_1.z.coerce.number(),
     cantidad: zod_1.z.coerce.number(),
-    precio: zod_1.z.coerce.number(),
+    precio1: zod_1.z.coerce.number(),
     opcion: zod_1.z.coerce
         .number()
         .refine((val) => [0, 2, 4].includes(val), {

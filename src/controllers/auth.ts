@@ -21,6 +21,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
 };
 
 const renewLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
     try {
         const session = req.session;
         const sessionId = req.sessionId;
