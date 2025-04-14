@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.renewLogin = exports.login = void 0;
+exports.logout = exports.refresh = exports.login = void 0;
 const authService_1 = require("../services/authService");
 const generate_redis_1 = require("../helpers/generate-redis");
 const generate_jwt_1 = require("../helpers/generate-jwt");
@@ -20,7 +20,7 @@ const login = async (req, res, next) => {
     }
 };
 exports.login = login;
-const renewLogin = async (req, res, next) => {
+const refresh = async (req, res, next) => {
     try {
         const session = req.session;
         const sessionId = req.sessionId;
@@ -40,7 +40,7 @@ const renewLogin = async (req, res, next) => {
         return next(error);
     }
 };
-exports.renewLogin = renewLogin;
+exports.refresh = refresh;
 const logout = async (req, res, next) => {
     try {
         const sessionId = req.sessionId;

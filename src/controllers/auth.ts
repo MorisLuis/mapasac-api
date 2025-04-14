@@ -1,9 +1,9 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { loginService } from '../services/authService';
 import { generateRedisSession, handleDeleteRedisSession } from '../helpers/generate-redis';
 import { generateAccessToken, generateRefreshToken } from '../helpers/generate-jwt';
 import { UnauthorizedError } from '../errors/CustomError';
-import { UserSessionInterface } from '../interface/user';
+import type { UserSessionInterface } from '../interface/user';
 
 const login = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -20,7 +20,7 @@ const login = async (req: Request, res: Response, next: NextFunction): Promise<v
     }
 };
 
-const renewLogin = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+const refresh = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
 
     try {
         const session = req.session;
@@ -59,7 +59,7 @@ const logout = async (req: Request, res: Response, next: NextFunction): Promise<
 
 export {
     login,
-    renewLogin,
+    refresh,
     logout
 };
 

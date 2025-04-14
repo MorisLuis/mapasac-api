@@ -8,7 +8,7 @@ exports.productQuerys = {
             codbarras,
             producto,
             clave,
-            precio1 
+            precio1 AS precio
         FROM mapasoft.invearts
         ORDER BY idinvearts ASC 
         OFFSET ($1 - 1) * $2
@@ -23,7 +23,7 @@ exports.productQuerys = {
             P.codbarras,
             P.producto,
             P.clave,
-            P.precio1,
+            P.precio1 AS precio,
             P.cvefamilia,
             P.unidad,
             P.noarticulo,
@@ -40,7 +40,7 @@ exports.productQuerys = {
             P.codbarras,
             P.producto,
             P.clave,
-            P.precio1,
+            P.precio1 AS precio,
             P.cvefamilia,
             P.unidad,
             P.noarticulo,
@@ -57,7 +57,7 @@ exports.productQuerys = {
             P.codbarras,
             P.producto,
             P.clave,
-            P.precio1,
+            P.precio1 AS precio,
             P.cvefamilia,
             P.unidad,
             P.noarticulo,
@@ -75,7 +75,7 @@ exports.productQuerys = {
             P.producto,
 			P.noarticulo,
             P.clave,
-            P.precio1,
+            P.precio1 AS precio,
             P.cvefamilia,
             P.unidad,
             P.noarticulo,

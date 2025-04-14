@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import { dbConnectionInitial } from '../database/connection';
 import { utilsQuery } from '../querys/utilsQuery';
-import { Pool } from 'pg';
+import type { Pool } from 'pg';
 
 const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     const session = req.session;
@@ -23,7 +23,7 @@ const handleErrorsFrontend = async (req: Request, res: Response, next: NextFunct
 
 interface ErrorsBackendInterface {
     Message: string;
-    Id_Usuario: string;
+    Id_Usuario: number;
     Metodo: string;
     path: string;
     svr: string;
@@ -47,7 +47,7 @@ const handleErrorsBackend = async (error: ErrorsBackendInterface): Promise<void>
         if (pool) await pool.query('ROLLBACK');
         console.error('Error al guardar el error en la base de datos:', err);
     } finally {
-        if (pool) pool.end(); // Cerrar la conexión a la base de datos
+        if (pool) await pool.end(); // Cerrar la conexión a la base de datos
     }
 };
 

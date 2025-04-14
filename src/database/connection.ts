@@ -1,4 +1,5 @@
-import { Pool, PoolConfig } from 'pg';
+import type { PoolConfig } from 'pg';
+import { Pool } from 'pg';
 import config from '../config';
 
 const POOL_MAX = 50;
@@ -38,7 +39,7 @@ export const dbConnectionInitial = async (): Promise<Pool> => {
         connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
     };
 
-    return new Pool(poolConfig);
+    return await new Pool(poolConfig);
 };
 
 

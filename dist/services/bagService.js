@@ -78,22 +78,34 @@ const insertProductToBagService = async (session, productData) => {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     try {
-        const { idinvearts, codbarras, unidad, cantidad, precio1, opcion, capa, idinveclas, comentario } = productData;
-        const productBodySell = [
+        const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
+        const productBodySell = {
             idinvearts,
             unidad,
             cantidad,
-            precio1,
+            precio,
             idusrmob,
             opcion,
-            codbarras ?? '',
-            idinveclas ?? 0,
-            capa ?? '',
-            comentario ? comentario.toUpperCase() : ''
+            codbarras: codbarras ?? '',
+            idinveclas: idinveclas ?? 0,
+            capa: capa ?? '',
+            comentario: comentario?.toUpperCase() ?? ''
+        };
+        const params = [
+            productBodySell.idinvearts,
+            productBodySell.unidad,
+            productBodySell.cantidad,
+            productBodySell.precio,
+            productBodySell.idusrmob,
+            productBodySell.opcion,
+            productBodySell.codbarras,
+            productBodySell.idinveclas,
+            productBodySell.capa,
+            productBodySell.comentario
         ];
         // Iniciar transacción
         await client.query('BEGIN');
-        await client.query(bagQuerys_1.bagQuerys.addProductSellToBag, productBodySell);
+        await client.query(bagQuerys_1.bagQuerys.addProductSellToBag, params);
         await client.query('COMMIT');
         // Confirmar transacción
         await client.query('COMMIT');

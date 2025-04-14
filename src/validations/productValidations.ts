@@ -34,12 +34,11 @@ export const inveArtsBodySchema = z.object({
     codbarras: z.string().optional(),
     producto: z.string().optional(),
     clave: z.string().optional(),
-    precio1: z.number().optional(),
+    precio: z.number().optional(),
     unidad: z.number().optional(),
 
     // Campos adicionales de ProductInterface
     familia: z.string().optional(),
-    precio: z.number().optional(), // ❗ Requerido en la interfaz
     cantidad: z.number().optional(),
     idenlacemob: z.number().optional(), // ❗ Requerido en la interfaz
     unidad_nombre: z.string().optional(),

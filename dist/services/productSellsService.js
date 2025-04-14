@@ -146,7 +146,7 @@ const getIdinveartsProductService = async (session, cvefamilia) => {
     ;
     const result = await pool.query(productSellsQuery_1.productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
     const idinvearts = result.rows[0];
-    const response = { idinvearts };
+    const response = idinvearts;
     return response;
 };
 exports.getIdinveartsProductService = getIdinveartsProductService;

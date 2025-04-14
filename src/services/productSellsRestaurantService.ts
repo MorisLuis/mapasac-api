@@ -1,8 +1,8 @@
 import { productSellsRestaurantQuerys } from '../querys/productSellsRestaurantQuery';
 import { dbConnection } from '../database/connection';
-import { UserSessionInterface } from '../interface/user';
+import type { UserSessionInterface } from '../interface/user';
 import { ValidationError } from '../errors/CustomError';
-import { ProductSellsRestaurantInterface } from '../interface/invearts';
+import type { ProductSellsRestaurantInterface } from '../interface/invearts';
 import { Buffer } from 'buffer';
 
 const getProductsSellsRestaurantService = async (

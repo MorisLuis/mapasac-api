@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { getProducByCodebarService, getProductByClaveService, getProductByIdService, getProductByNoArticuloService, getProductsService, getTotalProductsService, updateProductCodebarService, updateProductService } from "../services/productService";
 import { getProducByCodebarQuerySchema, getProductByClaveQuerySchema, getProductByIdQuerySchema, getProductByNoArticuloQuerySchema, getProductsQuerySchema, inveArtsBodySchema, inveArtsParamsSchema, updateProductCodebarBodySchema } from "../validations/productValidations";
 

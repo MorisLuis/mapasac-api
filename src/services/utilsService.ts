@@ -1,8 +1,8 @@
-import { Pool } from "pg";
+import type { Pool } from "pg";
 import { dbConnection, dbConnectionInitial } from "../database/connection";
 import { utilsQuery } from "../querys/utilsQuery";
-import { UserSessionInterface } from "../interface/user";
-import { AddressInterface, ClientInterface, ModuleInterface, TypePaymentsInterface } from "../interface/other";
+import type { UserSessionInterface } from "../interface/user";
+import type { AddressInterface, ClientInterface, ModuleInterface, TypePaymentsInterface } from "../interface/other";
 import { AppError, ValidationError } from "../errors/CustomError";
 
 const getPaymentTypeService = async (

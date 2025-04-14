@@ -1,7 +1,7 @@
 import { dbConnection } from "../database/connection";
 import { AppError, ValidationError } from "../errors/CustomError";
-import { ProductInterface } from "../interface/invearts";
-import { UserSessionInterface } from "../interface/user";
+import type { ProductInterface } from "../interface/invearts";
+import type { UserSessionInterface } from "../interface/user";
 import { productQuerys } from "../querys/productQuery";
 import { identifyBarcodeType } from "../utils/identifyBarcodeType";
 

@@ -2,10 +2,10 @@ import moment from 'moment';
 import { querys } from '../querys/querys';
 import { inveartsQuerys } from '../querys/inveartsQuery';
 import { dbConnection } from '../database/connection';
-import { UserSessionInterface } from '../interface/user';
-import { opcionBag } from '../interface/bag';
+import type { UserSessionInterface } from '../interface/user';
+import type { opcionBag } from '../interface/bag';
 import { AppError, ValidationError } from '../errors/CustomError';
-import { EnlacemobInterfaceSales } from '../interface/enlacemob';
+import type { EnlacemobInterfaceSales } from '../interface/enlacemob';
 
 const postInventoryService = async (
     session: UserSessionInterface

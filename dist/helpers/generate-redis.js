@@ -9,7 +9,7 @@ const CustomError_1 = require("../errors/CustomError");
 // Generar sesion de redis.
 const generateRedisSession = async (sessionId, datosDelUsuario) => {
     try {
-        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', 3600);
+        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', 36000);
         if (!result) {
             throw new CustomError_1.AppError('Error al generar la sesión en Redis', 500);
         }
@@ -42,7 +42,7 @@ const updateSession = async (sessionId, newData) => {
             throw new CustomError_1.NotFoundError('Sesión no encontrada en Redis');
         }
         session = { ...session, ...newData };
-        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(session), 'EX', 3600);
+        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(session), 'EX', 36000);
         if (!result) {
             throw new CustomError_1.AppError('Error al actualizar la sesión en Redis', 500);
         }

@@ -9,14 +9,14 @@ export interface InveArtsInterface {
     clave: string;
     unidad: number;
     minimo: number;
-    precio1: number;
+    precio: number;
     estatus: number;
     nousuario: number;
     unidadc: number;
 }
 
 // Table: invearts
-export interface ProductInterface extends Pick<InveArtsInterface, 'idinvearts' | 'noarticulo' | 'cvefamilia' | 'codbarras' | 'producto' | 'clave' | 'precio1' | 'unidad'> {
+export interface ProductInterface extends Pick<InveArtsInterface, 'idinvearts' | 'noarticulo' | 'cvefamilia' | 'codbarras' | 'producto' | 'clave' | 'precio' | 'unidad'> {
     familia?: string;
     precio: number;
     cantidad?: number;

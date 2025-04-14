@@ -38,7 +38,7 @@ const handleErrorsBackend = async (error) => {
     }
     finally {
         if (pool)
-            pool.end(); // Cerrar la conexión a la base de datos
+            await pool.end(); // Cerrar la conexión a la base de datos
     }
 };
 exports.handleErrorsBackend = handleErrorsBackend;

@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { getAddressDirectionService, getClientsService, getModulesService, getPaymentTypeService } from "../services/utilsService";
 
 const getPaymentType = async (req: Request, res: Response, next: NextFunction): Promise<void> => {

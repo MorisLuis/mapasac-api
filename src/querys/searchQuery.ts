@@ -7,7 +7,7 @@ export const searchQuerys = {
             P.codbarras,
             P.producto,
             P.clave,
-            P.precio1,
+            P.precio1 AS precio,
             P.cvefamilia,
             F.descripcio AS Familia,
             P.noarticulo

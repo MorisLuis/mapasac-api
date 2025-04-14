@@ -1,5 +1,6 @@
 // server.ts
-import express, { Application } from "express";
+import type { Application } from "express";
+import express from "express";
 import cors from 'cors';
 import { dbConnectionInitial } from "../database/connection";
 
@@ -41,7 +42,7 @@ class Server {
             errors: "/api/errors"
         }
 
-        this.connectDB();
+        void this.connectDB();
         this.middlewares();
         this.routes();
         this.errorHandler();
@@ -72,6 +73,11 @@ class Server {
         this.app.use(this.paths.errors, errorRouter);
     }
 
+    public async closeConnections(): Promise<void> {
+        await dbConnectionInitial().then(pool => pool.end()).catch(() => { });
+        console.log('Conexión a la base de datos cerrada');
+    }
+
     public listen(): void {
         this.app.listen(this.port, () => {
             console.log("Servidor corriendo en puerto " + this.port);
@@ -85,3 +91,12 @@ class Server {
 }
 
 export default Server;
+
+// Listener para cerrar conexiones con SIGINT
+const server = new Server();
+
+process.on('SIGINT', async () => {
+    console.log('❌ Cerrando conexiones...');
+    await server.closeConnections();
+    process.exit(0);
+});

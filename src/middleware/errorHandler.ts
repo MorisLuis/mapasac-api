@@ -1,12 +1,13 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { handleErrorsBackend } from "../controllers/errors";
 
 interface ErrorResponse extends Error {
   statusCode?: number;
 }
+
+
 const errorHandler = async (err: ErrorResponse, req: Request, res: Response, _next: NextFunction): Promise<void> => {
   
-  console.log("errorHandler")
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
   console.error(`[ERROR] ${req.method} ${req.path} - ${message}`);
@@ -16,7 +17,7 @@ const errorHandler = async (err: ErrorResponse, req: Request, res: Response, _ne
     await handleErrorsBackend({
       path: req.path,
       Message: message,
-      Id_Usuario: '',
+      Id_Usuario: 0,
       Metodo: req.method,
       code: statusCode.toString(),
       svr: ""

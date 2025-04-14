@@ -1,6 +1,6 @@
-import { Pool } from 'pg';
+import type { Pool } from 'pg';
 import { querys } from '../querys/querys';
-import { UserSessionInterface } from '../interface/user';
+import type { UserSessionInterface } from '../interface/user';
 import { dbConnectionInitial } from '../database/connection';
 import { NotFoundError, ValidationError } from '../errors/CustomError';
 import { v4 } from 'uuid';

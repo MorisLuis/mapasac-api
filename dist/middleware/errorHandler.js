@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.errorHandler = void 0;
 const errors_1 = require("../controllers/errors");
 const errorHandler = async (err, req, res, _next) => {
-    console.log("errorHandler");
     const statusCode = err.statusCode || 500;
     const message = err.message || 'Internal Server Error';
     console.error(`[ERROR] ${req.method} ${req.path} - ${message}`);
@@ -12,7 +11,7 @@ const errorHandler = async (err, req, res, _next) => {
         await (0, errors_1.handleErrorsBackend)({
             path: req.path,
             Message: message,
-            Id_Usuario: '',
+            Id_Usuario: 0,
             Metodo: req.method,
             code: statusCode.toString(),
             svr: ""

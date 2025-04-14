@@ -3,7 +3,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-// server.ts
 const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const connection_1 = require("../database/connection");
@@ -30,7 +29,7 @@ class Server {
             bag: "/api/bag",
             errors: "/api/errors"
         };
-        this.connectDB();
+        void this.connectDB();
         this.middlewares();
         this.routes();
         this.errorHandler();
@@ -58,6 +57,10 @@ class Server {
         this.app.use(this.paths.bag, bagRouter_1.default);
         this.app.use(this.paths.errors, errorRouter_1.default);
     }
+    async closeConnections() {
+        await (0, connection_1.dbConnectionInitial)().then(pool => pool.end()).catch(() => { });
+        console.log('Conexión a la base de datos cerrada');
+    }
     listen() {
         this.app.listen(this.port, () => {
             console.log("Servidor corriendo en puerto " + this.port);
@@ -70,4 +73,11 @@ class Server {
     }
 }
 exports.default = Server;
+// Listener para cerrar conexiones con SIGINT
+const server = new Server();
+process.on('SIGINT', async () => {
+    console.log('❌ Cerrando conexiones...');
+    await server.closeConnections();
+    process.exit(0);
+});
 //# sourceMappingURL=server.js.map

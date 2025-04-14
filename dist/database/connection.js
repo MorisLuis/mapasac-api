@@ -35,7 +35,7 @@ const dbConnectionInitial = async () => {
         idleTimeoutMillis: IDLE_TIMEOUT_MS,
         connectionTimeoutMillis: CONNECTION_TIMEOUT_MS
     };
-    return new pg_1.Pool(poolConfig);
+    return await new pg_1.Pool(poolConfig);
 };
 exports.dbConnectionInitial = dbConnectionInitial;
 // Función para cerrar el pool

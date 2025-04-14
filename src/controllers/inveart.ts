@@ -1,4 +1,4 @@
-import { NextFunction, Request, Response } from "express";
+import type { NextFunction, Request, Response } from "express";
 import { postInventoryService, postSellService } from "../services/inveartService";
 import { postSellQuery, postSellBodySchema } from "../validations/sellValidations";
 

@@ -29,11 +29,10 @@ exports.inveArtsBodySchema = zod_1.z.object({
     codbarras: zod_1.z.string().optional(),
     producto: zod_1.z.string().optional(),
     clave: zod_1.z.string().optional(),
-    precio1: zod_1.z.number().optional(),
+    precio: zod_1.z.number().optional(),
     unidad: zod_1.z.number().optional(),
     // Campos adicionales de ProductInterface
     familia: zod_1.z.string().optional(),
-    precio: zod_1.z.number().optional(), // ❗ Requerido en la interfaz
     cantidad: zod_1.z.number().optional(),
     idenlacemob: zod_1.z.number().optional(), // ❗ Requerido en la interfaz
     unidad_nombre: zod_1.z.string().optional(),

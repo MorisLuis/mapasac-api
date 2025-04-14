@@ -1,11 +1,11 @@
 import { productSellsQuerys } from '../querys/productSellsQuery';
 import { dbConnection } from '../database/connection';
-import { UserSessionInterface } from '../interface/user';
+import type { UserSessionInterface } from '../interface/user';
 import { ValidationError } from '../errors/CustomError';
-import { UnitsInterface } from '../interface/other';
-import { ProductSellsFamilyInterface, ProductSellsInterface } from '../interface/invearts';
+import type { UnitsInterface } from '../interface/other';
+import type { ProductSellsInterface } from '../interface/invearts';
 import { Buffer } from 'buffer';
-import ClassInterface from '../interface/class';
+import type ClassInterface from '../interface/class';
 
 
 const getProductsSellsService = async (
@@ -193,8 +193,7 @@ const getIdinveartsProductService = async (
     };
     const result = await pool.query(productSellsQuerys.getIdinveartsProduct, [cvefamilia]);
     const idinvearts = result.rows[0];
-
-    const response: { idinvearts: number } = { idinvearts };
+    const response: { idinvearts: number } = idinvearts
     return response;
 }
 

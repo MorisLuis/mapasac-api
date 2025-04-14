@@ -12,15 +12,15 @@ exports.getTotalProductsInBagQuerySchema = zod_1.z.object({
 });
 exports.insertProductToBagBodySchema = zod_1.z.object({
     idinvearts: zod_1.z.coerce.number(),
-    codbarras: zod_1.z.string().optional(),
     unidad: zod_1.z.coerce.number(),
     cantidad: zod_1.z.coerce.number(),
-    precio1: zod_1.z.coerce.number(),
+    precio: zod_1.z.coerce.number(),
     opcion: zod_1.z.coerce
         .number()
         .refine((val) => [0, 2, 4].includes(val), {
         message: "Opción debe ser 0, 2 o 4",
     }),
+    codbarras: zod_1.z.string().optional(),
     capa: zod_1.z.string().optional(),
     idinveclas: zod_1.z.coerce.number().optional(),
     comentario: zod_1.z.string().optional(),

@@ -1,8 +1,8 @@
 import { dbConnection } from "../database/connection";
 import { AppError, ValidationError } from "../errors/CustomError";
-import { BagInterface } from "../interface/bag";
-import { EnlacemobInterface } from "../interface/enlacemob";
-import { UserSessionInterface } from "../interface/user";
+import type { BagInterface } from "../interface/bag";
+import type { EnlacemobInterface } from "../interface/enlacemob";
+import type { UserSessionInterface } from "../interface/user";
 import { bagQuerys } from "../querys/bagQuerys";
 
 
@@ -112,24 +112,36 @@ const insertProductToBagService = async (
     }
 
     try {
-        const { idinvearts, codbarras, unidad, cantidad, precio1, opcion, capa, idinveclas, comentario } = productData;
-
-        const productBodySell = [
+        const { idinvearts, codbarras, unidad, cantidad, precio, opcion, capa, idinveclas, comentario } = productData;
+        const productBodySell: EnlacemobInterface = {
             idinvearts,
             unidad,
             cantidad,
-            precio1,
+            precio,
             idusrmob,
             opcion,
-            codbarras ?? '',
-            idinveclas ?? 0,
-            capa ?? '',
-            comentario ? comentario.toUpperCase() : ''
+            codbarras: codbarras ?? '',
+            idinveclas: idinveclas ?? 0,
+            capa: capa ?? '',
+            comentario: comentario?.toUpperCase() ?? ''
+        };
+
+        const params = [
+            productBodySell.idinvearts,
+            productBodySell.unidad,
+            productBodySell.cantidad,
+            productBodySell.precio,
+            productBodySell.idusrmob,
+            productBodySell.opcion,
+            productBodySell.codbarras,
+            productBodySell.idinveclas,
+            productBodySell.capa,
+            productBodySell.comentario
         ];
-        
+
         // Iniciar transacción
         await client.query('BEGIN');
-        await client.query(bagQuerys.addProductSellToBag, productBodySell);
+        await client.query(bagQuerys.addProductSellToBag, params);
         await client.query('COMMIT');
         // Confirmar transacción
         await client.query('COMMIT');

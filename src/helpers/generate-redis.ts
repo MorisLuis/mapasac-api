@@ -1,12 +1,12 @@
 import redisClient from "../config/redisClient";
-import { UserSessionInterface } from "../interface/user";
+import type { UserSessionInterface } from "../interface/user";
 import { AppError, NotFoundError } from "../errors/CustomError";
 
 
 // Generar sesion de redis.
 export const generateRedisSession = async (sessionId: string, datosDelUsuario: UserSessionInterface): Promise<string | null> => {
     try {
-        const result = await redisClient.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', 3600);
+        const result = await redisClient.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', 36000);
         if (!result) {
             throw new AppError('Error al generar la sesión en Redis', 500);
         }
@@ -45,7 +45,7 @@ export const updateSession = async (
 
         session = { ...session, ...newData };
 
-        const result = await redisClient.set(`session:${sessionId}`, JSON.stringify(session), 'EX', 3600);
+        const result = await redisClient.set(`session:${sessionId}`, JSON.stringify(session), 'EX', 36000);
 
         if (!result) {
             throw new AppError('Error al actualizar la sesión en Redis', 500);

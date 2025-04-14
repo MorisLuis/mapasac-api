@@ -1,8 +1,8 @@
 import { dbConnection } from "../database/connection";
 import { ValidationError } from "../errors/CustomError";
-import { ProductInterface } from "../interface/invearts";
-import { ClientInterface } from "../interface/other";
-import { UserSessionInterface } from "../interface/user";
+import type { ProductInterface } from "../interface/invearts";
+import type { ClientInterface } from "../interface/other";
+import type { UserSessionInterface } from "../interface/user";
 import { searchQuerys } from "../querys/searchQuery";
 
 

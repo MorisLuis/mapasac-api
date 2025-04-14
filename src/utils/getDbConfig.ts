@@ -1,4 +1,4 @@
-import { Pool, PoolConfig } from "pg";
+import type { Pool, PoolConfig } from "pg";
 import { querys } from "../querys/querys";
 
 interface getDbConfigInterface {
