@@ -27,6 +27,7 @@ const loginService = async (usr, pas) => {
         throw new CustomError_1.NotFoundError('Contraseña incorrecta');
     }
     const sessionId = (0, uuid_1.v4)();
+    console.log({ sessionId });
     await (0, generate_redis_1.generateRedisSession)(sessionId, user);
     // Generar JWT
     const token = (0, generate_jwt_1.generateAccessToken)(sessionId);

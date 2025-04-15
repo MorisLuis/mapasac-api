@@ -19,6 +19,7 @@ export const generateRedisSession = async (sessionId: string, datosDelUsuario: U
 
 // Obtener la sesión desde Redis
 export const getRedisSession = async (sessionId: string): Promise<UserSessionInterface | null> => {
+    console.log("getRedisSession")
     try {
         const sessionData = await redisClient?.get(`session:${sessionId}`);
         if (!sessionData) {
@@ -37,6 +38,7 @@ export const updateSession = async (
     newData: Partial<UserSessionInterface>
 ): Promise<UserSessionInterface> => {
     try {
+        console.log("updateSession")
         let session = await getRedisSession(sessionId);
 
         if (!session) {
@@ -62,12 +64,7 @@ export const updateSession = async (
 // Eliminar la sesión en Redis.
 export const handleDeleteRedisSession = async (sessionId: string): Promise<void> => {
     try {
-        const response = await redisClient.del(`session:${sessionId}`);
-
-        if (response === 0) {
-            throw new NotFoundError('Sesión no encontrada en Redis');
-        }
-
+        await redisClient.del(`session:${sessionId}`);
         console.log(`✅ Sesión ${sessionId} eliminada exitosamente`);
     } catch (error) {
         throw new AppError(`Error en handleDeleteRedisSession: ${error}`, 500);

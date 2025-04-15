@@ -1,17 +1,16 @@
 import type { NextFunction, Request, Response } from 'express';
 import type { JwtPayload } from 'jsonwebtoken';
-import jwt from 'jsonwebtoken';
+import jwt, { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 import { AppError, ForbiddenError, UnauthorizedError } from '../errors/CustomError';
 import redisClient from '../config/redisClient';
 import type { UserSessionInterface } from '../interface/user';
 
 const validateJWT = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
-
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
 
     if (!token) {
-        return next(new UnauthorizedError('Acceso denegado. Falta token o es invalido'));
+        return next(new UnauthorizedError('Acceso denegado. Falta token o es inválido'));
     }
 
     try {
@@ -20,31 +19,40 @@ const validateJWT = async (req: Request, _res: Response, next: NextFunction): Pr
         req.sessionId = sessionId;
 
         if (!sessionId) {
-            next(new UnauthorizedError('Acceso denegado. Falta token o es invalido'))
-            return
+            return next(new UnauthorizedError('Acceso denegado. Token inválido'));
         }
 
         const sessionDataRaw = await redisClient.get(`session:${sessionId}`);
-        const sessionData = sessionDataRaw ?? null;
-
-        if (!sessionData) {
-            next(new UnauthorizedError('Sesión no válida'));
-            return;
-        };
-
-        try {
-            const session: UserSessionInterface = JSON.parse(sessionData);
-            req.session = session;
-
-            return next();
-        } catch (error) {
-            return next(new AppError(`Error parsing session data ${error}`));
+        if (!sessionDataRaw) {
+            return next(new UnauthorizedError('Sesión no válida'));
         }
 
+        let session: UserSessionInterface;
+        try {
+            session = JSON.parse(sessionDataRaw);
+        } catch (parseError) {
+            return next(new AppError(`Error al procesar datos de sesión: ${parseError}`));
+        }
+
+        req.session = session;
+        return next();
 
     } catch (error) {
-        next(new AppError(`Fallo al autenticar el token: ${error}`))
+        switch (true) {
+            case error instanceof TokenExpiredError:
+                return next(new UnauthorizedError('El token ha expirado, por favor, inicia sesión nuevamente'));
+
+            case error instanceof JsonWebTokenError:
+                return next(new UnauthorizedError('Token inválido, por favor verifica tus credenciales'));
+
+            case error instanceof Error:
+                return next(new UnauthorizedError(`Fallo al autenticar el token: ${error.message}`));
+
+            default:
+                return next(new UnauthorizedError('Fallo desconocido al autenticar el token'));
+        }
     }
+
 };
 
 const validateRefreshJWT = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
@@ -84,7 +92,19 @@ const validateRefreshJWT = async (req: Request, _res: Response, next: NextFuncti
         }
 
     } catch (error) {
-        next(new ForbiddenError(`Token expirado o inválido: ${error}`));
+        switch (true) {
+            case error instanceof TokenExpiredError:
+                return next(new UnauthorizedError('El token ha expirado, por favor, inicia sesión nuevamente'));
+
+            case error instanceof JsonWebTokenError:
+                return next(new UnauthorizedError('Token inválido, por favor verifica tus credenciales'));
+
+            case error instanceof Error:
+                return next(new UnauthorizedError(`Fallo al autenticar el token: ${error.message}`));
+
+            default:
+                return next(new UnauthorizedError('Fallo desconocido al autenticar el token'));
+        }
     }
 };
 

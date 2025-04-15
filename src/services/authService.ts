@@ -34,6 +34,7 @@ const loginService = async (usr: string, pas: string): Promise<{ user: UserSessi
 
     const sessionId = v4();
 
+    console.log({sessionId})
     await generateRedisSession(sessionId, user)
 
     // Generar JWT

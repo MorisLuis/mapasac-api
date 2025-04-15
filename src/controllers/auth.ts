@@ -49,6 +49,7 @@ const refresh = async (req: Request, res: Response, next: NextFunction): Promise
 const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const sessionId = req.sessionId;
+        console.log({sessionId});
         if (!sessionId) throw new UnauthorizedError('Sesion terminada')
         await handleDeleteRedisSession(sessionId)
         res.json({ ok: true })

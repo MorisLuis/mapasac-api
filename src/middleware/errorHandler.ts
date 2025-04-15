@@ -10,7 +10,7 @@ const errorHandler = async (err: ErrorResponse, req: Request, res: Response, _ne
   
   const statusCode = err.statusCode || 500;
   const message = err.message || 'Internal Server Error';
-  console.error(`[ERROR] ${req.method} ${req.path} - ${message}`);
+  console.error(`[ERROR] ${statusCode} ${req.method} ${req.path} - ${message}`);
 
   // Intentamos guardar el error en la base de datos
   try {

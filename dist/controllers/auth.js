@@ -44,6 +44,7 @@ exports.refresh = refresh;
 const logout = async (req, res, next) => {
     try {
         const sessionId = req.sessionId;
+        console.log({ sessionId });
         if (!sessionId)
             throw new CustomError_1.UnauthorizedError('Sesion terminada');
         await (0, generate_redis_1.handleDeleteRedisSession)(sessionId);
