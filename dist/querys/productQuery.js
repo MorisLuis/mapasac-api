@@ -14,6 +14,19 @@ exports.productQuerys = {
         OFFSET ($1 - 1) * $2
         LIMIT $2;
     `,
+    getProductsWithoutCodbarrras: ` 
+        SELECT
+            idinvearts,
+            codbarras,
+            producto,
+            clave,
+            precio1 AS precio
+        FROM mapasoft.invearts
+        WHERE codbarras = ''
+        ORDER BY idinvearts ASC 
+        OFFSET ($1 - 1) * $2
+        LIMIT $2;
+    `,
     getTotalProducts: `
         SELECT COUNT(*) FROM mapasoft.invearts 
     `,

@@ -7,8 +7,8 @@ const productValidations_1 = require("../validations/productValidations");
 const getProducts = async (req, res, next) => {
     try {
         const session = req.session;
-        const { limit, page } = productValidations_1.getProductsQuerySchema.parse(req.query);
-        const { products } = await (0, productService_1.getProductsService)({ session, page, limit });
+        const { limit, page, codebarEmpty } = productValidations_1.getProductsQuerySchema.parse(req.query);
+        const { products } = await (0, productService_1.getProductsService)({ session, page, limit, codebarEmpty });
         res.json({
             total: products.length,
             products

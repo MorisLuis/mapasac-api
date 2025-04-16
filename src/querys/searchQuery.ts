@@ -18,6 +18,23 @@ export const searchQuerys = {
             LIMIT(10)
     `,
 
+    searchProductWithoutCodBarras: `
+        SELECT
+            P.idinvearts,
+            P.codbarras,
+            P.producto,
+            P.clave,
+            P.precio1 AS precio,
+            P.cvefamilia,
+            F.descripcio AS Familia,
+            P.noarticulo
+        FROM mapasoft.invearts P
+            JOIN mapasoft.invefami F ON P.cvefamilia = F.cvefamilia
+            WHERE producto ILIKE '%' || $1 || '%' AND codbarras = ''
+            OR clave ILIKE $1 || '%' AND codbarras = ''
+            LIMIT(10)
+    `,
+
     searchProductInBag: `
         SELECT 
             I.producto,

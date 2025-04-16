@@ -7,8 +7,8 @@ const getProducts = async (req: Request, res: Response, next: NextFunction): Pro
 
     try {
         const session = req.session;
-        const { limit, page } = getProductsQuerySchema.parse(req.query);
-        const { products } = await getProductsService({ session, page, limit })
+        const { limit, page, codebarEmpty } = getProductsQuerySchema.parse(req.query);
+        const { products } = await getProductsService({ session, page, limit, codebarEmpty })
 
         res.json({
             total: products.length,

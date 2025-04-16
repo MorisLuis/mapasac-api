@@ -5,7 +5,7 @@ const connection_1 = require("../database/connection");
 const CustomError_1 = require("../errors/CustomError");
 const productQuery_1 = require("../querys/productQuery");
 const identifyBarcodeType_1 = require("../utils/identifyBarcodeType");
-const getProductsService = async ({ session, page, limit }) => {
+const getProductsService = async ({ session, page, limit, codebarEmpty = false }) => {
     const { svr, dba, pasdba, usrdba, port } = session;
     const config = {
         user: usrdba,
@@ -19,7 +19,13 @@ const getProductsService = async ({ session, page, limit }) => {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
     ;
-    const result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
+    let result;
+    if (codebarEmpty) {
+        result = await pool.query(productQuery_1.productQuerys.getProductsWithoutCodbarrras, [page, limit]);
+    }
+    else {
+        result = await pool.query(productQuery_1.productQuerys.getProducts, [page, limit]);
+    }
     const products = result.rows;
     const response = { products };
     return response;
@@ -152,8 +158,12 @@ const updateProductService = async ({ session, idinvearts, updateFields }) => {
         throw new CustomError_1.ValidationError('El campo idinvearts es requerido');
     }
     try {
+        console.log({ updateFields });
         const setClauses = Object.keys(updateFields)
-            .map((key, index) => `${key} = $${index + 2}`)
+            .map((key, index) => {
+            const dbKey = key === 'precio' ? 'precio1' : key;
+            return `${dbKey} = $${index + 2}`;
+        })
             .join(', ');
         const values = [idinvearts, ...Object.values(updateFields)];
         const query = productQuery_1.productQuerys.updateProduct.replace('$SET_CLAUSES', setClauses);

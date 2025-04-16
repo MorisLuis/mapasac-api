@@ -8,7 +8,17 @@ exports.getProductsQuerySchema = zod_1.z.object({
         .refine((val) => !isNaN(val), { message: "page debe ser un número válido" }),
     limit: zod_1.z.union([zod_1.z.string(), zod_1.z.number()])
         .transform((val) => Number(val))
-        .refine((val) => !isNaN(val), { message: "limit debe ser un número válido" })
+        .refine((val) => !isNaN(val), { message: "limit debe ser un número válido" }),
+    codebarEmpty: zod_1.z
+        .union([zod_1.z.string(), zod_1.z.boolean()])
+        .optional()
+        .transform((val) => {
+        if (val === 'true' || val === true)
+            return true;
+        if (val === 'false' || val === false)
+            return false;
+        return undefined;
+    }),
 });
 exports.getProductByClaveQuerySchema = zod_1.z.object({
     clave: zod_1.z.string().min(1, "clave es requerido")

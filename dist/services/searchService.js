@@ -4,7 +4,7 @@ exports.searchClientsService = exports.searchProductInBagService = exports.searc
 const connection_1 = require("../database/connection");
 const CustomError_1 = require("../errors/CustomError");
 const searchQuery_1 = require("../querys/searchQuery");
-const searchProductService = async (session, searchTerm) => {
+const searchProductService = async (session, searchTerm, codebarEmpty) => {
     const { svr, dba, pasdba, usrdba, port } = session;
     const config = {
         user: usrdba,
@@ -17,8 +17,16 @@ const searchProductService = async (session, searchTerm) => {
     if (!pool) {
         throw new CustomError_1.ValidationError('No se pudo establecer la conexión con la base de datos');
     }
-    const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [searchTerm]);
-    const products = result.rows;
+    let products;
+    if (codebarEmpty) {
+        console.log("pass here!");
+        const result = await pool.query(searchQuery_1.searchQuerys.searchProductWithoutCodBarras, [searchTerm]);
+        products = result.rows;
+    }
+    else {
+        const result = await pool.query(searchQuery_1.searchQuerys.searchProduct, [searchTerm]);
+        products = result.rows;
+    }
     const response = { products };
     return response;
 };

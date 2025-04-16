@@ -10,12 +10,14 @@ interface getProductsServiceInterface {
     session: UserSessionInterface;
     page: number;
     limit: number;
+    codebarEmpty?: boolean
 }
 
 const getProductsService = async ({
     session,
     page,
-    limit
+    limit,
+    codebarEmpty = false
 }: getProductsServiceInterface): Promise<{ products: ProductInterface[] }> => {
 
     const { svr, dba, pasdba, usrdba, port } = session;
@@ -33,7 +35,12 @@ const getProductsService = async ({
         throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     };
 
-    const result = await pool.query(productQuerys.getProducts, [page, limit]);
+    let result;
+    if( codebarEmpty ) {
+        result = await pool.query(productQuerys.getProductsWithoutCodbarrras, [page, limit]);
+    } else {
+        result = await pool.query(productQuerys.getProducts, [page, limit]);
+    }
     const products = result.rows;
 
     const response: { products: ProductInterface[] } = { products }
@@ -239,9 +246,13 @@ const updateProductService = async ({
     }
 
     try {
+        console.log({updateFields})
         const setClauses = Object.keys(updateFields)
-            .map((key, index) => `${key} = $${index + 2}`)
-            .join(', ');
+        .map((key, index) => {
+            const dbKey = key === 'precio' ? 'precio1' : key;
+            return `${dbKey} = $${index + 2}`;
+        })
+        .join(', ');
 
         const values = [idinvearts, ...Object.values(updateFields)];
         const query = productQuerys.updateProduct.replace('$SET_CLAUSES', setClauses);

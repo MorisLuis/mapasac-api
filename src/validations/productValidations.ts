@@ -7,7 +7,15 @@ export const getProductsQuerySchema = z.object({
 
     limit: z.union([z.string(), z.number()])
         .transform((val) => Number(val))
-        .refine((val) => !isNaN(val), { message: "limit debe ser un número válido" })
+        .refine((val) => !isNaN(val), { message: "limit debe ser un número válido" }),
+    codebarEmpty: z
+        .union([z.string(), z.boolean()])
+        .optional()
+        .transform((val) => {
+            if (val === 'true' || val === true) return true;
+            if (val === 'false' || val === false) return false;
+            return undefined;
+        }),
 });
 
 

@@ -8,7 +8,8 @@ import { searchQuerys } from "../querys/searchQuery";
 
 const searchProductService = async (
     session: UserSessionInterface,
-    searchTerm: string
+    searchTerm: string,
+    codebarEmpty?: boolean
 ): Promise<{ products: ProductInterface[] }> => {
 
     const { svr, dba, pasdba, usrdba, port } = session;
@@ -26,8 +27,15 @@ const searchProductService = async (
         throw new ValidationError('No se pudo establecer la conexión con la base de datos');
     }
 
-    const result = await pool.query(searchQuerys.searchProduct, [searchTerm]);
-    const products = result.rows;
+    let products;
+    if(codebarEmpty) {
+        console.log("pass here!")
+        const result = await pool.query(searchQuerys.searchProductWithoutCodBarras, [searchTerm]);
+        products = result.rows;
+    } else {
+        const result = await pool.query(searchQuerys.searchProduct, [searchTerm]);
+        products = result.rows;    
+    }
 
     const response: { products: ProductInterface[] } = { products }
     return response;
