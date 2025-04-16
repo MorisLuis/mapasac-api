@@ -6,7 +6,7 @@ const validate_jwt_1 = require("../helpers/validate-jwt");
 const utils_1 = require("../controllers/utils");
 const router = (0, express_1.Router)();
 router.post('/login', auth_1.login);
-router.post('/renew', validate_jwt_1.validateRefreshJWT, auth_1.refresh);
+router.post('/refresh', validate_jwt_1.validateRefreshJWT, auth_1.refresh);
 router.get('/logout', validate_jwt_1.validateJWT, auth_1.logout);
 router.get('/modules', validate_jwt_1.validateJWT, utils_1.getModules);
 exports.default = router;
