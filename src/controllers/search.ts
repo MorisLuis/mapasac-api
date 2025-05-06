@@ -6,7 +6,6 @@ const searchProduct = async (req: Request, res: Response, next: NextFunction): P
 
     try {
         const { term, codebarEmpty } = searchProductsQuerySchema.parse(req.query);
-        console.log({codebarEmpty})
         const session = req.session;
         const searchTerm = term ? term.toString() : 'a';
         const { products } = await searchProductService(session, searchTerm, codebarEmpty);

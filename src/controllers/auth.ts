@@ -25,8 +25,8 @@ const refresh = async (req: Request, res: Response, next: NextFunction): Promise
     try {
         const session = req.session;
         const sessionId = req.sessionId;
-
         const refreshToken = req.body.refreshToken;
+
         if (!refreshToken) {
             throw new UnauthorizedError("No hay refresh token")
         }
@@ -49,7 +49,6 @@ const refresh = async (req: Request, res: Response, next: NextFunction): Promise
 const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const sessionId = req.sessionId;
-        console.log({sessionId});
         if (!sessionId) throw new UnauthorizedError('Sesion terminada')
         await handleDeleteRedisSession(sessionId)
         res.json({ ok: true })

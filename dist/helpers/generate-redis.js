@@ -9,7 +9,8 @@ const CustomError_1 = require("../errors/CustomError");
 // Generar sesion de redis.
 const generateRedisSession = async (sessionId, datosDelUsuario) => {
     try {
-        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', 36000);
+        const ONE_WEEK_IN_SECONDS = 60 * 60 * 24 * 7;
+        const result = await redisClient_1.default.set(`session:${sessionId}`, JSON.stringify(datosDelUsuario), 'EX', ONE_WEEK_IN_SECONDS);
         if (!result) {
             throw new CustomError_1.AppError('Error al generar la sesión en Redis', 500);
         }

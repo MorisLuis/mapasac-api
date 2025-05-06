@@ -44,18 +44,18 @@ const validateJWT = async (req, _res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader?.split(' ')[1];
     if (!token) {
-        return next(new CustomError_1.UnauthorizedError('Acceso denegado. Falta token o es inválido'));
+        return next(new CustomError_1.ForbiddenError('Acceso denegado. Falta token o es inválido'));
     }
     try {
         const decoded = jsonwebtoken_1.default.verify(token, process.env.ACCESS_TOKEN_SECRET);
         const sessionId = decoded.sessionId;
         req.sessionId = sessionId;
         if (!sessionId) {
-            return next(new CustomError_1.UnauthorizedError('Acceso denegado. Token inválido'));
+            return next(new CustomError_1.ForbiddenError('Acceso denegado. Token inválido'));
         }
         const sessionDataRaw = await redisClient_1.default.get(`session:${sessionId}`);
         if (!sessionDataRaw) {
-            return next(new CustomError_1.UnauthorizedError('Sesión no válida'));
+            return next(new CustomError_1.ForbiddenError('Sesión no válida'));
         }
         let session;
         try {
@@ -70,13 +70,13 @@ const validateJWT = async (req, _res, next) => {
     catch (error) {
         switch (true) {
             case error instanceof jsonwebtoken_1.TokenExpiredError:
-                return next(new CustomError_1.UnauthorizedError('El token ha expirado, por favor, inicia sesión nuevamente'));
+                return next(new CustomError_1.ForbiddenError('El token ha expirado, por favor, inicia sesión nuevamente'));
             case error instanceof jsonwebtoken_1.JsonWebTokenError:
-                return next(new CustomError_1.UnauthorizedError('Token inválido, por favor verifica tus credenciales'));
+                return next(new CustomError_1.ForbiddenError('Token inválido, por favor verifica tus credenciales'));
             case error instanceof Error:
-                return next(new CustomError_1.UnauthorizedError(`Fallo al autenticar el token: ${error.message}`));
+                return next(new CustomError_1.AppError(`Fallo al autenticar el token: ${error.message}`));
             default:
-                return next(new CustomError_1.UnauthorizedError('Fallo desconocido al autenticar el token'));
+                return next(new CustomError_1.AppError('Fallo desconocido al autenticar el token'));
         }
     }
 };

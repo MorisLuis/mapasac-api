@@ -246,7 +246,6 @@ const updateProductService = async ({
     }
 
     try {
-        console.log({updateFields})
         const setClauses = Object.keys(updateFields)
         .map((key, index) => {
             const dbKey = key === 'precio' ? 'precio1' : key;

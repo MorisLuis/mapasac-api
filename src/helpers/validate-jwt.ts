@@ -10,7 +10,7 @@ const validateJWT = async (req: Request, _res: Response, next: NextFunction): Pr
     const token = authHeader?.split(' ')[1];
 
     if (!token) {
-        return next(new UnauthorizedError('Acceso denegado. Falta token o es inválido'));
+        return next(new ForbiddenError('Acceso denegado. Falta token o es inválido'));
     }
 
     try {
@@ -19,12 +19,12 @@ const validateJWT = async (req: Request, _res: Response, next: NextFunction): Pr
         req.sessionId = sessionId;
 
         if (!sessionId) {
-            return next(new UnauthorizedError('Acceso denegado. Token inválido'));
+            return next(new ForbiddenError('Acceso denegado. Token inválido'));
         }
 
         const sessionDataRaw = await redisClient.get(`session:${sessionId}`);
         if (!sessionDataRaw) {
-            return next(new UnauthorizedError('Sesión no válida'));
+            return next(new ForbiddenError('Sesión no válida'));
         }
 
         let session: UserSessionInterface;
@@ -40,16 +40,16 @@ const validateJWT = async (req: Request, _res: Response, next: NextFunction): Pr
     } catch (error) {
         switch (true) {
             case error instanceof TokenExpiredError:
-                return next(new UnauthorizedError('El token ha expirado, por favor, inicia sesión nuevamente'));
+                return next(new ForbiddenError('El token ha expirado, por favor, inicia sesión nuevamente'));
 
             case error instanceof JsonWebTokenError:
-                return next(new UnauthorizedError('Token inválido, por favor verifica tus credenciales'));
+                return next(new ForbiddenError('Token inválido, por favor verifica tus credenciales'));
 
             case error instanceof Error:
-                return next(new UnauthorizedError(`Fallo al autenticar el token: ${error.message}`));
+                return next(new AppError(`Fallo al autenticar el token: ${error.message}`));
 
             default:
-                return next(new UnauthorizedError('Fallo desconocido al autenticar el token'));
+                return next(new AppError('Fallo desconocido al autenticar el token'));
         }
     }
 

@@ -6,7 +6,6 @@ const searchValidations_1 = require("../validations/searchValidations");
 const searchProduct = async (req, res, next) => {
     try {
         const { term, codebarEmpty } = searchValidations_1.searchProductsQuerySchema.parse(req.query);
-        console.log({ codebarEmpty });
         const session = req.session;
         const searchTerm = term ? term.toString() : 'a';
         const { products } = await (0, searchService_1.searchProductService)(session, searchTerm, codebarEmpty);

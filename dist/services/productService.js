@@ -158,7 +158,6 @@ const updateProductService = async ({ session, idinvearts, updateFields }) => {
         throw new CustomError_1.ValidationError('El campo idinvearts es requerido');
     }
     try {
-        console.log({ updateFields });
         const setClauses = Object.keys(updateFields)
             .map((key, index) => {
             const dbKey = key === 'precio' ? 'precio1' : key;

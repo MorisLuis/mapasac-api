@@ -9,12 +9,12 @@ const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET || 'access_secret';
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || 'refresh_secret';
 /** Genera un Access Token con expiración corta (ej. 15min) */
 const generateAccessToken = (sessionId) => {
-    return jsonwebtoken_1.default.sign({ sessionId }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+    return jsonwebtoken_1.default.sign({ sessionId }, ACCESS_TOKEN_SECRET, { expiresIn: '7d' });
 };
 exports.generateAccessToken = generateAccessToken;
 /** Genera un Refresh Token con expiración larga (ej. 1 día) */
 const generateRefreshToken = (sessionId) => {
-    return jsonwebtoken_1.default.sign({ sessionId }, REFRESH_TOKEN_SECRET, { expiresIn: '1d' });
+    return jsonwebtoken_1.default.sign({ sessionId }, REFRESH_TOKEN_SECRET, { expiresIn: '15m' });
 };
 exports.generateRefreshToken = generateRefreshToken;
 //# sourceMappingURL=generate-jwt.js.map
