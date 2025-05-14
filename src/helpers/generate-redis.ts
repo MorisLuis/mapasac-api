@@ -20,7 +20,6 @@ export const generateRedisSession = async (sessionId: string, datosDelUsuario: U
 
 // Obtener la sesión desde Redis
 export const getRedisSession = async (sessionId: string): Promise<UserSessionInterface | null> => {
-    console.log("getRedisSession")
     try {
         const sessionData = await redisClient?.get(`session:${sessionId}`);
         if (!sessionData) {
@@ -39,7 +38,7 @@ export const updateSession = async (
     newData: Partial<UserSessionInterface>
 ): Promise<UserSessionInterface> => {
     try {
-        console.log("updateSession")
+
         let session = await getRedisSession(sessionId);
 
         if (!session) {

@@ -32,7 +32,7 @@ const getBagService = async (
     const result = await pool.query(bagQuerys.getBag, [option, idusrmob, page, limit]);
     const bag = result.rows;
 
-    const response: { bag: BagInterface[] } = { bag };
+    const response: { bag: BagInterface[] } = {  bag };
     return response;
 };
 

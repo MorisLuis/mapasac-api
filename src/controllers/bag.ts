@@ -7,14 +7,12 @@ const getBag = async (req: Request, res: Response, next: NextFunction): Promise<
     try {
         const session = req.session;
         const { limit, page, option } = getBagQuerySchema.parse(req.query);
-
         const { bag } = await getBagService(
             session,
             option,
             page,
             limit
-        )
-
+        );
         res.status(200).json({ bag })
     } catch (error) {
         return next(error);
@@ -23,7 +21,6 @@ const getBag = async (req: Request, res: Response, next: NextFunction): Promise<
 };
 
 const getTotalProductsInBag = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-
     try {
         const session = req.session;
         const { opcion } = getTotalProductsInBagQuerySchema.parse(req.query);

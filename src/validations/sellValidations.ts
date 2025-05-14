@@ -18,12 +18,18 @@ export const getProductsSellsFromFamilyQuerySchema = z.object({
 
 export const postSellBodySchema = z.object({
     clavepago: z.number().min(1, "clavepago es requerido"),
-    idclientes: z.number().min(1, "idclientes es requerido"),
     comments: z.string().optional(),
-    domicilio: z.string().optional(),
-    idviaenvio: z.string().optional()
+
+    idclientes: z.number().min(1, "idclientes es requerido")
 });
 
+export const postSellRestaurantBodySchema = z.object({
+    clavepago: z.number().min(1, "clavepago es requerido"),
+    comments: z.string().optional(),
+
+    domicilio: z.string().optional(),
+    idviaenvio: z.union([z.string(), z.number()]).optional().transform(val => val !== undefined ? String(val) : undefined)
+});
 
 export const postSellQuery = z.object({
     opcion: z.preprocess(

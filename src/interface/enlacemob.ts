@@ -17,10 +17,10 @@ export interface EnlacemobInterface {
     fecalta?: Date;
 };
 
-export interface EnlacemobInterfaceSales {
-    clavepago: number,
-    idclientes: number,
-    comments?: string,
-    domicilio?: string,
-    idviaenvio?: string
+export interface BaseSaleBody {
+    clavepago: number;
+    idclientes?: number;
+    comments?: string;
+    domicilio?: string;
+    idviaenvio?: string;
 }

@@ -8,7 +8,7 @@ const getProductsSellsRestaurant = async (req: Request, res: Response, next: Nex
     try {
         const session = req.session;
         const { limit, page } = getProductsSellsRestaurantQuerySchema.parse(req.query);
-        const {products} = await getProductsSellsRestaurantService(session, page, limit);
+        const { products } = await getProductsSellsRestaurantService(session, page, limit);
         res.json({ products });
 
     } catch (error) {
@@ -21,7 +21,7 @@ const getProductSellsRestaurantDetails = async (req: Request, res: Response, nex
     try {
         const session = req.session;
         const { cvefamilia } = getProductSellsRestaurantDetailsQuerySchema.parse(req.query);
-        const {product} = await getProductSellsRestaurantDetailsService(session, cvefamilia);
+        const { product } = await getProductSellsRestaurantDetailsService(session, cvefamilia);
         res.json({ product });
     } catch (error) {
         return next(error);
@@ -32,7 +32,7 @@ const getTotalProductsSellsRestaurant = async (req: Request, res: Response, next
 
     try {
         const session = req.session;
-        const {total} = await getTotalProductsSellsRestaurantService(session)
+        const { total } = await getTotalProductsSellsRestaurantService(session)
         res.json({ total });
     } catch (error) {
         return next(error);

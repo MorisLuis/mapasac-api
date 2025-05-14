@@ -5,7 +5,7 @@ import { dbConnection } from '../database/connection';
 import type { UserSessionInterface } from '../interface/user';
 import type { opcionBag } from '../interface/bag';
 import { AppError, ValidationError } from '../errors/CustomError';
-import type { EnlacemobInterfaceSales } from '../interface/enlacemob';
+import type { BaseSaleBody } from '../interface/enlacemob';
 
 const postInventoryService = async (
     session: UserSessionInterface
@@ -47,10 +47,9 @@ const postInventoryService = async (
     }
 };
 
-
 const postSellService = async (
     session: UserSessionInterface,
-    body: EnlacemobInterfaceSales,
+    body: BaseSaleBody,
     opcion: opcionBag
 ): Promise<{ message: string, folio: string }> => {
 

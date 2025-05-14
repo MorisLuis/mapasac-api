@@ -29,7 +29,6 @@ const searchProductService = async (
 
     let products;
     if(codebarEmpty) {
-        console.log("pass here!")
         const result = await pool.query(searchQuerys.searchProductWithoutCodBarras, [searchTerm]);
         products = result.rows;
     } else {

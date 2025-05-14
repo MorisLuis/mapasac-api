@@ -6,5 +6,6 @@ const inveart_1 = require("../controllers/inveart");
 const router = (0, express_1.Router)();
 router.post('/inventory', validate_jwt_1.validateJWT, inveart_1.postInventory);
 router.post('/sell', validate_jwt_1.validateJWT, inveart_1.postSell);
+router.post('/sellRestaurant', validate_jwt_1.validateJWT, inveart_1.postSellRestaurant);
 exports.default = router;
 //# sourceMappingURL=inverartRouter.js.map

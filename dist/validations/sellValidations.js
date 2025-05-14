@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.postSellQuery = exports.postSellBodySchema = exports.getProductsSellsFromFamilyQuerySchema = exports.getProductByEnlacemobQuerySchema = exports.getProductsSellsQuerySchema = void 0;
+exports.postSellQuery = exports.postSellRestaurantBodySchema = exports.postSellBodySchema = exports.getProductsSellsFromFamilyQuerySchema = exports.getProductByEnlacemobQuerySchema = exports.getProductsSellsQuerySchema = void 0;
 const zod_1 = require("zod");
 exports.getProductsSellsQuerySchema = zod_1.z.object({
     page: zod_1.z.string().min(1, "page es requerido"),
@@ -16,10 +16,14 @@ exports.getProductsSellsFromFamilyQuerySchema = zod_1.z.object({
 });
 exports.postSellBodySchema = zod_1.z.object({
     clavepago: zod_1.z.number().min(1, "clavepago es requerido"),
-    idclientes: zod_1.z.number().min(1, "idclientes es requerido"),
+    comments: zod_1.z.string().optional(),
+    idclientes: zod_1.z.number().min(1, "idclientes es requerido")
+});
+exports.postSellRestaurantBodySchema = zod_1.z.object({
+    clavepago: zod_1.z.number().min(1, "clavepago es requerido"),
     comments: zod_1.z.string().optional(),
     domicilio: zod_1.z.string().optional(),
-    idviaenvio: zod_1.z.string().optional()
+    idviaenvio: zod_1.z.union([zod_1.z.string(), zod_1.z.number()]).optional().transform(val => val !== undefined ? String(val) : undefined)
 });
 exports.postSellQuery = zod_1.z.object({
     opcion: zod_1.z.preprocess((val) => Number(val), zod_1.z.union([zod_1.z.literal(2), zod_1.z.literal(4)])),

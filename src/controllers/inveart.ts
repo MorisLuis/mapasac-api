@@ -1,6 +1,6 @@
 import type { NextFunction, Request, Response } from "express";
 import { postInventoryService, postSellService } from "../services/inveartService";
-import { postSellQuery, postSellBodySchema } from "../validations/sellValidations";
+import { postSellBodySchema, postSellRestaurantBodySchema } from "../validations/sellValidations";
 
 const postInventory = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
@@ -16,9 +16,22 @@ const postSell = async (req: Request, res: Response, next: NextFunction): Promis
 
     try {
         const session = req.session;
-        const { opcion } = postSellQuery.parse(req.query)
         const body = postSellBodySchema.parse(req.body);
-        const result = await postSellService(session, body, opcion);
+        const result = await postSellService(session, body, 2);
+        res.status(201).json(result);
+
+    } catch (error) {
+        return next(error);
+    };
+
+};
+
+const postSellRestaurant = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+
+    try {
+        const session = req.session;
+        const body = postSellRestaurantBodySchema.parse(req.body);
+        const result = await postSellService(session, body, 4);
         res.status(201).json(result);
 
     } catch (error) {
@@ -29,7 +42,9 @@ const postSell = async (req: Request, res: Response, next: NextFunction): Promis
 
 
 
+
 export {
     postInventory,
-    postSell
+    postSell,
+    postSellRestaurant
 }

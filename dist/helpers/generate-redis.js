@@ -23,7 +23,6 @@ const generateRedisSession = async (sessionId, datosDelUsuario) => {
 exports.generateRedisSession = generateRedisSession;
 // Obtener la sesión desde Redis
 const getRedisSession = async (sessionId) => {
-    console.log("getRedisSession");
     try {
         const sessionData = await redisClient_1.default?.get(`session:${sessionId}`);
         if (!sessionData) {
@@ -39,7 +38,6 @@ exports.getRedisSession = getRedisSession;
 // Actualizar la sesión en Redis
 const updateSession = async (sessionId, newData) => {
     try {
-        console.log("updateSession");
         let session = await (0, exports.getRedisSession)(sessionId);
         if (!session) {
             throw new CustomError_1.NotFoundError('Sesión no encontrada en Redis');
