@@ -45,14 +45,13 @@ const logout = async (req, res, next) => {
     try {
         const sessionId = req.sessionId;
         if (!sessionId)
-            throw new CustomError_1.UnauthorizedError('Sesion terminada');
+            throw new CustomError_1.UnauthorizedError('Sesión terminada');
         await (0, generate_redis_1.handleDeleteRedisSession)(sessionId);
         res.json({ ok: true });
     }
     catch (error) {
         next(error);
     }
-    ;
 };
 exports.logout = logout;
 //# sourceMappingURL=auth.js.map

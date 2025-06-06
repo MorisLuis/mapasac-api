@@ -19,6 +19,7 @@ const loginService = async (usr, pas) => {
     const userName = usr.toUpperCase();
     const result = await pool.query(querys_1.querys.auth, [userName]);
     const user = result.rows[0];
+    console.log({ user });
     if (!user) {
         throw new CustomError_1.NotFoundError('Usuario no encontrado');
     }

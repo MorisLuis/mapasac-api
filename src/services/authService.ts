@@ -23,6 +23,7 @@ const loginService = async (usr: string, pas: string): Promise<{ user: UserSessi
     const result = await pool.query(querys.auth, [userName]);
     const user = result.rows[0];
 
+    console.log({user})
     if (!user) {
         throw new NotFoundError('Usuario no encontrado');
     }

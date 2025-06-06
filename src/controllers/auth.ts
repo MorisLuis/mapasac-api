@@ -45,16 +45,17 @@ const refresh = async (req: Request, res: Response, next: NextFunction): Promise
         return next(error);
     }
 };
-
 const logout = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
     try {
         const sessionId = req.sessionId;
-        if (!sessionId) throw new UnauthorizedError('Sesion terminada')
-        await handleDeleteRedisSession(sessionId)
-        res.json({ ok: true })
+        if (!sessionId) throw new UnauthorizedError('Sesión terminada');
+
+        await handleDeleteRedisSession(sessionId);
+
+        res.json({ ok: true });
     } catch (error) {
         next(error);
-    };
+    }
 };
 
 export {
